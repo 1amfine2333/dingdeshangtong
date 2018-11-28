@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+	    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>用户登录 - 鼎德商砼</title>
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/jquery-weui.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/weui.min.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/public.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css" />
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/jq/jquery-1.10.2.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js" ></script>
+	</head>
+	<style>
+		body .weui-vcode-btn.getCode.active{ color: #ccc;}
+		body .weui-vcode-btn.getCode{ color: #4c7db2;}
+		body .weui-vcode-btn{ font-size: 1rem;}
+	</style>
+	<body>
+		<section id="app" class="loginSec">
+			<form action="{:url('index/login/loginPost')}" id="login_form">
+				<div class="logo">
+					<img src="__TMPL__/public/assets/user/img/logo.png"/>
+					<div>鼎德商砼</div>
+				</div>
+				<div class="inputBox">
+					<div class="bold">手机号</div>
+					<div class="input">
+						<input type="number" name="mobile" value="17765333233" pattern="[0-9]" placeholder="请输入手机号"/>
+					</div>
+				</div>
+				<div class="inputBox">
+					<div class="bold">验证码</div>
+					<div class="input disbox">
+						<input type="number" value="123456" name="sms_code" pattern="[0-9]" class="disflex" placeholder="请输入手机号"/>
+						<div class="yzm" @click="gerYzm($event)">{{yzmText}}</div>
+					</div>
+				</div>
+				<div class="btn" style="margin-top: 4rem;">登 录</div>
+			</form>
+		</section>
+	</body>
+</html>
+<script>
+
+	var app = new Vue({
+		el:'#app',
+		data:{
+			mobile:'',    //手机号
+			yzm:'',    //验证码
+			yzmText:'获取验证码',    //获取验证码文字
+			times:60,     //验证码倒计时
+			isget:0,    //是否已点击获取验证码按钮(0.未点击，1.已点击)
+		},
+		methods:{
+			//获取验证码
+			gerYzm:function(evt){
+				var self=this;
+				if(self.isget===0){
+					self.isget=1;
+					//ajax
+                    $.toast("")
+					self.setTime();
+				}
+			},
+			setTime:function(){
+				var self=this;
+				if(self.times<1){
+					self.yzmText="获取验证码";
+					self.times=60;
+					self.isget=0;
+					return
+				}else{
+					self.yzmText=self.times+"s后重新获取";
+					self.times--;
+				}
+				setTimeout(function(){
+					self.setTime();
+				},1000)
+			}
+		}
+	})
+
+	$("div.btn").on("click",function () {
+	    let form = $("#login_form");
+		let data = form.formData();
+        if(!(/^(13|14|15|17|18|19)[0-9]{9}$/.test(data.mobile))){
+            $.toast("手机号码有误，请重填",'cancel');
+            return false;
+        }
+
+        if(!(/^\d{6}$/.test(data.sms_code))){
+            $.toast("请输入正确的验证码",'cancel');
+            return false;
+        }
+        request({
+            load_btn:"div.btn",
+			url:form[0].action,
+			data:data,
+		})
+    })
+</script>
+
+
+
+
+

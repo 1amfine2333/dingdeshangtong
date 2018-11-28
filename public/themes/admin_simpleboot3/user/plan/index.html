@@ -1,0 +1,163 @@
+<include file="public@header"/>
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<link rel="stylesheet" href="__STATIC__/css/public.css">
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <form class="well form-inline margin-top-20" method="post" autocomplete="off" action="{:url('Plan/index')}">
+        <div>
+        模糊查询:
+        <input type="text" class="form-control" name="keyword" style="width: 360px;" value="{$keyword|default=''}" placeholder="微信昵称/单位名称/工程名称/负责人姓名/业务员姓名">
+        <input type="text" class="form-control" name="mobile" style="width: 200px;" value="{$mobile|default=''}" placeholder="现场负责人电话/用户手机号">
+        </div><br>
+        <div>
+        下单时间:
+        <input type="text" class="form-control" name="begin_time" id="begin_time" style="width: 160px;" value="{$begin_time|default=''}" placeholder=""> —
+        <input type="text" class="form-control" name="end_time" id="end_time" style="width: 160px;" value="{$end_time|default=''}" placeholder="">
+        浇筑时间:
+        <input type="text" class="form-control" name="start_time" id="start_time" style="width: 160px;" value="{$start_time|default=''}" placeholder=""> —
+        <input type="text" class="form-control" name="finish_time" id="finish_time" style="width: 160px;" value="{$finish_time|default=''}" placeholder="">
+        <input type="submit" class="btn btn-primary" value="查询"/>
+        </div>
+    </form>
+    <div style="margin-bottom: 12px;padding:12px 0;border:1px solid grey;width: 30%;" class="clearfix">
+        <label class="col-sm-12" style="margin-bottom: 10px;">总计划方量：<span>{$total_square}㎥</span></label>
+        <label class="col-sm-12">今日方量：<span>{$today_square}㎥</span></label>
+    </div>
+    <div style="margin-bottom: 12px;">
+        <a class="btn btn-danger" id="deleteTrue">删除</a>
+        <a class="btn btn-warning" id="deleteFalse">前端删除</a>
+    </div>
+    <form class="js-ajax-form" id="planList">
+        <table class="table table-hover table-bordered table-list">
+            <thead>
+            <tr>
+                <th width="16"><label><input type="checkbox" class="js-check-all" data-direction="x" data-checklist="js-check-x"></label></th>
+                <th>计划单编号</th>
+                <th>昵称</th>
+                <th>手机号</th>
+                <th>负责人姓名</th>
+                <th>负责人电话</th>
+                <th>单位名称</th>
+                <th>工程名称</th>
+                <th>计划方量</th>
+                <th>业务员</th>
+                <th>前端删除</th>
+                <th>销售经理</th>
+                <th>工程地址</th>
+                <th>下单时间</th>
+                <th>状态</th>
+                <th width="100">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <if condition="empty($data)">
+                <tr><td colspan="16" style="text-align: center;">暂无数据</td></tr>
+            </if>
+            <php>$status_array=array(1=>'待处理',2=>'已处理',3=>'已拒绝',4=>'已取消');</php>
+            <foreach name="plan" item="vp">
+                <tr>
+                    <td><input type="checkbox" class="js-check" name="plan_one" data-yid="js-check-y" data-xid="js-check-x" value="{$vp.id}"></td>
+                    <td>{$vp.number}</td>
+                    <td>{$vp.user_name}</td>
+                    <td>{$vp.phone}</td>
+                    <td>{$vp.principal}</td>
+                    <td>{$vp.mobile}</td>
+                    <td>{$vp.unit_name}</td>
+                    <td>{$vp.project_name}</td>
+                    <td>{$vp.plan_square}</td>
+                    <td>{$vp.salesman}</td>
+                    <td><if condition="$vp['delete_time'] gt 0">已删除前端展示</if></td>
+                    <td>{$vp.manager}</td>
+                    <td>{$vp.project_address}</td>
+                    <td><php>echo date('Y-m-d H:i:s',$vp['create_time'])</php></td>
+                    <td>{$status_array[$vp['status']]}</td>
+                    <td style="text-align: center;"><a href="{:url('Plan/info',array('id'=>$vp['id']))}">查看详情</a></td>
+                </tr>
+            </foreach>
+            </tbody>
+        </table>
+        <div class="pagination">{$page}</div>
+    </form>
+</div>
+<script src="__STATIC__/js/admin.js"></script>
+<script src="__STATIC__/layui/layui.js"></script>
+<script type="text/javascript">
+    layui.use(['laydate','layer'], function() {
+        var laydate = layui.laydate,layer = layui.layer;
+        //时间选择器
+        laydate.render({elem: '#begin_time', type: 'datetime'});
+        laydate.render({elem: '#end_time', type: 'datetime'});
+        laydate.render({elem: '#start_time', type: 'datetime'});
+        laydate.render({elem: '#finish_time', type: 'datetime'});
+        //批量真删除
+        $("#deleteTrue").on('click',function () {
+            var list_array = [];
+            $("#planList").find('input[name=plan_one]').each(function () {
+                if($(this).is(":checked")){
+                    list_array.push($(this).val());
+                }
+            });
+            if(list_array.length < 1){
+                layer.msg("请选择至少一条计划单",{icon:2,time:2000});
+                return false;
+            }
+            layer.confirm('确定删除选中的计划单吗？',{icon: 3, title:'提示'}
+                , function(){
+                    $.ajax({
+                        type: 'POST',
+                        url: '{:url("Plan/deleteTrue")}',
+                        data: {list:list_array},
+                        success: function (res) {
+                            if(res.code === 1){
+                                layer.msg(res.msg,{icon:1,time:2000},function () {
+                                    location.reload();
+                                })
+                            }else{
+                                layer.msg(res.msg,{icon:5,time:2000});
+                            }
+                        }
+                    })
+                }, function(index){
+                    layer.close(index);
+                }
+            );
+        });
+
+        //批量假删除
+        $("#deleteFalse").on('click',function () {
+            var lists_array = [];
+            $("#planList").find('input[name=plan_one]').each(function () {
+                if($(this).is(":checked")){
+                    lists_array.push($(this).val());
+                }
+            });
+            if(lists_array.length < 1){
+                layer.msg("请选择至少一条计划单",{icon:2,time:2000});
+                return false;
+            }
+            layer.confirm('确定前端删除选中的计划单吗？',{icon: 3, title:'提示'}
+                , function(){
+                    $.ajax({
+                        type: 'POST',
+                        url: '{:url("Plan/deleteFalse")}',
+                        data: {list:lists_array},
+                        success: function (res) {
+                            if(res.code === 1){
+                                layer.msg(res.msg,{icon:1,time:2000},function () {
+                                    location.reload();
+                                })
+                            }else{
+                                layer.msg(res.msg,{icon:5,time:2000});
+                            }
+                        }
+                    })
+                }, function(index){
+                    layer.close(index);
+                }
+            );
+        })
+    });
+</script>
+</body>
+</html>

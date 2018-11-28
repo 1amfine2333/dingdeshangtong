@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+	    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>投诉建议</title>
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/jquery-weui.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/weui.min.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/public.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css" />
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/jq/jquery-1.10.2.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js" ></script>
+	</head>
+	<style>
+		body .weui-vcode-btn.getCode.active{ color: #ccc;}
+		body .weui-vcode-btn.getCode{ color: #4c7db2;}
+		body .weui-vcode-btn{ font-size: 1rem;}
+		.underline{ text-decoration: underline;}
+		.weui-cells:after{ display: none;}
+		.btn{ position: fixed; left: 50%; bottom: 2%; transform: translate(-50%,-50%);}
+	</style>
+	<body class="">
+		<section id="app" class="DetailSec">
+			<div class="weui-cells weui-cells_checkbox">
+				<div class="weui-flex">
+		            <div class="weui-flex__item"><div class="placeholder">
+		            	<label class="weui-cell weui-check__label">
+			                <div class="weui-cell__hd">
+			                    <input type="radio" class="weui-check" name="checkbox1" value="1" v-model="chose" @change="changeFn($event)">
+			                    <i class="weui-icon-checked"></i>
+			                </div>
+			                <div class="weui-cell__bd">
+			                    <p>建议</p>
+			                </div>
+			            </label>
+		            </div></div>
+		            <div class="weui-flex__item"><div class="placeholder">
+		            	<label class="weui-cell weui-check__label">
+			                <div class="weui-cell__hd">
+			                    <input type="radio" class="weui-check" name="checkbox1" value="2" v-model="chose" @change="changeFn($event)">
+			                    <i class="weui-icon-checked"></i>
+			                </div>
+			                <div class="weui-cell__bd">
+			                    <p>投诉</p>
+			                </div>
+			            </label>
+		            </div></div>
+		            <div class="weui-flex__item"><div class="placeholder"></div></div>
+		        </div>
+	        </div>
+	        <div style="padding: 10px;">
+	        	<div class="bgf7" style="padding: 10px;">
+	        		<textarea class="weui-textarea " placeholder="请填写您的反馈" v-model="backtext" rows="5" maxlength="300"></textarea>
+                	<div class="weui-textarea-counter">您还可以输入{{words}}字</div>
+	        	</div>
+	        </div>
+	        <div class="backImgBox">
+	        	<div class="backImgItem">
+	        		<img src="__TMPL__/public/assets/user/img/map.png" />
+	        		<i></i>
+	        	</div>
+	        	<div class="backImgItem">
+	        		<img src="__TMPL__/public/assets/user/img/map.png" />
+	        		<i></i>
+	        	</div>
+	        	<div class="backImgItem"></div>
+	        </div>
+			<div class="btn" style="margin:2rem auto;" @click="upFn($event)">提 交</div>
+		</section>
+	</body>
+</html>
+<script>
+
+	var app = new Vue({
+		el:'#app',
+		data:{
+			chose:1,    //1.建议，2.投诉
+			words:300,    //字数限制
+			backtext:'',    //反馈内容
+		},
+		methods:{
+			changeFn:function(evt){
+				console.log(app.chose)
+			}
+		}
+	})
+	function picFn(){
+		var wi=$('body').width()-80;
+		$('.backImgItem').width(wi/4).height(wi/4);
+	}
+	$(function(){
+		picFn();
+	})
+	
+</script>
+
+
+
+
+

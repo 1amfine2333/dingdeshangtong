@@ -1,0 +1,66 @@
+.layui-layer-msg .layui-layer-content{
+    width: 100% !important;
+    height: 100% !important;
+    text-align: center !important;
+    color:#fff;
+    font-size: 12px !important;
+    padding: 55% 0 0 0 !important;
+    overflow: hidden !important;
+}
+.layui-layer.layui-layer-dialog.layui-layer-border.layui-layer-msg{
+    width: 110px !important;
+    background: #1a242fd1;
+    height: 125px;
+    min-width: 140px !important;
+    border: none;
+    border-radius: 20px;overflow: hidden !important;
+}
+.layui-layer-msg .layui-layer-content .layui-layer-ico{
+    top: 35px !important;
+    margin-left: -28px !important;
+    left: 50% !important;
+    font-size: 5em;
+    background: transparent;
+}
+.layui-layer-ico1:before{
+    font-family: layui-icon!important;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    content: "\1005";
+}
+.layui-layer-ico2:before{
+    font-family: layui-icon!important;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    content: "\1007";
+}
+.table td,.table th{
+    text-align: center;
+}
+
+.table-bordered td a{
+    text-decoration: none !important;margin-right: 5px;
+}
+.btn {
+    margin-right: 10px;
+}
+
+select.select{
+    border-radius: 3px;
+    height: 35px;
+    position: relative;
+    top: 2px;
+    border: 1px solid #e4e4e4;
+}
+.layui-form-label{
+    float: left;
+    display: block;
+    padding: 9px 5px;
+    width: 90px;
+    font-weight: 400;
+    line-height: 20px;
+    text-align: right;
+}
+.pagination{
+    float: right;
+}

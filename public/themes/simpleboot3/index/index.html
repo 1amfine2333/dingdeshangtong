@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+	    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>首页</title>
+		<link rel="stylesheet" href="__TMPL__/public/assets/user/lib/mui/mui.min.css" />
+		<link rel="stylesheet" href="__TMPL__/public/assets/user/lib/mui/mui.picker.min.css" />
+		<link rel="stylesheet" href="__TMPL__/public/assets/user/lib/mui/mui.poppicker.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/jquery-weui.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/weui.min.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/public.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css" />
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/jq/jquery-1.10.2.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/mui/mui.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/mui/mui.picker.min.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/mui/mui.poppicker.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js?_=1" ></script>
+	</head>
+	<style>
+		body .weui-vcode-btn.getCode.active{ color: #ccc;}
+		body .weui-vcode-btn.getCode{ color: #4c7db2;}
+		body .weui-vcode-btn{ font-size: 1rem;}
+		.underline{ text-decoration: underline;}
+	</style>
+	<body class="bgf7">
+		<section id="app" class="mainSec">
+			<div class="content" style="padding-bottom: 50px;">
+				<form action="" id="formData">
+				<div class="map">
+					<div>
+						<img src="__TMPL__/public/assets/user/img/map.png" width="100%" />
+					</div>
+					<div class="mapInfo">
+						<div class="size9 bold">工程地址</div>
+						<div class="disbox">
+							<div class="disflex size9 address" :class="isedit?'underline':''" :contenteditable="isedit" >{{address}}</div>
+							<input type="hidden" name="project_address" >
+							<div class="pen" @click="isedit=!isedit"></div>
+						</div>
+					</div>
+				</div>
+				<div class="weui-cells index bgf7" style="margin: 1rem 1rem 0;">
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/dwmc.png" class="icon" alt="">
+		                	单位名称
+		                </div>
+		                <div class="weui-cell__bd relative">
+		                    <input type="text" class="right" v-model="dwmc" maxlength="15" name="unit_name" placeholder="请输入单位名称" />
+		                    <span class="history" data-val="dwmc">{{historys.dwmc}}</span>
+		                </div>
+		                <div class="weui-cell__ft"></div>
+		            </div>
+		            <div class="weui-cell weui-cell_access">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/gcmc.png" class="icon" alt="">
+		                	工程名称
+		                </div>
+		                <div class="weui-cell__bd relative">
+		                    <input type="text" class="right" v-model="gcmc" maxlength="15"  name="project_name"  placeholder="请输入/选择工程" />
+		                    <span class="history" data-val="gcmc">{{historys.gcmc}}</span>
+		                </div>
+		                <div class="weui-cell__ft" @click='choseFn($event,1)'> </div>
+		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/ywy.png" class="icon" alt="">
+		                	业务员
+		                </div>
+		                <div class="weui-cell__bd relative">
+		                    <input type="text" class="right" v-model="ywy" maxlength="6"   name="salesman" placeholder="请输入业务员姓名" />
+		                    <span class="history" data-val="ywy">{{historys.ywy}}</span>
+		                </div>
+		                <div class="weui-cell__ft"></div>
+		            </div>
+		            <div class="weui-cell weui-cell_access">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/jzfs.png" class="icon" alt="">
+		                	浇筑方式
+		                </div>
+		                <div class="weui-cell__bd relative">
+		                    <input type="text" class="right" v-model="jzfs"   name="pouring_type" maxlength="10" placeholder="请输入/选择浇筑方式" />
+		                    <span class="history" data-val="jzfs">{{historys.jzfs}}</span>
+		                </div>
+		                <div class="weui-cell__ft" @click='choseFn($event,2)'> </div>
+		            </div>
+		            <div class="weui-cell weui-cell_access">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/jzbw.png" class="icon" alt="">
+		                	浇筑部位
+		                </div>
+		                <div class="weui-cell__bd relative">
+		                    <input type="text" class="right" v-model="jzbw"   name="pouring_part" maxlength="10" placeholder="请输入/选择浇筑部位" />
+		                    <span class="history" data-val="jzbw">{{historys.jzbw}}</span>
+		                </div>
+		                <div class="weui-cell__ft" @click='choseFn($event,3)'> </div>
+		            </div>
+		            <div class="weui-cell weui-cell_access">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/jzbh.png" class="icon" alt="">
+		                	浇筑标号
+		                </div>
+		                <div class="weui-cell__bd relative">
+		                    <input type="text" class="right" v-model="jzbh"    name="pouring_label" maxlength="10" placeholder="请输入/选择浇筑标号" />
+		                    <span class="history" data-val="jzbh">{{historys.jzbh}}</span>
+		                </div>
+		                <div class="weui-cell__ft" @click='choseFn($event,4)'> </div>
+		            </div>
+		            <div class="weui-cell weui-cell_access">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/tld.png" class="icon" alt="">
+		                	坍落度
+		                </div>
+		                <div class="weui-cell__bd relative">
+		                    <input type="text" class="right" v-model="tld"   name="slump" maxlength="10" placeholder="请输入/选择坍落度" />
+		                    <span class="history" data-val="tld">{{historys.tld}}</span>
+		                </div>
+		                <div class="weui-cell__ft" @click='choseFn($event,5)'> </div>
+		            </div>
+		            <div class="weui-cell weui-cell_access">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/jzsj.png" class="icon" alt="">
+		                	浇筑时间
+		                </div>
+		                <div class="weui-cell__bd relative">
+		                    <input type="text" class="right" v-model="jzsj"  readonly placeholder="请选择浇筑时间" />
+		                    <input type="hidden" name="pouring_time"  value="" />
+		                    <span class="history" data-val="jzsj">{{historys.jzsj}}</span>
+		                </div>
+		                <div class="weui-cell__ft" onclick="choseTime(this)"> </div>
+		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/styj.png" class="icon" alt="">
+		                	商拓运距
+		                </div>
+		                <div class="weui-cell__bd relative">
+		                    <input type="text" class="right" v-model="styj"   name="distance" maxlength="15" placeholder="请输入商砼运距" />
+		                    <span class="history" data-val="styj">{{historys.styj}}</span>
+		                </div>
+		                <div class="weui-cell__ft"> </div>
+		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/jhfl.png" class="icon" alt="">
+		                	计划方量
+		                </div>
+		                <div class="weui-cell__bd relative">
+		                    <input type="text" class="right" v-model="jhfl"   name="plan_square" maxlength="15" placeholder="请输入计划方量" />
+		                    <span class="history" data-val="jhfl">{{historys.jhfl}}</span>
+		                </div>
+		                <div class="weui-cell__ft"> </div>
+		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/xcfz.png" class="icon" alt="">
+		                	现场负责
+		                </div>
+		                <div class="weui-cell__bd relative">
+		                    <input type="text" class="right" v-model="xcfz"   name="principal" maxlength="6" placeholder="请输入现场负责人姓名" />
+		                    <span class="history" data-val="xcfz">{{historys.xcfz}}</span>
+		                </div>
+		                <div class="weui-cell__ft"> </div>
+		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/lxdh.png" class="icon" alt="">
+		                	联系电话
+		                </div>
+		                <div class="weui-cell__bd relative">
+		                    <input type="text" class="right" v-model="lxdh"   name="mobile" placeholder="请输入现场负责人电话" />
+		                    <span class="history" data-val="lxdh">{{historys.lxdh}}</span>
+		                </div>
+		                <div class="weui-cell__ft"> </div>
+		            </div>
+		        </div>
+		        <div class="btn" style="margin-bottom:1rem;" @click="upFn($event)">提 交</div>
+				</form>
+			</div>
+			
+			<footer class="mainFooter">
+				<a class="fot1 active">首页</a>
+				<a class="fot2" href="{:url('plan/index')}">计划单</a>
+				<a class="fot3" href="{:url('user/index')}">我的 {$has_msg?'<i></i>':""}</a>
+			</footer>
+		</section>
+	</body>
+</html>
+<script>
+
+	const data_category= {:json_encode($category)?:''};
+
+	let app = new Vue({
+		el:'#app',
+		data:{
+			address:'四川省成都市成华区二环路东三段212号',    //工程地址
+			isedit:false,    //地址是否可编辑
+			dwmc:'',     //单位名称
+			gcmc:'',     //工程名称
+			ywy:'',    //业务员
+			jzfs:'',     //浇筑方式
+			jzbw:'',     //浇筑部位
+			jzbh:'',     //浇筑标号
+			tld:'',     //坍落度
+			jzsj:'',     //浇筑时间
+			styj:'',    //商砼运距
+			jhfl:'',    //计划方量
+			xcfz:'',     //现场负责人姓名
+			lxdh:'',     //现场负责人联系电话
+			historys:{
+				dwmc:'重庆心联宇科技',     //单位名称
+				gcmc:'重庆心联宇科技',     //工程名称
+				ywy:'李世民',    //业务员
+				jzfs:'',     //浇筑方式
+				jzbw:'',     //浇筑部位
+				jzbh:'18599585475',     //浇筑标号
+				tld:'10',     //坍落度
+				jzsj:'{:date("Y-m-d H:i:s")}',     //浇筑时间
+				styj:'100',    //商砼运距
+				jhfl:'50',    //计划方量
+				xcfz:'咚巴拉',     //现场负责人姓名
+				lxdh:'18725950959',     //现场负责人联系电话
+			},     //历史记录
+			gcmcList:[
+				{value:1,text:'工程1',ywyname:'张一'},
+				{value:2,text:'工程2',ywyname:'张二'},
+				{value:3,text:'工程3',ywyname:'张三'},
+				{value:4,text:'工程4',ywyname:'张四'},
+			],    //工程名称列表
+			jzfsList:[
+				{ value:1,text:'浇筑方式一'},
+				{ value:2,text:'浇筑方式二'},
+				{ value:3,text:'浇筑方式三'},
+				{ value:4,text:'浇筑方式四'},
+			],    //浇筑方式列表
+			jzbwList:[
+				{ value:1,text:'浇筑部位一'},
+				{ value:2,text:'浇筑部位二'},
+				{ value:3,text:'浇筑部位三'},
+				{ value:4,text:'浇筑部位四'},
+			],     //浇筑部位列表
+			jzfhList:[
+				{ value:1,text:'浇筑符号一'},
+				{ value:2,text:'浇筑符号二'},
+				{ value:3,text:'浇筑符号三'},
+				{ value:4,text:'浇筑符号四'},
+			],     //浇筑符号列表
+			tldList:[
+				{ value:1,text:'坍落度一'},
+				{ value:2,text:'坍落度二'},
+				{ value:3,text:'坍落度三'},
+				{ value:4,text:'坍落度四'},
+			],     //坍落度列表
+		},
+		methods:{
+			//点击选择
+			choseFn:function(evt,type){
+				var self=this;
+				console.log(self.gcmcList)
+				if(type==1){
+					var data= self.gcmcList;
+				}else if(type==2){
+					var data=data_category[2].subsets;self.jzfsList;
+				}else if(type==3){
+					var data=data_category[3].subsets;self.jzbwList;
+				}else if(type==4){
+					var data=data_category[1].subsets;self.jzfhList;
+				}else{
+					var data=data_category[4].subsets;self.tldList;
+				}
+				mui.init();
+				$('input').blur();
+				var picker = new mui.PopPicker();
+				picker.setData(data);
+				//picker.pickers[0].setSelectedIndex(4, 2000);
+				picker.pickers[0].setSelectedValue('fourth', 2000);
+				picker.show(function(SelectedItem) {
+					console.log(SelectedItem);
+					if(type==1){
+						self.gcmc= SelectedItem[0].text;
+						self.ywy=SelectedItem[0].value;
+					}else if(type==2){
+						self.jzfs=SelectedItem[0].text;
+					}else if(type==3){
+						self.jzbw=SelectedItem[0].text;
+					}else if(type==4){
+						self.jzbh=SelectedItem[0].text;
+					}else{
+						self.tld=SelectedItem[0].text;
+					}
+				})
+			},
+			//点击提交
+			upFn:function(evt){
+				var self=this;
+				var address=$('.address').text();
+                $("[name=project_address]").val(address);
+				if(address.length<1||self.dwmc.length<1||self.gcmc.length<1||self.ywy.length<1||self.jzfs.length<1||self.jzbw.length<1||self.jzbh.length<1||self.tld.length<1||self.jzsj.length<1||self.styj.length<1||self.jhfl.length<1||self.xcfz.length<1||self.lxdh.length<1){
+					$.toast("请完善计划单信息!","cancel");
+					return
+				}
+				if(!testTel(self.lxdh)){
+					$.toast("请输入正确格式手机号!","cancel");
+					return
+				}
+				let data = $("#formData").serialize();
+				request({
+					url:"{:url('index/indexPost')}",
+					data:data,
+				})
+			}
+		},
+		watch:{
+			
+		}
+	});
+
+	//选择时间
+	function choseTime(obj){
+		mui.init();
+		$('input').blur();
+		setTimeout(function(){
+			var dtpickerStartTime = new mui.DtPicker({
+				type : "hour",
+				beginDate:new Date(),
+				endDate:'',
+				labels: ['年', '月', '日', '点'],//设置默认标签区域提示语 
+				customData : {
+				}
+			});
+			dtpickerStartTime.show(function(e){
+				app.jzsj=e.y.value+"年"+e.m.value+"月"+e.d.value+"日"+e.h.value+"点";
+//				$(obj).find('input').val(e.y.value+"年"+e.m.value+"月"+e.d.value+"日");
+    			$('input[name=pouring_time]').val(e.text+":00:00");
+			})
+		},500)
+	}
+	$(function(){
+		//输入框获得焦点，读取历史记录
+		$('input').focus(function(){
+			$('.history').hide();
+			var hist=$(this).siblings('.history');
+			if(hist.html()!=''){
+				hist.show();
+			}
+		});
+		
+		//点击历史记录，填充内容至输入框
+		$('.history').click(function(){
+			var val=$(this).attr('data-val');
+			var script = "app."+val +"=$(this).html()";
+			eval(script);
+			$(this).hide();
+		})
+	})
+
+
+	
+</script>
+
+
+
+
+

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+	    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>我的消息</title>
+	    <link rel="stylesheet" href="../../../lib/weui/jquery-weui.css" />
+	    <link rel="stylesheet" href="../../../lib/weui/weui.min.css" />
+	    <link rel="stylesheet" href="../../../css/public.css" />
+	    <link rel="stylesheet" href="../../../css/style.css" />
+	    <script type="text/javascript" src="../../../lib/jq/jquery-1.10.2.js" ></script>
+	    <script type="text/javascript" src="../../../lib/weui/jquery-weui.js" ></script>
+	    <script type="text/javascript" src="../../../js/v.min.js" ></script>
+	    <script type="text/javascript" src="../../../js/common.js" ></script>
+	</head>
+	<style>
+		body .weui-vcode-btn.getCode.active{ color: #ccc;}
+		body .weui-vcode-btn.getCode{ color: #4c7db2;}
+		body .weui-vcode-btn{ font-size: 1rem;}
+		.underline{ text-decoration: underline;}
+	</style>
+	<body class="">
+		<section id="app" class="DetailSec">
+			<div style="padding: 2rem 1rem;" class="center msgcontent">
+				<div class="size11 bold" style="padding-bottom: 1rem;">标题标题标题标题标题标题</div>
+				<div class="color6" style="padding-bottom: 1rem;">2018-11-21 11:11:11</div>
+				<img src="../../../img/map.png" />
+				<div class="color6 left">内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容</div>
+			</div>
+			
+		</section>
+	</body>
+</html>
+<script>
+
+	var app = new Vue({
+		el:'#app',
+		data:{
+			
+		},
+		methods:{
+			
+		}
+	})
+	
+	$(function(){
+		$('.msgcontent').find('*').css('max-width','100%')
+	})
+	
+</script>
+
+
+
+
+

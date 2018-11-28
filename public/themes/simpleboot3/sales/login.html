@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+	    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>登录</title>
+	    <link rel="stylesheet" href="../../lib/weui/jquery-weui.css" />
+	    <link rel="stylesheet" href="../../lib/weui/weui.min.css" />
+	    <link rel="stylesheet" href="../../css/public.css" />
+	    <link rel="stylesheet" href="../../css/style.css" />
+	    <script type="text/javascript" src="../../lib/jq/jquery-1.10.2.js" ></script>
+	    <script type="text/javascript" src="../../lib/weui/jquery-weui.js" ></script>
+	    <script type="text/javascript" src="../../js/v.min.js" ></script>
+	    <script type="text/javascript" src="../../js/common.js" ></script>
+	</head>
+	<style>
+		body .weui-vcode-btn.getCode.active{ color: #ccc;}
+		body .weui-vcode-btn.getCode{ color: #4c7db2;}
+		body .weui-vcode-btn{ font-size: 1rem;}
+	</style>
+	<body>
+		<section id="app" class="loginSec">
+			<div class="logo">
+				<img src="../../img/logo.png" />
+				<div>鼎德商砼</div>
+				<div style="font-size: 13px; font-weight: normal;">销售经理端</div>
+			</div>
+			<div class="inputBox">
+				<div class="bold">手机号</div>
+				<div class="input">
+					<input type="number" pattern="[0-9]" placeholder="请输入手机号" />
+				</div>
+			</div>
+			<div class="inputBox">
+				<div class="bold">密码</div>
+				<div class="input disbox">
+					<input type="number" pattern="[0-9]" class="disflex" placeholder="请输入密码" />
+				</div>
+			</div>
+			<div class="btn" style="margin-top: 4rem;">登 录</div>
+		</section>
+	</body>
+</html>
+<script>
+
+	var app = new Vue({
+		el:'#app',
+		data:{
+			mobile:'',    //手机号
+			pwd:'',     //密码
+		},
+		methods:{
+		}
+	})
+</script>
+
+
+
+
+

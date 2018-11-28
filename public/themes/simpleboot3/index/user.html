@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>个人中心</title>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/jquery-weui.css"/>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/weui.min.css"/>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/public.css"/>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css"/>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/jq/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js"></script>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js"></script>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js"></script>
+</head>
+<style>
+    body .weui-vcode-btn.getCode.active {
+        color: #ccc;
+    }
+
+    body .weui-vcode-btn.getCode {
+        color: #4c7db2;
+    }
+
+    body .weui-vcode-btn {
+        font-size: 1rem;
+    }
+
+    body .weui-cells:after, body .weui-cell:before {
+        display: none;
+    }
+</style>
+<body class="bgf7">
+<section id="app" class="mainSec">
+    <div class="headBg">
+        <div class="headImg">
+            <img src="__TMPL__/public/assets/user/img/map.png"/>
+        </div>
+        <div class="size11">{$Think.session.user.user_nickname}</div>
+        <div style="padding-bottom: 10px;">{$Think.session.user.mobile}</div>
+    </div>
+    <div class="centerCon">
+        <a href="{:url('user/msg')}">
+            <img src="__TMPL__/public/assets/user/img/bell.png"/>
+            <div>我的消息</div>
+            <php>
+                $tips=$tips_my_msg>99?($tips_my_msg."+"):($tips_my_msg?'<span class="point point1">$tips_my_msg</span>':"");
+                $tips_complaint = $tips_complaint?"point2":"";
+            </php>
+            {$tips}
+        </a>
+        <a href="{:url('complaint/index')}">
+            <img src="__TMPL__/public/assets/user/img/jianyi.png"/>
+            <div>投诉建议</div>
+            <span class="point {$tips_complaint}"></span>
+        </a>
+        <a @click="isshow=true">
+            <img src="__TMPL__/public/assets/user/img/lianxi.png"/>
+            <div>联系公司</div>
+        </a>
+        <a @click="exitFn($event)">
+            <img src="__TMPL__/public/assets/user/img/exit.png"/>
+            <div>退出登录</div>
+        </a>
+    </div>
+    <div class="meng" v-show="isshow" @click="isshow=false"></div>
+    <div class="contactBox" v-show="isshow">
+        <div class="bold" style="padding: 1.5rem 0;">客服热线</div>
+        <div class="weui-cells weui-cells_checkbox">
+            <foreach name="data.tel" id="item">
+                <label class="weui-cell weui-check__label center" style="width: -webkit-max-content; margin: 0 auto;">
+                    <div class="weui-cell__hd">
+                        <input type="radio" class="weui-check" name="checkbox1" value="{$item.tel_no}"
+                               @change="change($event)">
+                        <i class="weui-icon-checked"></i>
+                    </div>
+                    <div class="weui-cell__ft">
+                        <p style="min-width: 150px;">{$item.title}：{$item.tel_no}</p>
+                    </div>
+                </label>
+            </foreach>
+        </div>
+        <div class="weui-flex button">
+            <div class="weui-flex__item">
+                <div class="placeholder" @click="isshow=false">取消</div>
+            </div>
+            <div class="weui-flex__item">
+                <div class="placeholder" @click="call($event)">拨号</div>
+            </div>
+        </div>
+    </div>
+    <footer class="mainFooter">
+        <a class="fot1" href="{:url('index/index')}">首页</a>
+        <a class="fot2" href="{:url('plan/index')}">计划单</a>
+        <a class="fot3 active">我的</a>
+    </footer>
+</section>
+</body>
+</html>
+<script>
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            isshow: false,    //是否显示联系公司框
+            mobile: '',     //客服电话
+        },
+        methods: {
+            //点击选择电话
+            change: function (evt) {
+                var self = this,
+                    mobile = $(evt.target).val();
+                self.mobile = "tel:" + mobile;
+
+            },
+            //点击拨号
+            call: function (evt) {
+                var self = this;
+                if (self.mobile.length < 1) {
+                    $.toast("请选择客服热线", "cancel");
+                    return
+                }
+                location.href = self.mobile;
+            },
+            //点击退出
+            exitFn: function (evt) {
+                $.confirm({
+                    title: '提示',
+                    text: '确定退出？',
+                    onOK: function () {
+                        location = "{:url('login/loginOut')}"
+                    },
+                    onCancel: function () {
+                    }
+                });
+            }
+        }
+    });
+    $(function () {
+        var wi = $('body').width() - 100;
+        $('.centerCon>a').width(wi / 2).height(wi / 2);
+    })
+</script>
+
+
+
+
+

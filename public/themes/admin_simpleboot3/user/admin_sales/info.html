@@ -1,0 +1,140 @@
+<include file="public@header"/>
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<link rel="stylesheet" href="/static/css/public.css">
+<style>
+    .info{
+        padding: 10px 0 20px 0;
+    }
+    .text-info{
+        border: 1px solid #9e9e9e;
+        padding: 10px 0 0 10px;
+        margin-bottom: 15px;
+        color: #666;
+        min-width: 540px;
+    }
+    .info .row{
+        padding-bottom: 10px;
+    }
+    .title {
+        width: 105px;
+    }
+    .title_name{
+        width: 130px;
+    }
+    .name-text,.title_name{
+        float: left;
+        padding: 5px 0;
+    }
+    .active{
+        background-color:#ccc !important;
+        border-color: #eee !important;
+    }
+    .nav-tabs>li.active>a{
+        margin-right:0;
+    }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+    <ul class="nav nav-tabs">
+        <li><a href="{:url('admin_sales/index')}">销售经理管理</a></li>
+        <li class="active"><a href="">销售经理计划单详情</a></li>
+    </ul>
+    <div class="info">
+
+        <div class="row">
+            <div class="title col-sm-1">微信昵称：</div>
+            <div class="col-sm-8">{$data.user_nickname|default="未绑定"}</div>
+        </div>
+        <div class="row">
+            <div class="title col-sm-1">真实姓名：</div>
+            <div class="col-sm-8">{$data.user_name|default=""}</div>
+        </div>
+        <div class="row">
+            <div class="title col-sm-1">手  机  号 &nbsp;：</div>
+            <div class="col-sm-8">{$data.mobile}</div>
+        </div>
+        <div class="row">
+            <div class="title col-sm-1">添加时间：</div>
+            <div class="col-sm-8">{:date('Y-m-d H:i:s',$data->create_time)}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6"></div>
+        </div>
+
+        <div class="text-info col-sm-6">
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="title_name">已处理计划单次数：</div>
+                    <div class="name-text">{$count.success}</div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="title_name">已拒绝计划单次数：</div>
+                    <div class="name-text">{$count.refuse}</div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="title_name">取消计划单次数：</div>
+                    <div class="name-text">{$count.cancel}</div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <php>$id = input('id');$type=input('type')?:2;</php>
+                <a href="{:url('admin_sales/info',['id'=>$id,'type'=>2])}" class="btn btn-success <if $type==2>active</if>">已处理 <span class="badge">{$count.success}</span></a>
+                <a href="{:url('admin_sales/info',['id'=>$id,'type'=>3])}" class="btn btn-danger <if $type==3>active</if>">已拒绝 <span class="badge">{$count.refuse}</span></a>
+                <a href="{:url('admin_sales/info',['id'=>$id,'type'=>4])}" class="btn btn-default <if $type==4>active</if>">已取消 <span class="badge">{$count.cancel}</span></a>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" class="js-ajax-form layui-form">
+        <table class="table table-hover table-bordered">
+            <thead>
+            <tr>
+                <th>计划单号</th>
+                <th>负责人姓名</th>
+                <th>负责人电话</th>
+                <th>单位名称</th>
+                <th>工程名称</th>
+                <th>业务员</th>
+                <th>销售经理</th>
+                <th>工程地址</th>
+                <th>下单时间</th>
+                <th>状态</th>
+                <th>{:lang('ACTIONS')}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <if condition="empty($info)">
+                <tr><td colspan="11">暂无数据</td></tr>
+            </if>
+            <php>
+                $status =['1'=>"待处理","2"=>"已处理","3"=>"已拒绝",'4'=>"已取消"];
+            </php>
+            <foreach name="list" item="vo">
+                <tr>
+                    <td>{$vo.number}</td>
+                    <td>{$vo['principal']}</td>
+                    <td>{$vo.mobile}</td>
+                    <td>{$vo.unit_name}</td>
+                    <td>{$vo.project_name}</td>
+                    <td>{$vo.salesman}</td>
+                    <td>{$vo.manager}</td>
+                    <td>{$vo.project_address}</td>
+                    <td>{:date('Y-m-d H:i:s',$vo['create_time'])}</td>
+                    <td>{$status[$vo['status']]}</td>
+                     <td>
+                         <a href="{:url('plan/info',['id'=>$vo['id']])}" >查看详情</a>
+                     </td>
+                </tr>
+            </foreach>
+            </tbody>
+        </table>
+        <div class="pagination">{$page}</div>
+    </form>
+</div>
+<script src="__STATIC__/js/admin.js"></script>
+</body>
+</html>

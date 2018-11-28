@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+	    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>我的消息</title>
+	    <link rel="stylesheet" href="../../../lib/weui/jquery-weui.css" />
+	    <link rel="stylesheet" href="../../../lib/weui/weui.min.css" />
+	    <link rel="stylesheet" href="../../../css/public.css" />
+	    <link rel="stylesheet" href="../../../css/style.css" />
+	    <script type="text/javascript" src="../../../lib/jq/jquery-1.10.2.js" ></script>
+	    <script type="text/javascript" src="../../../lib/weui/jquery-weui.js" ></script>
+	    <script type="text/javascript" src="../../../js/v.min.js" ></script>
+	    <script type="text/javascript" src="../../../js/common.js" ></script>
+	</head>
+	<style>
+		body .weui-vcode-btn.getCode.active{ color: #ccc;}
+		body .weui-vcode-btn.getCode{ color: #4c7db2;}
+		body .weui-vcode-btn{ font-size: 1rem;}
+		.underline{ text-decoration: underline;}
+	</style>
+	<body class="bgf7">
+		<section id="app" class="DetailSec">
+			<div class="empty" v-show="isempty">
+				<img src="../../../img/empty.png" />
+				<div>暂无内容！</div>
+			</div>
+			<div class="weui-cells" v-show="!isempty">
+	            <div class="weui-cell">
+	                <div class="weui-cell__hd" style="align-self: flex-start;">
+	                	<img src="../../../img/point.png" alt="" style="width:13px;margin-right:5px;margin-top: 5px; display:block">
+	                </div>
+	                <div class="weui-cell__bd">
+	                    <div>消息标题消息标题消息标题消息标题</div>
+						<div class="color9 size9">2018-12-1-21 12:00:00</div>
+	                </div>
+	                <div class="weui-cell__ft"></div>
+	            </div>
+	            <div class="weui-cell">
+	                <div class="weui-cell__hd" style="align-self: flex-start;">
+	                	<img src="" alt="" style="width:12px;margin-right:5px;margin-top: 5px; display:block">
+	                </div>
+	                <div class="weui-cell__bd">
+	                    <div class="color9">消息标题消息标题消息标题消息标题</div>
+						<div class="color9 size9">2018-12-1-21 12:00:00</div>
+	                </div>
+	                <div class="weui-cell__ft"></div>
+	            </div>
+	        </div>
+	        <div class="nomore" v-show="!isempty">{{tips}}</div>
+		</section>
+	</body>
+</html>
+<script>
+
+	var app = new Vue({
+		el:'#app',
+		data:{
+			isempty:false,    //列表是否为空
+			tips:'上拉可以加载更多哦~',
+		},
+		methods:{
+			
+		}
+	})
+	
+	$(function(){
+		
+	})
+	
+</script>
+
+
+
+
+

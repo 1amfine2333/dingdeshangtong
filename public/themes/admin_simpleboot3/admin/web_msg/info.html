@@ -1,0 +1,54 @@
+<include file="public@header"/>
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<link rel="stylesheet" href="/static/css/public.css">
+<style type="text/css">
+
+    .table-bordered tr td:nth-child(2){
+        text-align: left;
+    }
+</style>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:url('web_msg/index')}">站内信</a></li>
+        <li class="active"><a href="">详情</a></li>
+    </ul>
+    <form action="{:url('web_msg/addPost')}" method="post" class="form-horizontal js-ajax-form margin-top-20">
+        <div class="row">
+            <div class="col-md-9">
+
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <td>标&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;题:</td>
+                        <td>  {$data.title}</td>
+                    </tr>
+                    <tr>
+                        <td>发送对象:</td>
+                        <td>
+                            <php>
+                                $userType = [0=>"全部",2=>"用户",3=>"销售经理"];
+                            </php>
+                            <span class="label label-default" >{$userType[$data['user_type']]}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>发布时间:</td>
+                        <td> {:date("Y-m-d H:i:s",$data.create_time)}</td>
+                    </tr>
+                    <tr>
+                        <td>内&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;容:</td>
+                        <td> {:htmlspecialchars_decode($data.content)} </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="__STATIC__/js/admin.js"></script>
+</body>
+</html>

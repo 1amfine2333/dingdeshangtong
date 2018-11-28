@@ -1,0 +1,69 @@
+*{
+    box-sizing: border-box;
+    font-family: "Microsoft Yahei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.main{padding: 60px 30px;}
+.layui-form{
+    padding: 10px;
+}
+.layui-form .logo{
+    text-align: center;
+
+}
+.layui-form .logo img{
+    width: 110px;
+}
+
+.layui-form .layui-form-item{
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.layui-form .layui-form-item label{
+    display: block;font-weight:700;
+    width: 100%;font-size: 16px;
+    text-align: left;
+}
+.layui-form .layui-form-item .input-block{
+    position: relative;
+    clear: both;
+}
+.layui-form .layui-form-item .layui-input{
+    display: block;
+    width: 100%;
+    height: 50px;
+    border: none;letter-spacing:1px;
+    padding: 10px;
+    background-color: #fafafa;
+    color: #666;
+}
+.layui-form .layui-form-item .layui-btn{
+    width: 190px;
+    height: 50px;
+    border: none;
+    padding: 8px;letter-spacing:3px;
+    outline-style: none;
+    font-size: 16px;
+    border-radius: 50px;
+    background-color: #5075ff;
+    box-shadow: 0 2px 5px rgba(80, 117, 255, 0.60);
+    color: #fff;
+    transition:all ease 300ms;
+}
+.layui-form .layui-form-item .layui-btn:active{
+    background: #4d72e9;
+}
+.layui-form .layui-form-item .layui-input::placeholder{
+    color: #ddd;font-size: 15px; word-spacing:8px; letter-spacing:3px;
+}
+.send_code{
+    text-decoration: none;
+    position: absolute;
+    top:0;
+    right: 0;
+    height: 100%;
+    font-size: 15px;
+    padding: 15px 10px;
+    color: #5075ff;
+}

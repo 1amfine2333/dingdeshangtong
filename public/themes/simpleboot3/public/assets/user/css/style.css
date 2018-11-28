@@ -1,0 +1,198 @@
+
+/*按钮色*/
+body .weui-btn-area{ margin: 2rem 20px .3rem;}
+body .weui-btn_primary{    
+	background-color: #4c7db2;
+	color: #fff;
+	font-size: 16px;
+}
+body .weui-btn_primary:not(.weui-btn_disabled):active{
+	background-color: #4c7db2;
+}
+/*点击背景色*/
+.weui-cell_access:active{ background-color: #fff;}
+
+body .weui-cells{ margin-top: 0;}
+body .weui-cells:before{ display: none;}
+body .weui-cell:before{ right: 15px;}
+body .weui-cell__ft{ color: #666;}
+body .weui-cell_access .weui-cell__ft:after{
+	content: '';
+	border: none;
+	width: 20px;
+	height: 10px;
+	background: url(../img/rjt.png) no-repeat;
+	background-size: 10px;
+	background-position: right center;
+	transform: none;
+	-webkit-transform: none;
+	margin-top: -6px;
+}
+
+/*提示框*/
+body .weui-toast{margin-left: 0; background: rgba(0,0,0,.7); color: #fff; text-align: center; padding: 2rem 0; border-radius: 10px; z-index: 1000; width: 60%; right: 20%; transform: translate(-50% -50%); min-height: auto;}
+body .weui-toast>p{ color: #fff;}
+body .weui-mask{ background: rgba(0,0,0,.5);}
+body .weui-dialog{ border-radius: 5px;}
+body .weui-dialog__title{ font-size: 15px;}
+body .weui-dialog__bd{ font-size: 13px; padding: 1rem 0 1.5rem;}
+body .weui-dialog__btn{ color: #000; font-size: 13px;}
+body .weui-dialog .weui-dialog__btn.default, .weui-toast .weui-dialog__btn.default{ color: #aaa;}
+/*body .weui-dialog__ft:after{ border-top: 1px solid #e3e3e3;}*/
+
+/*错误提示框样式*/
+body .weui-icon-cancel.weui-icon_toast{ margin-top: 0;}
+body .weui-icon-cancel.weui-icon_toast:before{
+	content: "";
+	width: 4.5rem;
+	height: 4.5rem;
+	background: url(../img/cancel2.png) no-repeat center;
+	background-size: cover;
+}
+
+/*单选多选按钮颜色*/
+body .weui-cells_checkbox .weui-icon-checked:before{
+	content: "";
+	width: 20px;
+	height: 20px;
+	background: url(../img/chose1.png) no-repeat center;
+	background-size: cover;
+}
+body .weui-cells_checkbox .weui-check:checked+.weui-icon-checked:before{
+	content: "";
+	width: 20px;
+	height: 20px;
+	background: url(../img/chose2.png) no-repeat center;
+	background-size: cover;
+}
+
+/*weui-cell 图片大小*/
+body .weui-cell__hd img.icon{ width: 2.5rem; object-fit: cover; margin-right: 10px; display: inline-block; vertical-align: middle;}
+body .weui-cell__hd img.icon2{ width: 2rem; object-fit: cover; margin-right: 10px; display: inline-block; vertical-align: middle;}
+/*首页 weui-cell 样式控制*/
+body .weui-cells.index:after,
+body .weui-cells.index .weui-cell:before{ display: none;}
+body .weui-cells.index .weui-cell{ border-radius: 8px; margin-bottom: 10px; box-shadow: 0 4px 5px #ddd; background: #fff;}
+body .weui-cells.index .weui-cell .weui-cell__bd{ margin-top: -3px; padding-left: 5px;}
+body .weui-cells.index .weui-cell_access .weui-cell__ft,
+body .weui-cells.index .weui-cell .weui-cell__ft{ width: 20px;}
+
+/*城市选择器*/
+body .weui-picker-modal .picker-item{ text-align: center;}
+
+/*图片预览样式*/
+body .weui-photo-browser-modal .photo-container img{ max-width: 100%;}
+
+
+/*mui样式初始化*/
+input[type=color], input[type=date], input[type=datetime-local], input[type=datetime], input[type=email], input[type=month], input[type=number], input[type=password], input[type=search], input[type=tel], input[type=text], input[type=time], input[type=url], input[type=week], select, textarea{ margin: 0; line-height: normal; border: 0; line-height: normal; height: auto; padding: 0;}
+
+/*picker样式优化*/
+.mui-btn, button, input[type=button], input[type=reset], input[type=submit]{ border: none;}
+/*时间选择器样式初始化*/
+body .mui-dtpicker-title{ color: #3c95e9;}
+/*body .mui-dtpicker-title>h5{ color: #3c95e9;}*/
+body .mui-dtpicker-header{ border-bottom: 1px solid #f7f7f7;}
+body .mui-dtpicker-header button{ border: 0; font-size: 14px;}
+body .mui-btn-blue, .mui-btn-primary, input[type=submit]{ border: 0; color: #3c95e9; background-color: #fff;}
+.mui-dtpicker, .mui-poppicker,
+.mui-dtpicker-title h5,
+.mui-picker{
+	background: #fff;
+}
+[data-type=hour] [data-id=picker-h], [data-type=hour] [data-id=title-h], [data-type=datetime] [data-id=picker-h], [data-type=datetime] [data-id=title-h]{ border-left: 0;}
+body .mui-pciker-list li{ color: #ccc;}
+body .mui-pciker-list li.highlight{ color: #000;}
+
+
+.meng{ position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.2); z-index: 990;}
+.meng1{ position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0); z-index: 990;}
+.notice{ position: fixed; top: 40%; left: 20%; right: 20%; transform: translate(-50% -50%); background: rgba(0,0,0,.5); color: #fff; text-align: center; padding: 2rem 0; border-radius: 10px; z-index: 992;}
+.nomore{ text-align: center; padding: 5px 0; font-size: 12px; color: #999;}
+
+.btn{ height: 3rem; line-height: 3rem; width: 60%; border-radius: 50px; background: #5075FF; box-shadow: 0 2px 10px #5075FF; margin: 0 auto; text-align: center; color: #fff;}
+.btn2{ display: block; height: 3rem; line-height: 3rem; width: 30%; border-radius: 50px; background: #5075FF; box-shadow: 0 2px 10px #5075FF; margin: 0 auto; text-align: center; color: #fff;}
+.btn2.circle {background: #fff; box-shadow: none; color: #5075FF; border: 1px solid #5075FF;}
+
+
+/*登录*/
+.loginSec{ padding: 0 2.5rem;}
+.loginSec .logo{ text-align: center; padding: 3rem 0 2rem;}
+.loginSec .logo img{ width: 6.5rem;;}
+.loginSec .logo>div{ color: #5075ff; font-size: 1.5rem; padding-top: 1rem; font-weight: bold;}
+.loginSec .inputBox .input{ margin: 1rem 0; background: #f7f7f7; border-radius: 5px; height: 3rem; line-height: 3rem;}
+.loginSec .inputBox .input>input{ height: 3rem; line-height: 3rem; padding: 10px;}
+.loginSec .inputBox .input .yzm{ padding: 0 10px; font-size: 13px; color: #5075FF;}
+
+/*首页*/
+.map{ position: relative; padding-bottom: 1.5rem;}
+.mapInfo{ padding: .3rem .5rem .3rem 50px; color: #fff; background: url(../img/location.png) #5075FF no-repeat; background-size: 20px; background-position: 15px center; margin: 0 auto; border-radius: 50px; box-shadow: 0 2px 10px #5075FF; z-index: 99; position: absolute; left: 10%; right: 10%; bottom: 0;}
+.mapInfo .pen{ width: 20px; height: 20px; background: url(../img/edit.png) no-repeat center right; background-size: 15px;}
+/*输入框下面的记录文字*/
+.history{ position: absolute; right: 0; top: 100%; padding: .2rem .5rem; border: 1px solid #eee; border-radius: 3px; background: #fff; z-index: 99; display: none;}
+
+/*提交成功*/
+.sucessSec{ position: fixed; width: 100%; top: 40%; left: 50%; transform: translate(-50%,-50%);}
+
+/*计划单*/
+.jihuanHeader{overflow: hidden; background: #fff; position: fixed; top: 0; left: 0; right: 0; z-index: 999; border-bottom: 1px solid #f7f7f7;}
+.jihuanHeader>div{ float: left; width: 20%; text-align: center; height: 3rem; line-height: 3rem; position: relative;}
+.jihuanHeader>div:after{ content: ""; position: absolute; left: 35%; bottom: 0; width: 30%; height: 2px; background: #fff; border-radius: 5px;}
+.jihuanHeader>div.active{ color: #5075ff; font-weight: bold;}
+.jihuanHeader>div.active:after{ background: #5075ff;}
+
+.jihuaList{ padding: 10px; margin-top: 45px; padding-bottom: 50px;}
+.listItem{ background: #fff; border-radius: 5px; box-shadow: 0 2px 10px #ccc; padding: 0 10px; margin-bottom: 10px;}
+.listItem .tit{ padding: 15px 0;}
+.listItem .tit.active{ background: url(../img/point.png) no-repeat left 55%; background-size: 12px; padding-left: 20px;}
+.listItem .content{ padding: 10px 0 15px; border-top: 1px solid #f7f7f7; border-bottom: 1px solid #f7f7f7;}
+.listItem .content .addr{ background: url(../img/location2.png) no-repeat left center; background-size: 20px; padding: 5px 0 5px 30px;}
+.listItem .number{ line-height: 2.5rem;}
+.listItem .delBtn{ display: inline-block; height: 2.5rem; line-height: 2.5rem; padding: 0 30px; border-radius: 50px; background: #5075FF; box-shadow: 0 2px 10px #5075FF; margin: 0 auto; text-align: center; color: #fff;}
+
+/*暂无内容*/
+.empty{ position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; color: #aaa;}
+.empty>img{ width: 5rem; padding-bottom: 1rem;}
+
+/*计划单详情*/
+.DetailSec .tit{ padding: 15px 10px; background: #fff;}
+.DetailSec .tit.dark{ background: #f7f7f7; font-weight: bold;}
+/*已回复*/
+.yihuifu{ display: inline-block; padding: 2px 10px; background: #5075FF; border-radius: 8px; color: #fff;}
+
+/*个人中心*/
+.headBg{ background: url(../img/bgimg.png) no-repeat center; background-size: cover; text-align: center; padding-top: 1.5rem; color: #fff;}
+.headBg .headImg{ width: 5rem; height: 5rem; border-radius: 50%; overflow: hidden; margin: 0 auto .5rem;}
+.headBg .headImg>img{ width: 100%; height: 100%; object-fit: cover;}
+.centerCon{ padding: 20px 10px; overflow: hidden;}
+.centerCon>a{ display: inline-block; float: left; background: #fff; border-radius: 10px; box-shadow: 0 2px 10px #ccc; margin: 0 20px 20px; padding: 15px 20px; text-align: center; font-weight: bold; position: relative;}
+.centerCon>a>img{ width: 80%;}
+.centerCon>a .point{ position: absolute; top: -5px; right: -5px; display: inline-block;}
+.centerCon>a .point.point1{ background: #ff5747; border-radius: 50px; padding: 0 4px; text-align: center; height: 15px; line-height: 15px; box-shadow: 0 2px 5px #ff5747; font-size: 13px; color: #fff; font-weight: normal;}
+.centerCon>a .point.point2{ width: 17px; height: 17px; background: url(../img/point.png) no-repeat center; background-size: cover;}
+
+/*联系公司*/
+.contactBox{ background: #fff; position: fixed; top: 50%; left: 50%; z-index: 999; text-align: center; transform: translate(-50%,-50%); border-radius: 10px; width: 80%;}
+.contactBox .button .placeholder{ height: 3rem; line-height: 3rem; border-top: 1px solid #f7f7f7; margin-top: 1rem; display: block;}
+.contactBox .button>div:first-child{ border-right: 1px solid #f7f7f7; color: #999;}
+
+/*基本信息*/
+.editTel{ display: inline-block; width: 30px; height: 30px; background: url(../img/bianji.png) no-repeat center right; background-size: 20px; vertical-align: middle; margin-top: -5px;}
+.yzmBtn{ height: 2rem; line-height: 2rem; color: #fff; background: #5075FF; border-radius: 50px; box-shadow: 0 2px 10px #5075FF; padding: 0 15px;}
+/*消息列表*/
+.msgpoint{ width: 25px; height: 25px; background: url(../img/point.png) no-repeat center; background-size: 13px;}
+/*投诉建议*/
+.sicon{ height: 1.5rem; line-height: 1.5rem; color: #fff; background: #5075FF; border-radius: 50px; box-shadow: 0 2px 10px #5075FF; padding: 0 15px;}
+.state{ color: #ccc;}
+.state.active{ color: #ff5747;}
+.addBtn{ width: 3rem; height: 3rem; position: fixed; top: 50%; right: 20px;}
+.addBtn>img{ width: 100%; height: 100%;}
+.backImgBox{ overflow: hidden; padding: 20px 0;}
+.backImgBox .backImgItem{ float: left; border-radius: 10px; background: url(../img/addpic.png) #f7f7f7 no-repeat center; background-size: 45%; margin: 0 10px 10px 10px; position: relative;}
+.backImgBox .backImgItem>img{ width: 100%; height: 100%; object-fit: cover; border-radius: 10px;}
+.backImgBox .backImgItem>i{ display: inline-block; width: 20px; height: 20px; background: url(../img/cancel.png) no-repeat center; background-size: cover; position: absolute; top: -8px; right: -8px;}
+
+
+
+
+

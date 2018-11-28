@@ -1,0 +1,223 @@
+<include file="public@header" />
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<link rel="stylesheet" href="/static/css/public.css">
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<div>
+			<button id="addData" class="btn btn-success">新增</button>
+			<button id="delMultiple" class="btn btn-danger">删除</button>
+			<button id="resetPass" class="btn btn-warning">重置密码</button>
+		</div>
+        <form class="well form-inline margin-top-20" method="post" autocomplete="off" action="{:url('User/index')}">
+            <input type="text" class="form-control" name="keyword" style="width: 200px;" value="{:input('keyword')}" placeholder="模糊查询">
+			<select name="role_id" class="select" style="width: 160px;">
+				<option value="">角色名</option>
+				<foreach name="role" item="vo">
+					<option value="{$vo.id}" <if condition="$vo.id eq $role_id">selected</if>>{$vo.name}</option>
+				</foreach>
+			</select>
+            <input type="submit" class="btn btn-primary" value="查询" />
+        </form>
+		<table class="table table-hover table-bordered layui-form">
+			<thead>
+				<tr>
+					<th width="50"><input type="checkbox" name="check_id"  lay-skin="primary" lay-filter="layTableAllChoose" /></th>
+					<th>登录账号</th>
+					<th>真实姓名</th>
+					<th>所属角色</th>
+					<th width="130">{:lang('ACTIONS')}</th>
+				</tr>
+			</thead>
+			<tbody>
+			<if condition="empty($data)">
+				<tr><td colspan="5">暂无数据</td></tr>
+			</if>
+				<foreach name="users" item="vo">
+				<tr>
+					<td><input type="checkbox" lay-skin="primary" name="check_id"  value="{$vo.id}"/></td>
+					<td>{$vo.user_login}</td>
+					<td>{$vo.user_name}</td>
+					<td>{$vo.role_name}</td>
+					<td>
+						<if condition="$vo['id'] eq 1 || $vo['id'] eq cmf_get_current_admin_id()">
+							<font color="#cccccc">{:lang('EDIT')}</font>
+						<else/>
+							<a href="javaScript:void(0);" class="editData" data-id="{$vo.id}">{:lang('EDIT')}</a>
+						</if>
+
+					</td>
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{$page}</div>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+	<script src="__STATIC__/layui/layui.js"></script>
+	<script type="text/html" id="temp">
+		<h3 style="text-align: center;font-size: 16px;padding:15px 0 0;">{{d.id?"编辑":"添加"}}操作员</h3>
+		<form class="layui-form" id="formBox" style="padding: 25px 10px 0 0">
+			<div class="layui-form-item">
+				<label class="layui-form-label">登录账号：</label>
+				<div class="layui-input-block">
+					<input type="hidden" name="id" value="{{d.id}}">
+					<input type="text" name="user_login"  value="{{d.user_login}}" required="" lay-verify="required" placeholder="请输入登录账号" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">登录密码：</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" autocomplete="off" placeholder='{{d.id?"*****":"请输入密码"}}' name="user_pass" value="">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">真实姓名：</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" autocomplete="off"  placeholder="输入真实姓名" name="user_name" value="{{d.user_name}}">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">所属角色：</label>
+				<div class="layui-input-block">
+					<select name="role_id" class="select" style="width: 100%" lay-ignore>
+						<foreach name="roles" item="vo">
+							<option value="{$vo.id}"  {{#if(d.role_id=={$vo.id}){}} selected {{#}}}  >{$vo.name}</option>
+						</foreach>
+					</select>
+				</div>
+			</div>
+		</form>
+	</script>
+	<script>
+        layui.use(['layer',"laytpl",'form'],function () {
+            var form = layui.form;
+            var laytpl = layui.laytpl;
+
+            form.on('checkbox(layTableAllChoose)', function(data){
+                $("[name=check_id]:checkbox").prop("checked",data.elem.checked);
+                form.render("checkbox");
+            });
+
+
+            /***
+			 * 删除多条数据
+			 * */
+            $("#delMultiple").click(function () {
+
+                let values = checked();
+
+                if(values.length<1){
+                    msg({code:2,msg:"请先选择数据"});
+                }else{
+                    layer.confirm("删除后无法恢复, 确定删除这些管理员吗？",function () {
+						$.ajax({
+							url:"{:url('user/delMultiple')}",
+							type:"post",
+							data:{id:values.join(',')},
+							success:function (data) {   msg(data) }
+						});
+                    });
+                }
+
+            });
+
+
+            /***
+             * 批量重置密码
+             * */
+            $("#resetPass").click(function () {
+
+                let values = checked();
+
+                if(values.length<1){
+                    msg({code:2,msg:"请先选择数据"});
+                }else{
+                    layer.confirm("确定将这些管理员密码重置为【123456】吗？",function () {
+						$.ajax({
+							url:"{:url('user/resetPass')}",
+							type:"post",
+							data:{id:values.join(',')},
+							success:function (data) {   msg(data); }
+						});
+                    });
+                }
+
+            });
+
+
+
+            $("#addData").click(function () {
+                openWin("{:url('user/addPost')}");
+            });
+
+            /**
+			 * 编辑
+			 * */
+            $(".editData").click(function () {
+                var id = $(this).data("id");
+                var url ="{:url('user/editPost')}";
+                $.getJSON(url,{id:id},function (result) {
+                    openWin(url,result);
+                });
+            });
+
+            /**
+			 * 获取选中Id
+			 * @return array
+			 **/
+            function checked() {
+               let values = [];
+                $("[name=check_id]:checked").each(function (i,e) {
+                    values.push(e.value);
+                });
+                return values;
+            }
+
+            /**
+			 * 弹出窗口
+			 * @param url 提交的地址 string
+			 * @param data 请求参数 object
+			 * */
+            function openWin(url,data) {
+                if(!data){
+                    data = {id:"",user_name:"",user_pass:"" ,user_login:"",rule_id:""};
+                }
+                var html  =  laytpl($("#temp").html()).render(data);
+                layer.open({
+                    title:false,
+                    area:["420px","350px"],
+                    content:html,
+                    shadeClose:1,
+                    type:1,
+                    btn:["确定","取消"],
+                    yes:function (index) {
+                        var data = $("#formBox").formData();
+                        $.ajax({
+                            url:url,
+                            data:data,
+                            type:"post",
+                            success:function (result) {
+                                msg(result)
+                            }
+                        })
+                    },end:function () {
+						layer.closeAll()
+                    }
+                })
+            }
+
+            /**
+			 * 提示层
+             * @param data
+             */
+            function msg(data) {
+                let icon = data.code===1?1:2;
+                layer.msg(data.msg||"",{icon:icon, end:function () {
+                        data.url&&(location=data.url);
+                    }});
+            }
+        })
+	</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<include file="public@header"/>
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<link rel="stylesheet" href="__STATIC__/css/public.css">
+<style type="text/css">
+    .info{padding: 8px 20px;}
+    .div_box{padding: 12px 0;}
+    .div_box div{margin-bottom: 12px;}
+    .col-sm-6{padding: 0}
+    .div_input input{margin-right: 30px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+    <div class="info">
+        <div class="clearfix div_box">
+            <div>微信昵称：<span>{$plan.user_name}</span></div>
+            <div>手 机 号：<span>{$plan.phone}</span></div>
+            <div>计划单编号：<span>{$plan.number}</span></div>
+        </div>
+        <hr>
+        <div class="clearfix div_box">
+            <div>负责人：<span>{$plan.principal}</span></div>
+            <div>负责人电话：<span>{$plan.mobile}</span></div>
+            <div>单位名称：<span>{$plan.unit_name}</span></div>
+            <div>工程名称：<span>{$plan.project_name}</span></div>
+            <div>工程地址：<span>{$plan.project_address}</span></div>
+        </div>
+        <hr>
+        <php>$status_array=array(1=>'待处理',2=>'已处理',3=>'已拒绝',4=>'已取消');</php>
+        <div class="clearfix div_box">
+            <div class="col-sm-6">浇筑方式：<span>{$plan.pouring_type}</span></div>
+            <div class="col-sm-6">浇筑部位：<span>{$plan.pouring_part}</span></div>
+            <div class="col-sm-6">浇筑标号：<span>{$plan.pouring_label}</span></div>
+            <div class="col-sm-6">计划方量：<span>{$plan.plan_square}㎥</span></div>
+            <div class="col-sm-6">商砼运距：<span>{$plan.distance}Km</span></div>
+            <div class="col-sm-6">浇筑时间：<span><php>echo date('Y-m-d H:i:s',$plan['pouring_time']);</php></span></div>
+            <div class="col-sm-6">坍 落 度：<span>{$plan.slump}</span></div>
+            <div class="col-sm-6">下单时间：<span><php>echo date('Y-m-d H:i:s',$plan['create_time']);</php></span></div>
+            <div class="col-sm-6">业 务 员：<span>{$plan.salesman}</span></div>
+            <div class="col-sm-6">状态：<span>{$status_array[$plan['status']]}</span></div>
+            <div class="col-sm-6">销售经理：<span>{$plan.manager}</span></div>
+        </div>
+        <input type="hidden" id="planId" value="{$plan.id}">
+        <div class="clearfix div_input" style="margin-top: 50px;">
+            <if condition="$plan['status'] eq 3">
+                <input type="button" class="btn btn-info dealWith" value="处理"/>
+                <input type="button" class="btn btn-default" style="cursor: default;" value="已拒绝"/>
+                <input type="button" class="btn btn-warning cancelWith" value="取消"/>
+                <elseif condition="$plan['status'] eq 4" />
+                <input type="button" class="btn btn-info dealWith" value="处理"/>
+                <input type="button" class="btn btn-danger refuseWith" value="拒绝"/>
+                <input type="button" class="btn btn-default" style="cursor: default;" value="已取消"/>
+                <else/>
+                <input type="button" class="btn btn-info dealWith" value="处理"/>
+                <input type="button" class="btn btn-danger refuseWith" value="拒绝"/>
+                <input type="button" class="btn btn-warning cancelWith" value="取消"/>
+            </if>
+        </div>
+    </div>
+</div>
+<script src="__STATIC__/js/admin.js"></script>
+<script src="__STATIC__/layui/layui.js"></script>
+<script type="text/javascript">
+    layui.use(['layer'], function() {
+        var layer = layui.layer;
+        //处理
+        $(".dealWith").on('click',function () {
+            var info = "是否处理？";
+            action_order(info,2);
+        });
+        //拒绝
+        $(".refuseWith").on('click',function () {
+            var info = "是否拒绝？";
+            action_order(info,3);
+        });
+        //取消
+        $(".cancelWith").on('click',function () {
+            var info = "是否取消？";
+            action_order(info,4);
+        });
+
+        //处理计划单
+        function action_order(info,status) {
+            var plan_id = $("#planId").val();
+            layer.confirm(info,{icon: 3, title:'提示'}
+                , function(){
+                    $.ajax({
+                        type: 'POST',
+                        url: '{:url("Plan/actionOrder")}',
+                        data: {id:plan_id,status:status},
+                        success: function (res) {
+                            if(res.code === 1){
+                                layer.msg(res.msg,{icon:1,time:2000},function () {
+                                    location.reload();
+                                })
+                            }else{
+                                layer.msg(res.msg,{icon:2,time:2000});
+                            }
+                        }
+                    })
+                }, function(index){
+                    layer.close(index);
+                }
+            );
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<include file="public@header"/>
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<link rel="stylesheet" href="__STATIC__/css/public.css">
+<style type="text/css">
+    .layui-layer-btn-{text-align: center !important;}
+</style>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <div style="margin-bottom: 12px;">
+        <a class="btn btn-info" href="javascript:;" id="btnAdd">新增</a>
+        <a class="btn btn-warning" href="javascript:;" id="deleteMore">删除</a>
+    </div>
+    <form class="js-ajax-form" id="projectList">
+        <table class="table table-hover table-bordered table-list">
+            <thead>
+            <tr>
+                <th width="16"><label><input type="checkbox" class="js-check-all" data-direction="x" data-checklist="js-check-x"></label></th>
+                <th>工程名称</th>
+                <th>业务员</th>
+                <th>添加时间</th>
+                <th width="100">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <if condition="empty($data)">
+                <tr><td colspan="5" style="text-align: center;">暂无数据</td></tr>
+            </if>
+            <foreach name="project" item="vp">
+            <tr>
+                <td><input type="checkbox" class="js-check" name="project_one" data-yid="js-check-y" data-xid="js-check-x" value="{$vp.id}"></td>
+                <td>{$vp.name}</td>
+                <td>{$vp.salesman}</td>
+                <td><php>echo date('Y-m-d H:i:s',$vp['create_time']);</php></td>
+                <td style="text-align: center;">
+                    <a href="javascript:;" class="editPro" data-id="{$vp.id}" data-index="{$vp.name}" data-info="{$vp.salesman}">{:lang('EDIT')}</a>
+                    <a href="{:url('Project/delete',array('id'=>$vp['id']))}" class="js-ajax-delete">{:lang('DELETE')}</a>
+                </td>
+            </tr>
+            </foreach>
+            </tbody>
+        </table>
+        <div class="pagination">{$page}</div>
+    </form>
+</div>
+<script src="__STATIC__/js/admin.js"></script>
+<script src="__STATIC__/layui/layui.js"></script>
+<script type="text/javascript">
+    layui.use(['laydate','layer'], function() {
+        var laydate = layui.laydate,layer = layui.layer;
+        //时间选择器
+        laydate.render({elem: '#begin_time', type: 'datetime'});
+        laydate.render({elem: '#end_time', type: 'datetime'});
+        laydate.render({elem: '#start_time', type: 'datetime'});
+        laydate.render({elem: '#finish_time', type: 'datetime'});
+
+        //添加项目
+        $("#btnAdd").on('click',function () {
+            layer.open({
+                type: 1,
+                title: '',
+                closeBtn: 1,
+                shadeClose: false,
+                area: ['400px', '230px'],
+                content: '<div class="form-horizontal margin-top-20" style="padding: 0 20px;">'+
+                '    <div class="clearfix">'+
+                '        <label for="input-project" class="col-sm-12 control-label" style="text-align: left;margin-bottom: 5px;">工程名称：</label>'+
+                '        <div class="col-md-12 col-sm-10">'+
+                '            <input type="text" class="form-control" id="input-project" maxlength="15" name="from" placeholder="请输入工程名称">'+
+                '        </div>'+
+                '    </div>'+
+                '    <div class="clearfix">'+
+                '        <label for="input-man" class="col-sm-12 control-label" style="text-align: left;margin-bottom: 5px;">业务员：</label>'+
+                '        <div class="col-md-12 col-sm-10">'+
+                '            <input type="text" class="form-control" id="input-man" maxlength="6" name="host" placeholder="请输入业务员姓名">'+
+                '        </div>'+
+                '    </div>'+
+                '</div>',
+                btn: ['保存'],
+                yes: function(index, layero){
+                    var project_name = $("#input-project").val().trim();
+                    var sales_name = $("#input-man").val().trim();
+                    if(project_name == '' && sales_name == ''){
+                        layer.msg("请完善工程信息",{icon:2,time:2000});
+                        return false;
+                    }
+                    if(project_name == ''){
+                        layer.msg("请输入工程名称",{icon:2,time:2000});
+                        return false;
+                    }
+                    if(sales_name == ''){
+                        layer.msg("请输入业务员姓名",{icon:2,time:2000});
+                        return false;
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: '{:url("Project/addPost")}',
+                        data: {name:project_name,salesman:sales_name},
+                        success: function (res) {
+                            if(res.code === 1){
+                                layer.msg(res.msg,{icon:1,time:2000},function () {
+                                    location.reload();
+                                })
+                            }else{
+                                layer.msg(res.msg,{icon:2,time:2000});
+                            }
+                        }
+                    })
+                }
+            });
+        });
+
+        //编辑项目
+        $(".editPro").on('click',function () {
+            var data_id = $(this).attr('data-id');
+            var name = $(this).attr('data-index');
+            var sales_man = $(this).attr('data-info');
+            layer.open({
+                type: 1,
+                title: '',
+                closeBtn: 1,
+                shadeClose: false,
+                area: ['400px', '230px'],
+                content: '<div class="form-horizontal margin-top-20" style="padding: 0 20px;">'+
+                '    <div class="clearfix">'+
+                '        <label for="input-project" class="col-sm-12 control-label" style="text-align: left;margin-bottom: 5px;">工程名称：</label>'+
+                '        <div class="col-md-12 col-sm-10">'+
+                '            <input type="text" class="form-control" id="input-project" value="'+name+'" maxlength="15" name="from" placeholder="请输入工程名称">'+
+                '        </div>'+
+                '    </div>'+
+                '    <div class="clearfix">'+
+                '        <label for="input-man" class="col-sm-12 control-label" style="text-align: left;margin-bottom: 5px;">业务员：</label>'+
+                '        <div class="col-md-12 col-sm-10">'+
+                '            <input type="text" class="form-control" id="input-man" value="'+sales_man+'" maxlength="6" name="host" placeholder="请输入业务员姓名">'+
+                '        </div>'+
+                '    </div>'+
+                '</div>',
+                btn: ['保存'],
+                yes: function(index, layero){
+                    var project_name = $("#input-project").val().trim();
+                    var sales_name = $("#input-man").val().trim();
+                    if(project_name == '' && sales_name == ''){
+                        layer.msg("请完善工程信息",{icon:2,time:2000});
+                        return false;
+                    }
+                    if(project_name == ''){
+                        layer.msg("请输入工程名称",{icon:2,time:2000});
+                        return false;
+                    }
+                    if(sales_name == ''){
+                        layer.msg("请输入业务员姓名",{icon:2,time:2000});
+                        return false;
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: '{:url("Project/editPost")}',
+                        data: {id:data_id,name:project_name,salesman:sales_name},
+                        success: function (res) {
+                            if(res.code === 1){
+                                layer.msg(res.msg,{icon:1,time:2000},function () {
+                                    location.reload();
+                                })
+                            }else{
+                                layer.msg(res.msg,{icon:2,time:2000});
+                            }
+                        }
+                    })
+                }
+            });
+        });
+
+        //批量删除
+        $("#deleteMore").on('click',function () {
+            var list_array = [];
+            $("#projectList").find('input[name=project_one]').each(function () {
+                if($(this).is(":checked")){
+                    list_array.push($(this).val());
+                }
+            });
+            if(list_array.length < 1){
+                layer.msg("请选择至少一条工程信息",{icon:2,time:2000});
+                return false;
+            }
+            layer.confirm('确定删除选中的工程信息吗？',{icon: 3, title:'提示'}
+                , function(){
+                    $.ajax({
+                        type: 'POST',
+                        url: '{:url("Project/deletePost")}',
+                        data: {list:list_array},
+                        success: function (res) {
+                            if(res.code === 1){
+                                layer.msg(res.msg,{icon:1,time:2000},function () {
+                                    location.reload();
+                                })
+                            }else{
+                                layer.msg(res.msg,{icon:2,time:2000});
+                            }
+                        }
+                    })
+                }, function(index){
+                    layer.close(index);
+                }
+            );
+        })
+    });
+</script>
+</body>
+</html>

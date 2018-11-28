@@ -1,0 +1,96 @@
+<include file="public@header"/>
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<link rel="stylesheet" href="__STATIC__/css/public.css">
+</head>
+<body>
+<div class="wrap">
+    <form class="well form-inline margin-top-20" method="post" action="{:url('user/adminIndex/index')}">
+        模糊查询：
+        <input class="form-control" type="text" autocomplete="off" name="keyword" style="width: 200px; margin-right: 10px" value="{:input('request.keyword')}"
+               placeholder="微信昵称/手机">
+        注册时间：
+        <input type="text" class="form-control"  autocomplete="off" placeholder="开始时间" id="start" name="start_time"
+               value="{$start_time|default=''}"  style="width: 155px;">
+        <span>—</span>
+        <input type="text" class="form-control"  autocomplete="off" placeholder="结束时间" id="end"  name="end_time"
+               value="{$end_time|default=''}" style="width: 155px;">
+        <input type="submit" class="btn btn-primary" value="查询"/>
+        <!--<a class="btn btn-danger" href="{:url('user/adminIndex/index')}">清空</a>-->
+    </form>
+    <form method="post" class="js-ajax-form">
+        <table class="table table-hover table-bordered">
+            <thead>
+            <tr>
+                <th>{:lang('NICENAME')}</th>
+                <th>手机号</th>
+                <th>提交计划单</th>
+                <th>已处理计划单</th>
+                <th>拒绝计划单</th>
+                <th>取消计划单</th>
+                <th>{:lang('STATUS')}</th>
+                <th>注册时间</th>
+                <th>{:lang('ACTIONS')}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <if condition="empty($data)">
+                <tr><td colspan="9">暂无数据</td></tr>
+            </if>
+            <php>
+                $user_statuses=array("0"=>lang('USER_STATUS_BLOCKED'),"1"=>lang('USER_STATUS_ACTIVATED'),"2"=>lang('USER_STATUS_UNVERIFIED'));
+            </php>
+            <foreach name="list" item="vo">
+                <tr>
+                    <td>{$vo['user_nickname']?$vo['user_nickname']:lang('NOT_FILLED')}</td>
+                    <td>{$vo.mobile|default="未绑定"}</td>
+                    <td>{$vo['create']}</td>
+                    <td>{$vo['success']}</td>
+                    <td>{$vo['refuse']}</td>
+                    <td>{$vo['cancel']}</td>
+                    <td>{$user_statuses[$vo['user_status']]}</td>
+                    <td>{:date('Y-m-d H:i:s',$vo['create_time'])}</td>
+                    <td>
+                        <neq name="vo.id" value="1">
+                            <a href="{:url('adminIndex/info',['id'=>$vo['id']])}" >查看详情</a>
+                            <empty name="vo.user_status">
+                                <a href="{:url('adminIndex/cancelban',array('id'=>$vo['id']))}"
+                                   class="js-ajax-dialog-btn"
+                                   data-msg="确定开启此用户吗？">开启</a>
+                                <else/>
+                                <a href="{:url('adminIndex/ban',array('id'=>$vo['id']))}" class="js-ajax-dialog-btn"
+                                   data-msg="确定冻结此用户吗？">冻结</a>
+                            </empty>
+                            <else/>
+                            <a style="color: #ccc;">冻结</a>
+                        </neq>
+                    </td>
+                </tr>
+            </foreach>
+            </tbody>
+        </table>
+        <div class="pagination">{$page}</div>
+    </form>
+</div>
+<script src="__STATIC__/js/admin.js"></script>
+<script src="__STATIC__/layui/layui.js"></script>
+<script src=""></script>
+<script type="text/javascript">
+    layui.use(['layer','laydate','form'],function () {
+        var laytpl = layui.laytpl;
+        var form = layui.form;
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#start'
+            ,type: 'datetime'
+            ,max: "{:date('Y-m-d H:i:s')}"
+        });
+        laydate.render({
+            elem: '#end'
+            ,type: 'datetime'
+            ,max: "{:date('Y-m-d H:i:s')}"
+        });
+
+    });
+</script>
+</body>
+</html>

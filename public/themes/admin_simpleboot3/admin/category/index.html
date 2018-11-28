@@ -1,0 +1,235 @@
+<include file="public@header"/>
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<link rel="stylesheet" href="__STATIC__/css/public.css">
+<style type="text/css">
+    table tr td{text-align: left !important;}
+    .treeTable tr td .expander{margin-left: 0 !important;}
+    .layui-layer-btn-{text-align: center !important;}
+    .treeTable tr.collapsed td .expander{background-image:url(__STATIC__/images/open.png) !important;padding: 20px;background-size: 25px;}
+    .treeTable tr.expanded td .expander{background-image:url(__STATIC__/images/close.png) !important;padding: 20px;background-size: 22px;}
+</style>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <div style="margin-bottom: 12px;">
+        <a class="btn btn-info" href="javascript:;" id="btnAdd">新增</a>
+    </div>
+    <form class="js-ajax-form" action="">
+        <table class="table table-hover table-bordered table-list" id="menus-table">
+            <thead>
+            <tr>
+                <th>分类</th>
+                <th width="200">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <if condition="empty($category)">
+                <tr><td colspan="2" style="text-align: center;">暂无数据</td></tr>
+            </if>
+            {$category}
+            </tbody>
+        </table>
+    </form>
+</div>
+<script src="__STATIC__/js/admin.js"></script>
+<script src="__STATIC__/layui/layui.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        Wind.css('treeTable');
+        Wind.use('treeTable', function() {
+            $("#menus-table").treeTable({
+                indent : 20
+            });
+        });
+    });
+    layui.use(['laydate','layer'], function() {
+        var laydate = layui.laydate,layer = layui.layer;
+        //时间选择器
+        laydate.render({elem: '#begin_time', type: 'datetime'});
+        laydate.render({elem: '#end_time', type: 'datetime'});
+        laydate.render({elem: '#start_time', type: 'datetime'});
+        laydate.render({elem: '#finish_time', type: 'datetime'});
+
+        $("#btnAdd").on('click',function () {
+            var html_category = '<div class="form-horizontal  margin-top-20">'+
+                '        <div class="clearfix" style="margin-bottom: 25px;">'+
+                '            <label for="js-parent" class="col-sm-4 control-label">请选择一级分类</label>'+
+                '            <div class="col-md-6 col-sm-6">'+
+                '                <select name="parent_id" id="js-parent" class="form-control">'+
+                '                    <option value="">请选择分类</option>';
+            var object_cate = {$first};
+            if(object_cate.length > 0){
+                for(var i=0;i<object_cate.length;i++){
+                    html_category+='<option value="'+object_cate[i]['id']+'">'+object_cate[i]['name']+'</option>';
+                }
+            }
+            html_category+='</select>'+
+                '            </div>'+
+                '        </div>'+
+                '        <div class="clearfix">'+
+                '            <label for="input-category" class="col-sm-4 control-label">添加子分类</label>'+
+                '            <div class="col-md-6 col-sm-6">'+
+                '                <input type="text" class="form-control" id="input-category" maxlength="10" name="child_category">'+
+                '            </div>'+
+                '        </div>'+
+                '    </div>';
+            layer.open({
+                type: 1,
+                title: '',
+                closeBtn: 1,
+                shadeClose: false,
+                area: ['500px', '200px'],
+                content: html_category,
+                btn: ['保存'],
+                yes: function(index, layero){
+                    var pid = $("#js-parent").val();
+                    var category = $("#input-category").val().trim();
+                    add_category(pid,category);
+                }
+            });
+        });
+
+        //添加子分类
+        function add_category(pid,category) {
+            if(pid == ''){
+                layer.msg("请选择一级分类",{icon:2,time:2000});
+                return false;
+            }
+            if(category == ''){
+                layer.msg("请输入子分类名称",{icon:2,time:2000});
+                return false;
+            }
+            $.ajax({
+                type: 'POST',
+                url: '{:url("Category/addPost")}',
+                data: {parent_id:pid,name:category},
+                success: function (res) {
+                    if(res.code === 1){
+                        layer.msg(res.msg,{icon:1,time:2000},function () {
+                            location.reload();
+                        })
+                    }else{
+                        layer.msg(res.msg,{icon:2,time:2000});
+                    }
+                }
+            })
+        }
+
+        //添加子分类
+        $(".addChild").on('click',function (res) {
+            var data_id = $(this).attr('data-id');
+            var html_category = '<div class="form-horizontal  margin-top-20">'+
+                '        <div class="clearfix" style="margin-bottom: 25px;">'+
+                '            <label for="js-parent" class="col-sm-4 control-label">请选择一级分类</label>'+
+                '            <div class="col-md-6 col-sm-6">'+
+                '                <select name="parent_id" id="js-parent" class="form-control">'+
+                '                    <option value="">请选择分类</option>';
+            var object_cate = {$first};
+            if(object_cate.length > 0){
+                for(var i=0;i<object_cate.length;i++){
+                    if(data_id == object_cate[i]['id']){
+                        html_category+='<option value="'+object_cate[i]['id']+'" selected>'+object_cate[i]['name']+'</option>';
+                    }else{
+                        html_category+='<option value="'+object_cate[i]['id']+'">'+object_cate[i]['name']+'</option>';
+                    }
+
+                }
+            }
+            html_category+='</select>'+
+                '            </div>'+
+                '        </div>'+
+                '        <div class="clearfix">'+
+                '            <label for="input-category" class="col-sm-4 control-label">添加子分类</label>'+
+                '            <div class="col-md-6 col-sm-6">'+
+                '                <input type="text" class="form-control" id="input-category" maxlength="10" name="child_category">'+
+                '            </div>'+
+                '        </div>'+
+                '    </div>';
+            layer.open({
+                type: 1,
+                title: '',
+                closeBtn: 1,
+                shadeClose: false,
+                area: ['500px', '200px'],
+                content: html_category,
+                btn: ['保存'],
+                yes: function(index, layero){
+                    var pid = $("#js-parent").val();
+                    var category = $("#input-category").val().trim();
+                    add_category(pid,category);
+                }
+            });
+        });
+        
+        //编辑子分类
+        $(".editCate").on('click',function () {
+            var data_index = $(this).attr('data-index');
+            var data_id = $(this).attr('data-id');
+            var data_name = $(this).attr('data-name');
+            var html_category = '<div class="form-horizontal  margin-top-20">'+
+                '        <div class="clearfix" style="margin-bottom: 25px;">'+
+                '            <label for="js-parent" class="col-sm-4 control-label">请选择一级分类</label>'+
+                '            <div class="col-md-6 col-sm-6">'+
+                '                <select name="parent_id" id="js-parent" class="form-control">'+
+                '                    <option value="">请选择分类</option>';
+            var object_cate = {$first};
+            if(object_cate.length > 0){
+                for(var i=0;i<object_cate.length;i++){
+                    if(data_index == object_cate[i]['id']){
+                        html_category+='<option value="'+object_cate[i]['id']+'" selected>'+object_cate[i]['name']+'</option>';
+                    }else{
+                        html_category+='<option value="'+object_cate[i]['id']+'">'+object_cate[i]['name']+'</option>';
+                    }
+
+                }
+            }
+            html_category+='</select>'+
+                '            </div>'+
+                '        </div>'+
+                '        <div class="clearfix">'+
+                '            <label for="input-category" class="col-sm-4 control-label">添加子分类</label>'+
+                '            <div class="col-md-6 col-sm-6">'+
+                '                <input type="text" value="'+data_name+'" class="form-control" id="input-category" maxlength="10" name="child_category">'+
+                '            </div>'+
+                '        </div>'+
+                '    </div>';
+            layer.open({
+                type: 1,
+                title: '',
+                closeBtn: 1,
+                shadeClose: false,
+                area: ['500px', '200px'],
+                content: html_category,
+                btn: ['保存'],
+                yes: function(index, layero){
+                    var pid = $("#js-parent").val();
+                    var category = $("#input-category").val().trim();
+                    if(pid == ''){
+                        layer.msg("请选择一级分类",{icon:2,time:2000});
+                        return false;
+                    }
+                    if(category == ''){
+                        layer.msg("请输入子分类名称",{icon:2,time:2000});
+                        return false;
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: '{:url("Category/editPost")}',
+                        data: {id:data_id,parent_id:pid,name:category},
+                        success: function (res) {
+                            if(res.code === 1){
+                                layer.msg(res.msg,{icon:1,time:2000},function () {
+                                    location.reload();
+                                })
+                            }else{
+                                layer.msg(res.msg,{icon:2,time:2000});
+                            }
+                        }
+                    })
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

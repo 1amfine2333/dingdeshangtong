@@ -1,0 +1,74 @@
+<include file="public@header" />
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<link rel="stylesheet" href="/static/css/public.css">
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<form class="well form-inline margin-top-20" method="post" action="{:url('action_log/index')}">
+			模糊查询：
+			<input class="form-control" type="text" autocomplete="off" name="keyword" style="width: 200px; margin-right: 10px" value="{:input('request.keyword')}"
+				   placeholder="操作员账号">
+			注册时间：
+			<input type="text" class="form-control"  autocomplete="off" placeholder="开始时间" id="start" name="start_time"
+				   value="{$start_time|default=''}"  style="width: 155px;">
+			<span>—</span>
+			<input type="text" class="form-control"  autocomplete="off" placeholder="结束时间" id="end"  name="end_time"
+				   value="{$end_time|default=''}" style="width: 155px;">
+			<input type="submit" class="btn btn-primary" value="查询"/>
+		</form>
+		<table class="table table-hover table-bordered layui-form">
+			<thead>
+				<tr>
+					<th>操作类型</th>
+					<th>修改账号</th>
+					<th>内容</th>
+					<th width="180">操作时间</th>
+				</tr>
+			</thead>
+			<tbody>
+			<if condition="empty($data)">
+				<tr><td colspan="4">暂无数据</td></tr>
+			</if>
+				<foreach name="list" item="vo">
+				<tr>
+					<td>{$vo.action_type}</td>
+					<td>{$vo.user_login}</td>
+					<td>{$vo.content}</td>
+					<td>{:date("Y-m-d H:i:s",$vo.create_time)}</td>
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{$page}</div>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+	<script src="__STATIC__/layui/layui.js"></script>
+	<script>
+        layui.use(['layer', "laytpl", 'form','laydate'], function () {
+            var form = layui.form;
+            var laytpl = layui.laytpl;
+            var laydate = layui.laydate;
+
+            form.on('checkbox(layTableAllChoose)', function (data) {
+                $("[name=check_id]:checkbox").prop("checked", data.elem.checked);
+                form.render("checkbox")
+            });
+
+
+            laydate.render({
+                elem: '#start'
+                ,type: 'datetime'
+                ,max: "{:date('Y-m-d H:i:s')}"
+            });
+            laydate.render({
+                elem: '#end'
+                ,type: 'datetime'
+                ,max: "{:date('Y-m-d H:i:s')}"
+            });
+		});
+  </script>
+
+</body>
+</html>
+
+

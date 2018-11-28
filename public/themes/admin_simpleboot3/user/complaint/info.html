@@ -1,0 +1,116 @@
+<include file="public@header"/>
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<link rel="stylesheet" href="/static/css/public.css">
+<style>
+.layui-input-block{line-height: 36px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+    <ul class="nav nav-tabs">
+        <li><a href="{:url('complaint/index')}">投诉建议</a></li>
+        <li class="active"><a href="#">详情</a></li>
+    </ul>
+
+    <form method="post" class="col-md-8 layui-form" action="{:url('complaint/replyPost')}" onsubmit="return false">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">建&nbsp;&nbsp;议&nbsp;&nbsp;人：</label>
+            <div class="layui-input-block">{$data.user_nickname}</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">分&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;类：</label>
+            <php>$type = ['1'=>'建议','2'=>'投诉','3'=>'计划单反馈',];</php>
+            <div class="layui-input-block">{$type[ $data['type'] ]}</div>
+        </div>
+        <php>$status =['0'=>"待处理","1"=>"已处理","2"=>"已拒绝"];</php>
+        <div class="layui-form-item">
+            <label class="layui-form-label">状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：</label>
+            <div class="layui-input-block">{$status[ $data['status'] ]}</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">提交时间：</label>
+            <div class="layui-input-block">{:date('Y-m-d H:i:s',$data['create_time'])}</div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">反馈内容：</label>
+            <div class="layui-input-block" id="callBackContent">{:htmlspecialchars_decode($data.content)}</div>
+        </div>
+        <if condition="$data['reply']">
+            <div class="layui-form-item">
+                <label class="layui-form-label">回&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;复：</label>
+                <div class="layui-input-block">
+                    <pre>{:htmlspecialchars_decode($data.reply)}</pre>
+                </div>
+            </div>
+        <else/>
+        <div class="layui-form-item">
+            <label class="layui-form-label">回&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;复：</label>
+            <div class="layui-input-block">
+                <input type="hidden" name="id" value="{$data.id}">
+               <textarea name="reply" class="layui-textarea" id="" cols="30" rows="10"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="text-align: right">
+                <input type="submit" class="layui-btn layui-info" lay-submit lay-filter="reply" value="确定">
+            </div>
+        </div>
+        </if>
+    </form>
+</div>
+<script src="__STATIC__/js/admin.js"></script>
+
+<script src="__STATIC__/layui/layui.js"></script>
+<script type="text/javascript">
+    layui.use(['layer','form'],function () {
+        const form = layui.form;
+        const layer = layui.layer;
+
+        $("#callBackContent img").on('click',function () {
+            let img = $(this);
+            //let src = this.src;
+            layer.open({
+                title:false
+                ,type:1
+                ,area:['90%',"auto"]
+                ,shadeClose:true
+                ,content:img
+            })
+        });
+
+        form.on('submit(reply)', function(data){
+
+            let action = data.form.action;
+            $.ajax({
+                url:action,
+                type:"post",
+                data:data.field,
+                success:function (data) {
+                    msg(data);
+                }
+            });
+
+            return false;
+        });
+
+
+        /**
+         * 提示层
+         * @param data
+         */
+        function msg(data) {
+            let icon = data.code===1?1:2;
+            layer.msg(data.msg||"",{icon:icon, end:function () {
+                    data.url&&(location=data.url);
+                }});
+        }
+
+    });
+</script>
+</body>
+</html>

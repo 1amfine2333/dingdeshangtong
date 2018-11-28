@@ -1,0 +1,227 @@
+<include file="public@header"/>
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<link rel="stylesheet" href="__STATIC__/css/public.css">
+<style type="text/css">
+    #authrule-tree td{text-align: left;}
+    .layui-layer-btn-{text-align: center !important;}
+</style>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <div>
+        <button id="addData" class="btn btn-success">新增</button>
+        <button id="delMultiple" class="btn btn-danger">删除</button>
+    </div>
+    <form class="well form-inline margin-top-20" method="post" autocomplete="off" action="{:url('Rbac/index')}">
+        <input type="text" class="form-control" name="keyword" style="width: 260px;" value="{$keyword|default=''}" placeholder="请输入角色名称">
+        <input type="submit" class="btn btn-primary" value="查询"/>
+    </form>
+    <div class="margin-top-20 layui-form js-ajax-form">
+        <table class="table table-hover table-bordered">
+            <thead>
+            <tr>
+                <th width="40"><input type="checkbox" name="check_id" lay-skin="primary" lay-filter="layTableAllChoose"/></th>
+                <th>角色名</th>
+                <th>添加人</th>
+                <th>添加时间</th>
+                <th width="160">{:lang('ACTIONS')}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <if condition="empty($data)">
+                <tr><td colspan="5">暂无数据</td></tr>
+            </if>
+            <foreach name="roles" item="vo">
+                <tr>
+                    <th width="50"><input type="checkbox" name="check_id" lay-skin="primary" value="{$vo.id}"/></th>
+                    <td>{$vo.name}</td>
+                    <td>{$vo.user_login}</td>
+                    <td>{:date("Y-m-d H:i:s",$vo.create_time)}</td>
+                    <td>
+                        <if condition="$vo['id'] eq 1">
+                            <font color="#cccccc">{:lang('EDIT')}</font>
+                            <!-- <a href="javascript:openIframeDialog('{:url('rbac/member',array('id'=>$vo['id']))}','成员管理');">成员管理</a> | -->
+                            <else/>
+                            <a href="javaScript:void(0);" data-id="{$vo.id}" class="editData" >{:lang('EDIT')}</a>
+                        </if>
+                    </td>
+                </tr>
+            </foreach>
+            </tbody>
+        </table>
+        <div class="pagination">{$page}</div>
+    </div>
+</div>
+<script type="text/html" id="temp">
+    <form class="js-ajax-form margin-top-20" id="formBox" autocomplete="off" action="{:url('rbac/authorizePost')}" method="post">
+        <div class="form-group clearfix">
+            <label for="input-name" class="col-sm-4 control-label" style="text-align: right;height: 34px;line-height: 34px;"> 角色名</label>
+            <div class="col-md-6 col-sm-10">
+                <input type="text" class="form-control" id="input-name" maxlength="12" name="name" value="{{d.name||''}}">
+            </div>
+        </div>
+        <div class="table_full">
+            <table class="table table-bordered" id="authrule-tree">
+                <tbody>{{d.html}}</tbody>
+            </table>
+        </div>
+    </form>
+</script>
+<script src="__STATIC__/js/admin.js"></script>
+<script src="__STATIC__/layui/layui.js"></script>
+<script type="text/javascript">
+    layui.use(['layer', "laytpl", 'form'], function () {
+        var form = layui.form;
+        var laytpl = layui.laytpl;
+
+        form.on('checkbox(layTableAllChoose)', function (data) {
+            $("[name=check_id]:checkbox").prop("checked", data.elem.checked);
+            form.render("checkbox")
+        });
+
+
+        function tree() {
+            Wind.css('treeTable');
+            Wind.use('treeTable', function () {
+                $("#authrule-tree").treeTable({indent: 20});
+            });
+        }
+
+
+        /**
+         * 添加数据
+         * */
+        $("#addData").click(function () {
+            $.getJSON("{:url('rbac/authorize_json')}", {id: 0}, function (result) {
+                openWin("{:url('rbac/roleAddPost')}", result);
+            });
+        });
+
+        /***
+         * 删除多条数据
+         * */
+        $("#delMultiple").click(function () {
+            let values = checked();
+            if(values.length<1){
+                msg({code:2,msg:"请先选择数据"});
+            }else{
+                layer.confirm("删除后无法恢复, 确定删除这些角色吗？",function () {
+                    $.ajax({
+                        url:"{:url('rbac/roleDelete')}",
+                        type:"post",
+                        data:{id:values.join(',')},
+                        success:function (data) {   msg(data) }
+                    });
+                });
+            }
+
+        });
+
+        /**
+         * 编辑
+         * */
+        $(".editData").click(function () {
+            let id = $(this).attr("data-id");
+            $.getJSON("{:url('rbac/authorize_json')}", {id: id}, function (result) {
+                result.id=id;
+                openWin("{:url('Rbac/authorizePost')}?id="+id, result);
+            });
+        });
+
+        /**
+         * 获取选中行Id
+         * @return array
+         **/
+        function checked() {
+            let values = [];
+            $("[name=check_id]:checked").each(function (i, e) {
+                values.push(e.value);
+            });
+            return values;
+        }
+
+        /**
+         * 弹出窗口
+         * @param url 提交的地址 string
+         * @param data 请求参数 object
+         * */
+        function openWin(url, data) {
+            if (!data) {
+                data = {id: "", html: "",name:""};
+            }
+            let html = laytpl($("#temp").html()).render(data);
+            layer.open({
+                title: false,
+                area: ["400px", "70%"],
+                content: html,
+                shadeClose: 1,
+                type: 1,
+                btn: ["保存"],
+                yes: function (index) {
+                    let data = $("#formBox").serializeArray();
+                    $.ajax({
+                        url: url,
+                        data: data,
+                        type: "post",
+                        success: function (result) {
+                            msg(result);
+                        }
+                    })
+                },end:function () {
+                   layer.closeAll()
+               }
+            });
+            tree();
+        }
+
+        /**
+         * 提示层
+         * @param data
+         */
+        function msg(data) {
+            let icon = data.code === 1 ? 1 : 2;
+            layer.msg(data.msg || "", {
+                icon: icon,end:function () {
+                    data.url&&( location = data.url);
+                }
+            })
+        }
+
+
+    });
+
+    function checknode(obj) {
+        var chk = $("input[type='checkbox']");
+        var count = chk.length;
+        var num = chk.index(obj);
+        var level_top = level_bottom = chk.eq(num).attr('level');
+        for (var i = num; i >= 0; i--) {
+            var le = chk.eq(i).attr('level');
+            if (le < level_top) {
+                chk.eq(i).prop("checked", true);
+                var level_top = level_top - 1;
+            }
+        }
+        for (var j = num + 1; j < count; j++) {
+            var le = chk.eq(j).attr('level');
+            if (chk.eq(num).prop("checked")) {
+
+                if (le > level_bottom) {
+                    chk.eq(j).prop("checked", true);
+                }
+                else if (le == level_bottom) {
+                    break;
+                }
+            } else {
+                if (le > level_bottom) {
+                    chk.eq(j).prop("checked", false);
+                } else if (le == level_bottom) {
+                    break;
+                }
+            }
+        }
+    }
+
+</script>
+</body>
+</html>

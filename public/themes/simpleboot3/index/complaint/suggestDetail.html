@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+	    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>详情</title>
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/jquery-weui.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/weui.min.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/public.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css" />
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/jq/jquery-1.10.2.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js" ></script>
+	</head>
+	<style>
+		body .weui-vcode-btn.getCode.active{ color: #ccc;}
+		body .weui-vcode-btn.getCode{ color: #4c7db2;}
+		body .weui-vcode-btn{ font-size: 1rem;}
+		.underline{ text-decoration: underline;}
+		.dcl{ color: #ff5747;}
+		.yhf{ color: #5075FF;}
+		.back{ border-top: 5px solid #f7f7f7; padding: 0 10px;}
+	</style>
+	<body class="">
+		<section id="app" class="DetailSec">
+			<div class="msgcontent" style="color: #666;">
+				<div style="padding: 0 10px;">
+					<div class="dcl" style="padding: 20px 0;">待处理</div>
+					<div>内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容</div>
+					<img src="__TMPL__/public/assets/user/img/map.png" />
+				</div>
+				<!--<div style="padding: 0 10px;">
+					<div class="yhf" style="padding: 20px 0;">已回复</div>
+					<div>内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容</div>
+					<img src="__TMPL__/public/assets/user/img/map.png" />
+				</div>
+				<div class="back">
+					<div style="padding: 20px 0;">回复</div>
+					<div>内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容</div>
+				</div>-->
+			</div>
+		</section>
+	</body>
+</html>
+<script>
+
+	var app = new Vue({
+		el:'#app',
+		data:{
+			isempty:false,    //列表是否为空
+			tips:'上拉可以加载更多哦~',
+		},
+		methods:{
+			
+		}
+	})
+	
+	$(function(){
+		$('.msgcontent').find('*').css('max-width','100%')
+	})
+</script>
+
+
+
+
+
