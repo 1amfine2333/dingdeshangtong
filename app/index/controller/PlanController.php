@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 namespace app\index\controller;
 
+use app\user\model\ComplaintModel;
 use app\user\model\PlanOrderModel;
 use app\user\model\UserModel;
 use cmf\controller\UserBaseController;
@@ -56,8 +57,53 @@ class PlanController extends UserBaseController
         }
 
         $this->assign('data',$data);
-        return $this->fetch(":plan");
+        return $this->fetch();
     }
+
+
+    /**
+     * @return mixed
+     * @throws
+     */
+    public function detail(){
+        $id = input("id",0,'intval');
+
+        if($id){
+            $data = PlanOrderModel::get($id);
+            $data['isBack']= 0;
+            $data['back']=['content'=>'','reply'=>''];
+            $complain =(new ComplaintModel())->where(['plan_number'=>$data['number'],'user_id'=>cmf_get_current_user_id()])->find();
+            if(!empty($complain)){
+                $data['isBack'] = 1;
+                $data['back']=[
+                    'content'=>$complain['content'],
+                    'reply'=>$complain['reply'],
+                ];
+            }
+            $this->assign('data',$data);
+        }
+
+        return $this->fetch();
+
+    }
+
+    public function cancel(){
+        $id = input("id",0,'intval');
+        if($id)
+        {
+            $plan = new PlanOrderModel();
+            $result = $plan->where(['id'=>$id,'user_id'=>cmf_get_current_user_id(),'status'=>1])->update(["status"=>4]);
+            if ($result){
+                $this->success("取消成功!");
+            }else{
+                $this->error("取消失败,此计划单状态以改变或不存在");
+            }
+        }
+        else {
+            $this->error("抱歉,参数错误取消失败!");
+        }
+    }
+
 
     public function delete(){
         $id = input("id",0,'intval');

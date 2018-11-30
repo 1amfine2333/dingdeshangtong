@@ -29,7 +29,7 @@
 				<div class="inputBox">
 					<div class="bold">手机号</div>
 					<div class="input">
-						<input type="number" name="mobile" value="17765333233" pattern="[0-9]" placeholder="请输入手机号"/>
+						<input type="number" name="mobile" v-model="mobile" value="18012345612" pattern="[0-9]" placeholder="请输入手机号"/>
 					</div>
 				</div>
 				<div class="inputBox">
@@ -62,8 +62,19 @@
 				if(self.isget===0){
 					self.isget=1;
 					//ajax
-                    $.toast("")
-					self.setTime();
+					let yzm = $(".yzm");
+                    if(yzm.hasClass('disable')){
+                        return;
+					}
+                    request({
+						url:"{:url('login/sendCode')}",
+						data:{mobile:app.mobile},
+						success:function (res) {
+						    $.toast(res.msg);
+                            res.code&&self.setTime();
+                        }
+					});
+
 				}
 			},
 			setTime:function(){

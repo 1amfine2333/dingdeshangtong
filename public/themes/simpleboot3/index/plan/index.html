@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>全部 - 计划单</title>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/jquery-weui.css"/>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/weui.min.css"/>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/public.css?_=1"/>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css"/>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/jq/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js"></script>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js"></script>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js"></script>
+</head>
+<style>
+    body .weui-vcode-btn.getCode.active {
+        color: #ccc;
+    }
+
+    body .weui-vcode-btn.getCode {
+        color: #4c7db2;
+    }
+
+    body .weui-vcode-btn {
+        font-size: 1rem;
+    }
+</style>
+<body class="bgf7">
+<section id="app" class="mainSec">
+    <header class="jihuanHeader">
+        <div :class="type==0?'active':''" @click="chose($event,0)">全部</div>
+        <div :class="type==1?'active':''" @click="chose($event,1)">待处理</div>
+        <div :class="type==2?'active':''" @click="chose($event,2)">已处理</div>
+        <div :class="type==3?'active':''" @click="chose($event,3)">已拒绝</div>
+        <div :class="type==4?'active':''" @click="chose($event,4)">已取消</div>
+    </header>
+
+    <php> $isHide = count($data['list'])?true:false;</php>
+    <if condition="$isHide">
+        <div class="jihuaList" id="content">
+            <php>$status = ['1'=>'待处理','2'=>'已处理','3'=>'已拒绝','4'=>'已取消'];</php>
+            <foreach name="$data['list']" id="item">
+                <div class="listItem"  onclick="location='/index/plan/detail/id/{$item.id}';">
+                    <div class="disbox tit">
+                        <div class="disflex bold">{$item.project_name}</div>
+                        <div class="colorThem bold">{$status[$item['status']]}</div>
+                    </div>
+                    <div class="content">
+                        <div class="addr">{$item.project_address}</div>
+                        <div class="color6">计划方量：{$item.plan_square}㎡</div>
+                        <div class="color6">浇筑时间：{$item.pouring_time}</div>
+                        <div class="color6">商砼运距：{$item.distance}Km</div>
+                    </div>
+                    <div class="tit color6 disbox">
+                        <div class="disflex number">计划单号：{$item.number}</div>
+                        <if  in_array($item['status'],[3,4])><div class="delBtn" onclick="delPlan('{$item.id}',this)">删除</div></if>
+                    </div>
+                </div>
+            </foreach>
+        </div>
+        <else/>
+        <div class="empty">
+            <img src="__TMPL__/public/assets/user/img/empty.png"/>
+            <div>暂无内容！</div>
+        </div>
+    </if>
+
+    <footer class="mainFooter">
+        <a class="fot1" href="{:url('index/index')}">首页 <span id="test"></span></a>
+        <a class="fot2 active">计划单 <span id="test2"></span></a>
+        <a class="fot3" href="{:url('user/index')}">我的{$has_msg?'<i></i>':""}</a>
+    </footer>
+</section>
+</body>
+</html>
+
+<script type="text/html" id="tem">
+    <% for (i in list){ %>
+    <% var item = list[i];let status = ['全部','待处理','已处理','已拒绝','已取消'];%>
+    <div class="listItem" onclick="location='/index/plan/detail/id/<%=item.id%>';">
+        <div class="disbox tit">
+            <div class="disflex bold"><%= item.project_name %></div>
+            <div class="colorThem bold"><%= status[item['status']] %></div>
+        </div>
+        <div class="content">
+            <div class="addr"> <%= item.project_address %></div>
+            <div class="color6">计划方量：<%= item.plan_square %>㎡</div>
+            <div class="color6">浇筑时间：<%= item.pouring_time %></div>
+            <div class="color6">商砼运距：<%= item.distance%>Km</div>
+        </div>
+        <div class="tit color6 disbox">
+            <div class="disflex number">计划单号：<%= item.number%></div>
+            <% if (item.status==3 || item.status==4) {%><div class="delBtn" onclick="delPlan('<%=item.id%>',this);event.stopPropagation();">删除</div><%}%>
+        </div>
+    </div>
+    <%}%>
+</script>
+
+<script type="text/html" id="empty">
+    <div class="empty">
+        <img src="__TMPL__/public/assets/user/img/empty.png"/>
+        <div> 暂无内容！</div>
+    </div>
+</script>
+<script type="text/javascript" src="__TMPL__/public/assets/user/js/template.js"></script>
+<script>
+
+    function tempRender(data) {
+        let loading = '<div class="weui-loadmore"><i class="weui-loading"></i><span class="weui-loadmore__tips">正在加载</span></div>';
+        let no_more = '<div class="weui-loadmore weui-loadmore_line"><span class="weui-loadmore__tips">没有更多了</span></div>';
+        let list = data.data.list;
+        let pages = data.data.pages;
+        let page = data.data.page;
+        let tpl = list.length>0 ? "#tem" : "#empty";
+        let _html = template($(tpl).html(),data.data);
+        let hasNext = page<pages;
+        console.log("page:",page)
+        list.length>0&&( _html=_html+(hasNext?loading:no_more));
+        let content = $("#content");
+        content.find('.weui-loadmore').remove();
+        if(page===1){
+            content.html(_html);
+        }else{
+            content.append(_html);
+        }
+    }
+
+    let status = ['全部','待处理','已处理','已拒绝','已取消']
+    let app = new Vue({
+        el: '#app',
+        data: {
+            lock:true,   //是否为空
+            type: 0,    //当前选择的状态（0.全部，1.待处理，2.已处理，3.已拒绝，4.已取消）
+            page:1,
+            pages:0,
+        },
+        created() {
+            window.addEventListener('scroll', this.loadMore);
+        },
+        methods: {
+            //选择状态
+            chose: function (evt, type) {
+                if(app.type===type)
+                {
+                    return false;
+                }
+                app.type = type;
+                app.page = 1;
+                $("title").html(status[type]+" - 计划单");
+                loadData({status:type,page:1});
+            },
+            loadMore() {
+                //可滚动容器的高度s
+                let type = app.type;
+                let pages = app.pages;
+                let innerHeight = document.querySelector('#content').clientHeight;//屏幕尺寸高度
+                let outerHeight = document.querySelector('body').clientHeight; //可滚动容器超出当前窗口显示范围的高度
+                let scrollTop =   document.querySelector('body').scrollTop;
+                console.log(pages ,app.lock);
+                if (innerHeight < (outerHeight + scrollTop+20) && pages> app.page &&app.lock) {
+                    //加载更多操作
+                    app.page++;
+                    app.lock=false;//防止重复请求
+                    loadData({status:type,page:app.page});
+                }
+            }
+        }
+    });
+
+
+    //点击删除
+    function delPlan(id,obj){
+        $.confirm({
+            title: '提示',
+            text: '确认删除计划单？',
+            onOK: function () {
+                //点击确认
+                request({
+                    url:"{:url('plan/delete')}",
+                    data:{id:id},
+                    done:function (resule) {
+                        if(resule.code){
+                            $(obj).parents(".listItem").remove()
+                        }
+                    }
+                })
+            },
+            onCancel: function () {
+            }
+        });
+    }
+
+
+    app.pages = parseInt("{$data.pages}");
+    function loadData(data) {
+        if(app.page===1){
+            let loading = '<div class="weui-loadmore"><i class="weui-loading"></i><span class="weui-loadmore__tips">正在加载</span></div>';
+            $("#content").html(loading);
+        }
+        request({
+            data: data,
+            loading:false,
+            success: function (result) {
+                tempRender(result);
+                app.pages = result.data.pages;
+                console.log("setPage", app.pages);
+                setTimeout(function () {
+                    app.lock=true;
+                },100)
+            }
+        });
+    }
+
+
+
+</script>
+
+
+
+
+

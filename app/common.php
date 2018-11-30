@@ -39,7 +39,18 @@ function deep_in_array($value, $array)
  */
 function html($text = "", $len = 20)
 {
-    return substr($text, 0, $len);
+    return mb_substr(html_text($text), 0, $len);
+}
+
+function html_text($params){
+    if($params==""|!strlen($params)){
+        return $params;
+    }
+    $params=htmlspecialchars_decode($params);
+    $params=strip_tags($params);
+    $params=str_replace("&nbsp;","",$params);
+    $params=trim($params);
+    return $params;
 }
 
 /**

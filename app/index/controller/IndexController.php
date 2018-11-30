@@ -21,12 +21,12 @@ class IndexController extends UserBaseController
 
     /**
      * 前台用户首页
+     * @throws
      */
     public function index()
     {
             //类目
             $category = Db::name('category')->select();
-
             //数据处理
             $category_data = [];
 
@@ -52,14 +52,13 @@ class IndexController extends UserBaseController
             $this->assign('category',$category_data);
         }
 
-        return $this->fetch(":index");
+        return $this->fetch();
     }
 
 
-
-
     /**
-     * 前台用户首页
+     * 前台首页提交
+     *
      */
     public function indexPost()
     {
@@ -95,8 +94,14 @@ class IndexController extends UserBaseController
            $this->error("计划单提交失败!");
        }
 
+
     }
 
+
+    /**
+     * 提交成功页面
+     * @return \think\response\View
+     */
     public function successPage(){
         return view(":success");
     }

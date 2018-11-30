@@ -9,6 +9,7 @@
 namespace app\index\controller;
 
 
+use app\index\lib\AliSms;
 use app\user\model\UserModel;
 use cmf\controller\HomeBaseController;
 
@@ -46,8 +47,8 @@ class LoginController extends HomeBaseController
      */
     function loginOut()
     {
-       session("user",null);
-       $this->redirect(url("login/index"));
+        session("user", null);
+        $this->redirect(url("login/index"));
     }
 
     /**
@@ -56,8 +57,7 @@ class LoginController extends HomeBaseController
     public function loginPost()
     {
 
-        if (request()->isPost())
-        {
+        if (request()->isPost()) {
             $data = input('request.');
 
             $userModel = new UserModel();
@@ -69,8 +69,9 @@ class LoginController extends HomeBaseController
 
             $mobile = $data['mobile'];
             $sms_code = $data['sms_code'];
-            if ($sms_code != 123456) {
-                $this->error("验证码错误!");
+
+            if (!AliSms::checkVerify($mobile, $sms_code)) {
+                $this->error("短信验证码错误!");
             }
 
             $user = $userModel->where('mobile', $mobile)->find();
@@ -81,6 +82,7 @@ class LoginController extends HomeBaseController
                 $this->success("登录成功", $url, $data, 1);
             } else {
                 $this->error("用户不存在!");
+
                 $insert = $userModel::create([
                     "mobile" => $mobile,
                     "user_type" => 1,
@@ -88,9 +90,40 @@ class LoginController extends HomeBaseController
                     "last_login_time" => time(),
                 ]);
                 $id = $insert->getLastInsID();
-                session('user',$userModel->get($id));
+                session('user', $userModel->get($id));
                 $this->success('登录成功', $url, [], 1);
             }
         }
+    }
+
+
+    public function sendCode()
+    {
+        $mobile = input('post.mobile');
+        $time = 10;
+
+        //验证手机号码preg_match("/^(13|14|15|17|18|19)[0-9]{9}$/",$mobile)
+
+        if ($mobile) {
+
+            $sms = new AliSms();
+            $cache = cache($mobile);
+
+            //限制发送时间
+            if ($cache && $cache + $time < time()) {
+                $this->error("操作太频繁,请[" . $cache . ']秒后再试!');
+            }
+
+            //发送验证码
+            $result = $sms->send_verify($mobile);
+            if ($result === 1) {
+                cache($mobile, time(), $time);
+                $this->success("验证码发送成功!");
+            } else {
+                $this->error($sms->error);
+            }
+        }
+
+        $this->error("手机号格式错误!");
     }
 }

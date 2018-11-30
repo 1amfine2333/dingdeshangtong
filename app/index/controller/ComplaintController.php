@@ -26,73 +26,161 @@ class ComplaintController extends UserBaseController
      */
     public function index()
     {
-        $plan  = new ComplaintModel();
+        $plan = new ComplaintModel();
         $request = $this->request->param();
-        $where = ['user_id'=>cmf_get_current_user_id()];
+        $page = $this->request->param('page');
+        $where = ['user_id' => cmf_get_current_user_id()];
+        $limit = 10;
+        if (request()->isAjax()) {
 
-        //如果传入状态参数 则根据状态查询
-        if (!empty($request['status'])){
-            $where['status'] = intval($request['status']);
+            //如果传入状态参数 则根据状态查询
+            if (!empty($request['status'])) {
+                $where['status'] = intval($request['status']);
+            }
+            $list = $plan->field('user_id,reply,update_time,plan_number',true)->where($where)->order("create_time desc")->page($page, $limit)->select();
+
+            $status = [0 => '未回复', 1 => '已回复'];
+
+            foreach ($list as $k => $value) {
+                $value['create_time'] = date("Y-m-d H:i:s", $value['create_time']);
+                $value['status_text'] = @$status[$value['status']];
+                $value['content'] = html($value['content'], 50);// htmlspecialchars_decode($value['content']);
+
+                $list[$k] = $value;
+            }
+
+            $data['list'] = $list;
+            $data['pages'] = ceil($plan->where($where)->count() / $limit);
+
+            $this->success('success', null, $data);
         }
 
-        $list = $plan->where($where)->select();
+        return $this->fetch();
+    }
 
-        $status = [1=>'待处理',2=>'已处理',3=>'已拒绝',4=>'已取消'];
+    public function add()
+    {
+        return $this->fetch();
+    }
 
-        foreach ($list as $k => $value)
-        {
-            $value['pouring_time']=date("Y-m-d H:i:s",$value['pouring_time']);
-            $value['status_text']= @$status[$value['status']];
-            $list[$k]= $value;
+    /**
+     * @return mixed
+     * @throws
+     */
+    public function detail()
+    {
+        $id = input("id", 0, 'intval');
+
+        $status = ['待处理', '已处理'];
+
+        if ($id) {
+            $data = ComplaintModel::get(['id' => $id, 'user_id' => cmf_get_current_user_id()]);
+            if($data){
+
+                if($data->is_read==1){
+                    $data->is_read=2;
+                }
+                $data->save();
+                $data['status_text'] = @$status[$data['status']];
+            }
+            $this->assign('data', $data);
+
         }
-
-        $data['list'] =  $list;
-        $data['pages']=ceil( $plan->where($where)->count()/10 );
-
-
-        if (request()->isAjax()){
-            $this->success('success',null,$data);
-        }
-
-        $this->assign('data',$data);
-        return $this->fetch(":plan");
+        return $this->fetch();
     }
 
 
-
-
     /**
-     * 前台用户首页
+     *提交计划单
      */
     public function addPost()
     {
 
-        if ($this->request->isPost())
-        {
+        if ($this->request->isPost()) {
             $data = input('request.');
 
-            $result = $this->validate($data,"Complaint");
+            $result = $this->validate($data, "Complaint");
 
-            if ($result!==false)
-            {
+            if ($result !== true) {
                 $this->error($result);
             }
-            $plan = new ComplaintModel();
-            // $data['content'] = htmlspecialchars($data['content']);
-            $data['user_id']=cmf_get_current_user_id();
+            $Complain = new ComplaintModel();
+            $data['user_id'] = cmf_get_current_user_id();
+
             //新增计划单数据
 
-            $res  = $plan::create($data,"type,content,plan_number");
+            if($data['type']==3){
 
-            if ($res!==false){
-                $this->success("计划单提交成功!");
-            }else{
-                $this->error("计划单提交失败!");
+                if (empty($data['plan_number'])){
+                    $this->error("未获取到计划单号,提交失败!");
+                }
+
+                $plan = new  PlanOrderModel();
+                $planCount =  $plan->where(['user_id'=>$data['user_id'], 'number'=>$data['plan_number'] ])->count();
+                $ComplainCount =  $Complain->where(['plan_number'=>$data['plan_number'] ])->count();
+
+                if($planCount<1 || $ComplainCount>0){
+                    $this->error('提交失败,请刷新后重试');
+                }
+            }
+            if(isset($_POST['image'])){
+                $images=[];
+                foreach ($_POST['image'] as $v){
+                    $v = DS . 'upload'.DS.'user'.DS.$v;
+                    $images[] = "<img src='$v' alt='' style='object-fit: cover;'/>";
+                }
+                $data['content']=$data['content'].join('',$images);
+            }
+
+            $res = $Complain::create($data, "user_id,type,content,plan_number");
+
+            if ($res !== false) {
+                $this->success("提交成功!");
+            } else {
+                $this->error("提交失败!");
             }
         }
 
     }
 
 
+    /**
+     * 删除已上传图片
+     */
+    public function del(){
+        $img = trim(input('request.filename'));
+        $filename =ROOT_PATH . 'public'.DS.'upload'.DS.'user' .DS. $img;
+        if($img && is_file($filename)){
+            if (@fileatime($filename)+600>time()){
+                @unlink($filename);
+            }
+            $this->success('delete image success');
+        }
+        $this->error('this file is Non-existent');
+    }
+
+    /**
+     * 上传
+     */
+    public function upload(){
+        // 获取表单上传文件 例如上传了001.jpg
+        $file = request()->file('file');
+
+        if($file){
+            $info = $file->move(ROOT_PATH . 'public' . DS . 'upload'.DS.'user');
+            if($info){
+                // 成功上传后 获取上传信息
+                $res = [
+                    'src' => cmf_get_image_preview_url('user/'.$info->getSaveName()),
+                    'saveName' => $info->getSaveName(),
+                ];
+
+                $this->success('success','complaint/index',$res);
+            }else{
+                // 上传失败获取错误信息
+                $this->error($file->getError()) ;
+            }
+        }
+    }
 
 }

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>投诉建议</title>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/jquery-weui.css"/>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/weui.min.css"/>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/public.css"/>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css"/>
+    <link rel="stylesheet" href="/static/layui/css/layui.css"/>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/jq/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js"></script>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js"></script>
+    <script type="text/javascript" src="/static/layui/layui.js"></script>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/js/jquery.form.js"></script>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js"></script>
+</head>
+<style>
+    body .weui-vcode-btn.getCode.active {color: #ccc;}
+    body .weui-vcode-btn.getCode {color: #4c7db2;}
+    body .weui-vcode-btn {font-size: 1rem;}
+    .underline {text-decoration: underline;}
+    .weui-cells:after {display: none;}
+    .weui-check__label:active{background: #fff;}
+    .btn {position: fixed;left: 50%;bottom: 2%;transform: translate(-50%, -50%);}
+    .weui-loading{    width: 26px;height: 26px;}
+
+</style>
+<body class="">
+<section id="app" class="DetailSec">
+    <form action="{:url('complaint/addPost')}" id="formData">
+        <div class="weui-cells weui-cells_checkbox">
+            <div class="weui-flex">
+                <div class="weui-flex__item">
+                    <div class="placeholder">
+                        <label class="weui-cell weui-check__label">
+                            <div class="weui-cell__hd">
+                                <input type="radio" class="weui-check" name="type" value="1" v-model="chose"
+                                       @change="changeFn($event)">
+                                <i class="weui-icon-checked"></i>
+                            </div>
+                            <div class="weui-cell__bd">
+                                <p>建议</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="weui-flex__item">
+                    <div class="placeholder">
+                        <label class="weui-cell weui-check__label">
+                            <div class="weui-cell__hd">
+                                <input type="radio" class="weui-check" name="type" value="2" v-model="chose"
+                                       @change="changeFn($event)">
+                                <i class="weui-icon-checked"></i>
+                            </div>
+                            <div class="weui-cell__bd">
+                                <p>投诉</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="weui-flex__item">
+                    <div class="placeholder"></div>
+                </div>
+            </div>
+        </div>
+        <div style="padding: 10px;">
+            <div class="bgf7" style="padding: 10px;">
+                <textarea class="weui-textarea " placeholder="请填写您的反馈" v-model="content" name="content" rows="5"
+                          maxlength="300"></textarea>
+                <div class="weui-textarea-counter">您还可以输入{{words}}字</div>
+            </div>
+        </div>
+        <div class="backImgBox">
+          <div class="imgItem"> </div>
+            <div class="backImgItem weui-uploader__file addImg"></div>
+        </div>
+
+
+        <div class="btn" style="margin:2rem auto;" id="submit">提 交</div>
+    </form>
+</section>
+<template>
+    <div class="weui-uploader__file backImgItem" style="background-image:url(__TMPL__/public/assets/user/img/map.png)">
+    </div>
+    <div class="weui-uploader__file weui-uploader__file_status backImgItem" style="background-image:url(__TMPL__/public/assets/user/img/map.png)">
+        <div class="weui-uploader__file-content"><i class="weui-icon-warn"></i></div>
+    </div>
+
+    <div class="weui-uploader__file weui-uploader__file_status backImgItem" style="background-image:url(__TMPL__/public/assets/user/img/map.png)">
+        <div class="weui-uploader__file-content">50%</div>
+    </div>
+</template>
+</body>
+</html>
+<script>
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            chose: 1,    //1.建议，2.投诉
+            words: 300,    //字数限制
+            content: '',    //反馈内容
+        },
+        methods: {
+            changeFn: function (evt) {
+                console.log(app.chose)
+            }
+        }
+    });
+
+
+    /**
+     * 上传图片
+     * */
+    layui.use("upload",function (e) {
+        let upload = layui.upload;
+        let i=0;
+        upload.render({
+            elem: '.addImg'
+            ,url: '{:url("complaint/upload")}'
+            ,multiple: true
+            ,accept:"image"
+            ,before: function(obj){
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    i = getIndex();
+                   let $temp = '<div class="backImgItem weui-uploader__file_status weui-uploader__file" style="background-image:url('+result+')">' +
+                       '<div class="weui-uploader__file-content"><i class="weui-loading"></i></div>'+
+                       '<input type="hidden" class="images"  id="img_'+i+'" name="image['+i+']">' +
+                       '<i onclick="delImg('+i+')"></i></div>';
+                   $(".backImgBox .imgItem").append($temp);
+                });
+            }
+            ,done: function(res){
+                //上传完毕
+                let imgBox = $(".backImgBox .imgItem");
+                setTimeout(function () {
+                    imgBox.find(".backImgItem").eq(i).removeClass('weui-uploader__file_status');
+                },1300);
+                if(res.code){
+                    let imgPath = res.data['saveName'];
+                    imgBox.find("#img_"+i) .val(imgPath);
+                }else{
+                    $.toast(res.msg,'cancel');
+                }
+            },error:function (index) {
+
+            }
+
+        });
+
+        /**
+         * 获取索引
+         * */
+        function  getIndex() {
+            return $(".backImgBox .imgItem .images").length;
+        }
+
+    });
+
+
+    /**
+     * 删除image
+     * */
+    function delImg(i){
+        let img = $("#img_"+i);
+        let filename = img.val();
+        let imgBox = $(".backImgBox");
+        if(imgBox.find(".weui-uploader__file_status").length){
+            $.toast("图片正在上传中请稍后操作！",'cancel');
+            return;
+        }
+        request({
+            url:'{:url("complaint/del")}',
+            loading:false,
+            data:{filename:filename},
+            success:function (result) {
+                img.parents(".weui-uploader__file").remove();
+            }
+        })
+    }
+
+
+    /**
+     * 提交表单
+     */
+    $("#submit").on("click",function () {
+
+        let data = $("#formData").formData();
+        if(!data.content.length){
+            $.toast("请填写内容后提交!","cancel");return;
+        }
+        let imgBox = $(".backImgBox");
+        if(imgBox.find(".weui-uploader__file_status").length){
+            $.toast("请等待图片上传完成后再提交！",'cancel');
+            return;
+        }
+        request({  data:data });
+    });
+
+/*
+    var wi = $('body').width() - 80;
+    $('.backImgItem').width(wi / 4).height(wi / 4);*/
+</script>
+
+
+
+
+

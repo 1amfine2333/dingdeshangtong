@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+	    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>投诉建议</title>
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/jquery-weui.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/weui.min.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/public.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css?_=1" />
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/jq/jquery-1.10.2.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js" ></script>
+		<style>
+			body .weui-vcode-btn.getCode.active{ color: #ccc;}
+			body .weui-vcode-btn.getCode{ color: #4c7db2;}
+			body .weui-vcode-btn{ font-size: 1rem;}
+			.underline{ text-decoration: underline;}
+			.weui-cell__hd img{width:13px;margin-right:5px;margin-top: 5px; display:block;}
+		</style>
+	</head>
+	<body class="bgf7">
+	<section id="app" class="DetailSec">
+		<div class="empty" v-show="!pages">
+			<img src="__TMPL__/public/assets/user/img/empty.png" />
+			<div>暂无内容！</div>
+		</div>
+		<div class="weui-cells" id="content" v-show="pages">
+
+			<div class="weui-cell" v-for="item in list">
+				<div class="weui-cell__hd"  style="align-self: flex-start;">
+					<img v-bind:src="'__TMPL__/public/assets/user/img/'+(item['is_read']===1?'point.png':'radio.png')">
+				</div>
+					<div class="weui-cell__bd" style="width: 1%;" @click="location='/index/complaint/detail/id/'+item.id">
+						<div class="disbox" v-cloak >
+							<div class="sicon" >{{type[item.type]}}</div>
+							<div class="disflex right state"  v-if="item.status">已处理</div>
+							<div class="disflex right state active" v-else>待处理</div>
+						</div>
+						<div class="ellipsis" style="padding: 5px 0;" v-text="item.content"></div>
+						<div class="color9 size9" v-text="item['create_time']"></div>
+					</div>
+				<div class="weui-cell__ft"></div>
+			</div>
+
+		</div>
+		<div class="addBtn">
+			<a href="{:url('complaint/add')}"><img src="__TMPL__/public/assets/user/img/add.png" /></a>
+			<span class="a"></span>
+			<span class="b"></span>
+		</div>
+		<div class="nomore" v-cloak v-show="pages" v-html="(page<pages)?loading:no_more"></div>
+	</section>
+	</body>
+</html>
+<script>
+
+	var app = new Vue({
+		el:'#app',
+        data: {
+            lock:true,
+            type:['','建议','投诉','计划单'],
+            list:[],
+            page:1,
+            pages:0,
+            loading:'<div class="weui-loadmore"><i class="weui-loading"></i><span class="weui-loadmore__tips">正在加载</span></div>',
+			no_more: '<div class="weui-loadmore weui-loadmore_line"><span class="weui-loadmore__tips">没有更多了</span></div>'
+        },
+        created() {
+            console.log(11);
+            window.addEventListener('scroll', this.loadMore);
+        },
+
+		methods:{
+            loadMore() {
+                //可滚动容器的高度s
+                let pages = app.pages;
+                let innerHeight = document.querySelector('#content').clientHeight;//屏幕尺寸高度
+                let outerHeight = document.body.clientHeight; //可滚动容器超出当前窗口显示范围的高度
+                let scrollTop   =   document.body.scrollTop;
+                if (innerHeight < (outerHeight + scrollTop+30) && pages> app.page && app.lock) {
+                    //加载更多操作
+                    app.page++;
+                    app.lock=false;//防止重复请求
+                    loadData({page:app.page});
+                }
+            }
+		}
+	});
+    loadData({page:1});
+    function loadData(data) {
+        if(app.page===1){
+            $("#content").html(app.loading);
+        }
+        request({
+            data: data,
+            loading:false,
+            success: function (result) {
+                tempRender(result);
+                setTimeout(function () {
+                    app.lock=true;
+                },100)
+            }
+        });
+    }
+
+
+    function tempRender(data) {
+        $("#content").find(".weui-loadmore").remove()
+        let list = data.data.list;
+        let page = data.data.page;
+        app.pages = data.data.pages;
+        if(page===1){
+            app.list =list;
+        }else{
+            app.list = app.list.concat(list);
+        }
+    }
+
+	
+</script>
+
+
+
+
+

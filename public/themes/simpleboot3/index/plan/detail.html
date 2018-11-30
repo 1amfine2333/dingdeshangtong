@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+	    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>计划单详情</title>
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/jquery-weui.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/weui.min.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/public.css?_=1" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css" />
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/jq/jquery-1.10.2.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js" ></script>
+	</head>
+	<style>
+		body .weui-vcode-btn.getCode.active{ color: #ccc;}
+		body .weui-vcode-btn.getCode{ color: #4c7db2;}
+		body .weui-vcode-btn{ font-size: 1rem;}
+		.underline{ text-decoration: underline;}
+		body .weui-cell__hd{ min-width: 120px;}
+	</style>
+	<body class="bgf7">
+		<section id="app" class="DetailSec">
+			<div class="content" style="padding-bottom: 50px;">
+				<div class="disbox tit">
+					<div class="disflex">计划单号：{$data.number}</div>
+					<div class="colorThem" v-cloak>{{type==1?'待处理':(type==2?'已处理':(type==3?'已拒绝':'已取消'))}}</div>
+				</div>
+				<div class="tit dark">工程信息</div>
+				<div class="weui-cells" >
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/dwmc2.png" class="icon2" alt="">
+		                	单位名称
+		                </div>
+		                <div class="weui-cell__bd"></div>
+		                <div class="weui-cell__ft">{$data.unit_name}</div>
+		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/gcmc.png" class="icon2" alt="">
+		                	工程名称
+		                </div>
+		                <div class="weui-cell__bd"></div>
+		                <div class="weui-cell__ft">{$data.project_name}</div>
+		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/ywy.png" class="icon2" alt="">
+		                	业务人员
+		                </div>
+		                <div class="weui-cell__bd"></div>
+		                <div class="weui-cell__ft">{$data.salesman}</div>
+		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/gcdz.png" class="icon2" alt="">
+		                	工程地址
+		                </div>
+		                <div class="weui-cell__bd"></div>
+		                <div class="weui-cell__ft">{$data.project_address}</div>
+		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/xcfz2.png" class="icon2" alt="">
+		                	现场负责
+		                </div>
+		                <div class="weui-cell__bd"></div>
+		                <div class="weui-cell__ft">{$data.principal}</div>
+		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/lxdh2.png" class="icon2" alt="">
+		                	联系电话
+		                </div>
+		                <div class="weui-cell__bd"></div>
+		                <div class="weui-cell__ft">{$data.mobile}</div>
+		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/xdsj.png" class="icon2" alt="">
+		                	下单时间
+		                </div>
+		                <div class="weui-cell__bd"></div>
+		                <div class="weui-cell__ft">{:date("Y-m-d H:i:s",$data.create_time)}</div>
+		            </div>
+		        </div>
+		        <div class="tit dark">计划单</div>
+		        <div class="weui-cells">
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/jzfs.png" class="icon2" alt="">
+		                	浇筑方式
+		                </div>
+		                <div class="weui-cell__bd"></div>
+		                <div class="weui-cell__ft">{$data.pouring_type}</div>
+		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/jzbw.png" class="icon2" alt="">
+		                	浇筑部位
+		                </div>
+		                <div class="weui-cell__bd"></div>
+		                <div class="weui-cell__ft">{$data.pouring_part}</div>
+		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/jzbh.png" class="icon2" alt="">
+		                	浇筑标号
+		                </div>
+		                <div class="weui-cell__bd"></div>
+		                <div class="weui-cell__ft">{$data.pouring_label}</div>
+		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/tld.png" class="icon2" alt="">
+		                	坍落度
+		                </div>
+		                <div class="weui-cell__bd"></div>
+		                <div class="weui-cell__ft">{$data.slump}Km</div>
+		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/jhfl.png" class="icon2" alt="">
+		                	计划方量
+		                </div>
+		                <div class="weui-cell__bd"></div>
+		                <div class="weui-cell__ft">{$data.plan_square}㎡</div>
+		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/styj2.png" class="icon2" alt="">
+		                	商拓运距
+		                </div>
+		                <div class="weui-cell__bd"></div>
+		                <div class="weui-cell__ft">{$data.distance}Km</div>
+		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd">
+		                	<img src="__TMPL__/public/assets/user/img/jzsj2.png" class="icon2" alt="">
+		                	浇筑时间
+		                </div>
+		                <div class="weui-cell__bd"></div>
+		                <div class="weui-cell__ft">{:date("Y-m-d H:i:s",$data.pouring_time)}</div>
+		            </div>
+		        </div>
+		        <template v-if="type==2">
+			        <div class="tit dark">反馈</div>
+			        <div style="background: #fff; padding: 15px;">
+			        	<div class="bgf7" style="padding: 10px;" v-if="!isBack">
+			        		<textarea class="weui-textarea " placeholder="请填写您的反馈" v-model="content" rows="5" maxlength="300"></textarea>
+	                    	<div class="weui-textarea-counter">您还可以输入{{words}}字</div>
+	        				<div class="btn" style="margin:2rem auto;" @click="upFn($event)">提 交</div>
+			        	</div>
+			        	<div v-else>
+			        		<div>
+			        			<span class="yihuifu">已回复</span>
+								{$data['back']['content']}
+			        		</div>
+			        		<div>
+			        			<div class="colorThem" style="padding: 10px 0;">回复</div>
+			        			<div class="bgf7" style="padding: 10px; border-radius: 5px;">{$data.back.reply|default='等待回复..'}</div>
+			        		</div>
+			        	</div>
+		           </div>
+	            </template>
+		        
+		        <div class="btn" style="margin:2rem auto;" @click="cancelFn('{$data.id}')" v-if="type==1">取 消</div>
+		        <div class="btn" style="margin:2rem auto;" @click="delPlan('{$data.id}')" v-if="type==3||type==4">删 除</div>
+			</div>
+		</section>
+	</body>
+</html>
+<script>
+
+	var app = new Vue({
+		el:'#app',
+		data:{
+			type:'{$data.status}',    //当前的状态（0.全部，1.待处理，2.已处理，3.已拒绝，4.已取消）
+			isBack:parseInt('{$data.isBack}'),    //是否已经反馈
+            content:'',     //反馈文本
+			words:300,    //可输入字数
+		},
+		methods:{
+			//点击取消
+			cancelFn: function(id){
+				$.confirm({
+				  	title: '提示',
+				  	text: '确认取消计划单？',
+				  	onOK: function () {
+				    	//点击确认
+                        if(id){
+                            request({
+                                url:"{:url('plan/cancel')}",
+                                data:{id:id},
+                                success:function (resule) {
+                                    if(resule.code){setTimeout(function(){location.reload()},600)}
+                                    setTimeout(function () {resule.msg && $.toast(resule.msg,'cancel')},100)
+                                }
+                            })
+                        }
+			  		},
+				  	onCancel: function () {
+				  	}
+				});
+			},
+			//点击提交
+			upFn:function(evt){
+				var self=this;
+				if(self.content.length<1){
+					$.toast("请输入反馈内容","cancel");
+					return
+				}
+				$.confirm({
+				  	title: '提示',
+				  	text: '确认提交反馈吗？',
+				  	onOK: function () {
+                        request({
+                            url:"{:url('complaint/addPost')}",
+                            data:{content:self.content,plan_number:'{$data.number}',type:3},
+                            success:function (resule) {
+                                if(resule.code){setTimeout(function(){location.reload()},600)}
+                                setTimeout(function () {resule.msg && $.toast(resule.msg,'cancel')},100)
+                            }
+                        })
+				    	//点击确认
+			  		},
+				  	onCancel: function () {
+
+				  	}
+				});
+			}
+		},
+		watch:{
+			backtext:function(val){
+				app.words=300-val.length;
+			}
+		}
+	});
+    //点击删除
+    function delPlan(id){
+        $.confirm({
+            title: '提示',
+            text: '确认删除计划单？',
+            onOK: function () {
+                //点击确认
+				if(id){
+					request({
+						url:"{:url('plan/delete')}",
+						data:{id:id},
+						success:function (resule) {
+							if(resule.code){history.go(-1)}
+							setTimeout(function () {
+                                resule.msg && $.toast(resule.msg,'cancel')
+                            },100)
+						}
+					})
+                }
+            },
+            onCancel: function () {
+            }
+        });
+    }
+</script>
+
+
+
+
+
