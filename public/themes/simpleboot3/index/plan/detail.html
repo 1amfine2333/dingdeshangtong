@@ -220,9 +220,9 @@
                         request({
                             url:"{:url('complaint/addPost')}",
                             data:{content:self.content,plan_number:'{$data.number}',type:3},
-                            success:function (resule) {
-                                if(resule.code){setTimeout(function(){location.reload()},600)}
-                                setTimeout(function () {resule.msg && $.toast(resule.msg,'cancel')},100)
+                            success:function (res) {
+                                if(res.code){setTimeout(function(){location.reload()},600)}
+                                setTimeout(function () {res.msg && $.toast(res.msg,'cancel')},100)
                             }
                         })
 				    	//点击确认
@@ -250,10 +250,12 @@
 					request({
 						url:"{:url('plan/delete')}",
 						data:{id:id},
-						success:function (resule) {
-							if(resule.code){history.go(-1)}
+						success:function (res) {
 							setTimeout(function () {
-                                resule.msg && $.toast(resule.msg,'cancel')
+                                res.msg && $.toast(res.msg,'cancel')
+								setTimeout(function () {
+                                    if(res.code){history.go(-1)}
+                                },2000)
                             },100)
 						}
 					})

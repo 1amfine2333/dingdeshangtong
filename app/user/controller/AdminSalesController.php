@@ -123,7 +123,7 @@ class AdminSalesController extends AdminBaseController
 
         $w = [];
         $id = intval(input("id"));
-        $type = input("type")?:2;
+        $type = input("type")?:3;
 
         $user = new UserModel();
         $plan = new PlanOrderModel();
@@ -172,6 +172,12 @@ class AdminSalesController extends AdminBaseController
                 if ($result !== true) {
                     $this->error($result);
                 } else {
+
+                    $mobile = input('mobile');
+                    if(DB::name('user')->where(['mobile'=>$mobile,"user_type"=>3])->count()){
+                        $this->error("该手机号已存在!");
+                    }
+
                     if (isset($_POST['user_pass'])){
                         if (@$_POST['user_pass'] !==@$_POST['password_confirm']){
                             $this->error("密码输入不一致!");
@@ -182,6 +188,7 @@ class AdminSalesController extends AdminBaseController
 
                     unset($_POST['password_confirm']);
                     $_POST['user_type']    =   3;
+                    $_POST['user_status']    =   2;
                     $_POST['user_pass']    =   cmf_password($_POST['user_pass']);
                     $_POST['create_time']  =   time();
 

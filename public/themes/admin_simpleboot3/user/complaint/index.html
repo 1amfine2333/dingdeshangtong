@@ -14,7 +14,8 @@
         <select name="type" class="select" style="margin-right: 10px" title="选择类型">
             <option value="">全部</option>
             <foreach name="type"  item="vo">
-                <option value="{$key}">{$vo}</option>
+                <php>$selected = input('type')==$key?'selected':"" ; </php>
+                <option value="{$key}" {$selected} >{$vo}</option>
             </foreach>
         </select>
         发布时间：
@@ -58,7 +59,7 @@
                     <td>{$status[$vo['status']]}</td>
                     <td>{:date('Y-m-d H:i:s',$vo['create_time'])}</td>
                     <td>
-                        <a href="{:url('complaint/info',['id'=>$vo['id']])}" >查看计划单</a>
+                        <a href="{:url('complaint/info',['id'=>$vo['id']])}" >查看详情</a>
                         <a href="javaScript:void(0);" style="color: red" class="delete" data-id="{$vo.id}">删除</a>
                     </td>
                 </tr>

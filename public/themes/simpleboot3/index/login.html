@@ -29,17 +29,17 @@
 				<div class="inputBox">
 					<div class="bold">手机号</div>
 					<div class="input">
-						<input type="number" name="mobile" v-model="mobile" value="18012345612" pattern="[0-9]" placeholder="请输入手机号"/>
+						<input type="tel" name="mobile" v-model="mobile" value="" pattern="[0-9]" placeholder="请输入手机号"/>
 					</div>
 				</div>
 				<div class="inputBox">
 					<div class="bold">验证码</div>
 					<div class="input disbox">
-						<input type="number" value="123456" name="sms_code" pattern="[0-9]" class="disflex" placeholder="请输入手机号"/>
-						<div class="yzm" @click="gerYzm($event)">{{yzmText}}</div>
+						<input type="text" v-bind::value="yzm"  v-model="yzm" name="sms_code" pattern="[0-9]" class="disflex" placeholder="请输入手机号"/>
+						<div class="yzm" style="cursor: pointer" @click="gerYzm($event)">{{yzmText}}</div>
 					</div>
 				</div>
-				<div class="btn" style="margin-top: 4rem;">登 录</div>
+				<div class="btn" style="margin-top: 4rem;cursor: pointer">登 录</div>
 			</form>
 		</section>
 	</body>
@@ -61,17 +61,36 @@
 				var self=this;
 				if(self.isget===0){
 					self.isget=1;
-					//ajax
 					let yzm = $(".yzm");
                     if(yzm.hasClass('disable')){
                         return;
 					}
+                    if(app.mobile.length<1){
+                        $.toast("请输入手机号! ",'cancel');
+                        yzm.removeClass('disable');
+                        self.isget=0;
+                        return false;
+                    }
+                    if(!(/^(13|14|15|17|18|19)[0-9]{9}$/.test(app.mobile))){
+                        $.toast("请输入正确的手机号! ",'cancel');
+                        yzm.removeClass('disable');
+                        self.isget = 0;
+                        return false;
+                    }
+
                     request({
 						url:"{:url('login/sendCode')}",
 						data:{mobile:app.mobile},
+						//loading:false,
 						success:function (res) {
-						    $.toast(res.msg);
-                            res.code&&self.setTime();
+                            setTimeout(function () {
+                                $.toast(res.msg,res.code?"":"cancel");
+                            },100);
+                            if(res.code){
+                                self.setTime();
+                            }else{
+                                self.isget = 0;
+                            }
                         }
 					});
 
@@ -98,17 +117,25 @@
 	$("div.btn").on("click",function () {
 	    let form = $("#login_form");
 		let data = form.formData();
+		if(data.mobile.length<1){
+		    $.toast('请输入手机号 ! ','cancel');
+            return false;
+		}
+        if(data.sms_code.length<1){
+            $.toast('请输入验证码 ! ','cancel');
+            return false;
+        }
+
         if(!(/^(13|14|15|17|18|19)[0-9]{9}$/.test(data.mobile))){
-            $.toast("手机号码有误，请重填",'cancel');
+            $.toast("请输入正确的手机号! ",'cancel');
             return false;
         }
 
         if(!(/^\d{6}$/.test(data.sms_code))){
-            $.toast("请输入正确的验证码",'cancel');
+            $.toast("请输入正确的验证码! ",'cancel');
             return false;
         }
         request({
-            load_btn:"div.btn",
 			url:form[0].action,
 			data:data,
 		})

@@ -103,7 +103,7 @@ class IndexController extends UserBaseController
      * @return \think\response\View
      */
     public function successPage(){
-        return view(":success");
+        return view("success");
     }
 
 

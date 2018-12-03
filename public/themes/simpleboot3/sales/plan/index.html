@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <php>$status = ['1'=>'待处理','2'=>'已处理','3'=>'已拒绝','4'=>'已取消',];</php>
+    <title>{$status[input('status')]} - 计划单</title>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/jquery-weui.css"/>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/weui.min.css"/>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/public.css?_=2"/>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css"/>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/jq/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js"></script>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js"></script>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js"></script>
+</head>
+<style>
+    body .weui-vcode-btn.getCode.active {
+        color: #ccc;
+    }
+
+    body .weui-vcode-btn.getCode {
+        color: #4c7db2;
+    }
+    body .weui-vcode-btn {
+        font-size: 1rem;
+    }
+    .jihuaList{margin-top: 0px}
+</style>
+<body class="bgf7">
+<section id="app" class="DetailSec">
+    <div class="empty" v-show="pages===0">
+        <img src="__TMPL__/public/assets/user/img/empty.png"/>
+        <div>暂无内容！</div>
+    </div>
+    <div class="jihuaList" id="content" v-show="pages>0" style="padding-bottom: 10px;"></div>
+    <div class="no_more" v-show="pages" v-html="loading"></div>
+</section>
+</body>
+</html>
+
+<script type="text/html" id="tem">
+    <% for (i in list){ %>
+    <% var item = list[i];let status = ['全部','待处理','已处理','已拒绝','已取消'];%>
+    <div class="listItem" onclick="location='/sales/plan/detail/id/<%=item.id%>';">
+        <div class="disbox tit">
+            <div class="disflex bold"><%= item.project_name %></div>
+            <div class="colorThem bold"><%= status[item['status']] %></div>
+        </div>
+        <div class="content">
+            <div class="addr"> <%= item.project_address %></div>
+            <div class="color6">计划方量：<%= item.plan_square %>㎡</div>
+            <div class="color6">浇筑时间：<%= item.pouring_time %></div>
+            <div class="color6">商砼运距：<%= item.distance%>Km</div>
+        </div>
+        <div class="tit color6 disbox">
+            <div class="disflex number">计划单号：<%= item.number%></div>
+        </div>
+    </div>
+    <%}%>
+</script>
+
+<script type="text/html" id="empty">
+    <div class="empty">
+        <img src="__TMPL__/public/assets/user/img/empty.png"/>
+        <div> 暂无内容！</div>
+    </div>
+</script>
+<script type="text/javascript" src="__TMPL__/public/assets/user/js/template.js"></script>
+<script>
+
+    function tempRender(data) {
+
+        let page = data.data.page;
+        let _html = template($("#tem").html(), data.data);
+        let content = $("#content");
+        if (page === 1) {
+            content.html(_html);
+        } else {
+            content.append(_html);
+        }
+    }
+
+
+    let app = new Vue({
+        el: '#app',
+        data: {
+            loading: '<div class="weui-loadmore"><i class="weui-loading"></i><span class="weui-loadmore__tips">正在加载</span></div>',
+            no_more: '<div class="weui-loadmore weui-loadmore_line"><span class="weui-loadmore__tips">没有更多了</span></div>',
+            lock: false,   //是否为空
+            status: ['全部', '待处理', '已处理', '已拒绝', '已取消'],    //当前选择的状态（0.全部，1.待处理，2.已处理，3.已拒绝，4.已取消）
+            page: 1,
+            pages: parseInt("{$data.pages}"),
+            tips: 0,
+        },
+        created() {
+            $(window.document.body).infinite();
+        }
+    });
+
+    loadData({page: 1});
+
+    $(window.document.body).infinite().on("infinite", function () {
+        console.log("page:", app.page, "lock:", app.lock, "pages:", +app.pages);
+        if (app.lock) return;
+        app.lock = true;
+        app.page++;
+        loadData({page: app.page});
+    });
+
+    //点击删除
+    function delPlan(id, obj) {
+        $.confirm({
+            title: '提示',
+            text: '确认删除计划单？',
+            onOK: function () {
+                //点击确认
+                request({
+                    url: "{:url('plan/delete')}",
+                    data: {id: id},
+                    done: function (resule) {
+                        if (resule.code) {
+                            $(obj).parents(".listItem").remove()
+                        }
+                    }
+                })
+            }
+        });
+    }
+
+    function loadData(data) {
+        data.status="{:input('status')}";
+        request({
+            data: data,
+            loading: false,
+            success: function (result) {
+                app.pages = result.data.pages;
+                tempRender(result);
+                if (app.page >= app.pages) {
+                    $(document.body).destroyInfinite();
+                    $(".no_more").html((app.page<app.pages)?app.loading:app.no_more);
+                } else {
+                    app.lock = false;
+                }
+            }
+        });
+    }
+</script>
+
+
+
+
+

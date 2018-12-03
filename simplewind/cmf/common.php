@@ -59,7 +59,7 @@ function cmf_get_current_user()
 
 /**
  * 更新当前登录前台用户的信息
- * @param array $user 前台用户的信息
+ * @param array|object $user 前台用户的信息
  */
 function cmf_update_current_user($user)
 {

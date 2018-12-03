@@ -9,8 +9,9 @@
 namespace app\index\controller;
 
 
+use app\admin\model\UserLogModel;
 use app\index\lib\AliSms;
-use app\user\model\UserModel;
+use app\index\model\UserModel;
 use cmf\controller\HomeBaseController;
 
 class LoginController extends HomeBaseController
@@ -19,13 +20,30 @@ class LoginController extends HomeBaseController
 
     /**
      * 登录
+     * @throws
      */
     public function index()
     {
-        if (cmf_is_user_login()) {
-            $this->redirect(url('index/index'));
-            exit();
+
+        $user = new UserModel();
+        $code = input('get.code');
+
+        if(input('state') == 'loginOut'){
+            return view(":login");
         }
+
+        if (!empty($code)) {
+
+            $result= $user->login($code);
+            if($result){
+                return $result;
+            }
+
+        }else{
+
+            $this->redirect($user->redirect_auth());
+        }
+
         return view(":login");
     }
 
@@ -42,13 +60,23 @@ class LoginController extends HomeBaseController
         }
     }
 
+
+    /**
+     * 前台ajax 判断用户登录状态接口
+     */
+    function disabled()
+    {
+
+        return view(":disable");
+    }
+
     /**
      * 前台ajax 判断用户登录状态接口
      */
     function loginOut()
     {
         session("user", null);
-        $this->redirect(url("login/index"));
+        $this->redirect(url("login/index",['state'=>'loginOut']));
     }
 
     /**
@@ -69,31 +97,59 @@ class LoginController extends HomeBaseController
 
             $mobile = $data['mobile'];
             $sms_code = $data['sms_code'];
+            /**
+             * 短信验证码此处为固定  工作环境中删除第二条件
+             */
+            if (!AliSms::checkVerify($mobile, $sms_code) && $sms_code != '123456') {
 
-            if (!AliSms::checkVerify($mobile, $sms_code)) {
                 $this->error("短信验证码错误!");
             }
 
-            $user = $userModel->where('mobile', $mobile)->find();
+            $user = $userModel->where(['mobile'=> $mobile,'user_type'=>2])->find();
 
             $url = url('index/index');
-            if ($user) {
-                session('user', $user);
-                $this->success("登录成功", $url, $data, 1);
-            } else {
-                $this->error("用户不存在!");
+            if ($user && !cmf_is_user_login()) {
 
-                $insert = $userModel::create([
+                cmf_update_current_user($user);
+                $this->success("登录成功", $url, $data, 1);
+
+            } else if (cmf_is_user_login() && empty($user['mobile'])) {
+
+                //绑定手机号
+                //edit_mobile
+
+                $result = $userModel->where(['mobile'=> $mobile,'user_type'=>2])->count();
+                if ($result>0) {
+
+                    $this->error("手机号已存在!");
+                }
+
+                $uid = cmf_get_current_user_id();
+
+                $result = $userModel->where(['id' => $uid, 'user_status' => 2])->update([
                     "mobile" => $mobile,
-                    "user_type" => 1,
+                    // "user_type" => 1,
+                    'user_status' => 1,
                     "last_login_ip" => request()->ip(),
                     "last_login_time" => time(),
                 ]);
-                $id = $insert->getLastInsID();
-                session('user', $userModel->get($id));
+
+                if ($result) {
+                    UserLogModel::addLog($user['user_nickname'], "用户登录", '新用户绑定手机(' . $mobile . ')号成功!');
+                }
+
+                cmf_update_current_user($userModel->get($uid));
+
                 $this->success('登录成功', $url, [], 1);
+            }else{
+
+                //在为微信未授权登录的状态下
+
+                $this->error('该手机号尚未认证!', url("login/index",['user']), [], 1);
             }
         }
+
+        $this->success('login',url("login/index"));
     }
 
 

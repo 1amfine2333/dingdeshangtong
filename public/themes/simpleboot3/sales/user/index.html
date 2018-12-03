@@ -5,14 +5,16 @@
 	    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
 	    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
 		<title>销售经理端</title>
-	    <link rel="stylesheet" href="../../lib/weui/jquery-weui.css" />
-	    <link rel="stylesheet" href="../../lib/weui/weui.min.css" />
-	    <link rel="stylesheet" href="../../css/public.css" />
-	    <link rel="stylesheet" href="../../css/style.css" />
-	    <script type="text/javascript" src="../../lib/jq/jquery-1.10.2.js" ></script>
-	    <script type="text/javascript" src="../../lib/weui/jquery-weui.js" ></script>
-	    <script type="text/javascript" src="../../js/v.min.js" ></script>
-	    <script type="text/javascript" src="../../js/common.js" ></script>
+		<link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/jquery-weui.css"/>
+		<link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/weui.min.css"/>
+		<link rel="stylesheet" href="__TMPL__/public/assets/user/css/public.css"/>
+		<link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css?_=1"/>
+		<script type="text/javascript" src="__TMPL__/public/assets/user/lib/jq/jquery-1.10.2.js"></script>
+		<script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js"></script>
+		<script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js"></script>
+		<script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js"></script>
+
+
 	</head>
 	<style>
 		body .weui-vcode-btn.getCode.active{ color: #ccc;}
@@ -21,7 +23,7 @@
 		body .centerCon>a{ margin: 0 10px 20px; padding: 10px 0; text-align: center; font-weight: normal;}
 		body .centerCon>a>img{ width: 40%;}
 		body .weui-cells:after{ display: none;}
-		body .weui-cell.list{ margin: 0 10px 15px; background: url(../../img/rjt.png) #fff no-repeat 97% center; background-size: 8px; padding: 20px 10px; border-radius: 8px; box-shadow: 0 2px 10px #ccc; font-weight: bold;}
+		body .weui-cell.list{ margin: 0 10px 15px; background: url(__TMPL__/public/assets/user/img/rjt.png) #fff no-repeat 97% center; background-size: 8px; padding: 20px 10px; border-radius: 8px; box-shadow: 0 2px 10px #ccc; font-weight: bold;}
 		body .weui-cell.list img{ width: 2.4rem; margin-right: 10px;}
 		body .weui-cell.list .numIcon{ position: relative; display: inline-block;}
 		body .weui-cell.list .numIcon>span{ display: inline-block; height: 15px; line-height: 15px; position: absolute; top: -10px; left: 100%; background: #ff5747; border-radius: 20px; color: #fff; font-size: 13px; font-weight: normal; padding: 0 3px;}
@@ -30,45 +32,48 @@
 		<section id="app" class="mainSec">
 			<div class="headBg">
 				<div class="headImg">
-					<img src="../../img/map.png" />
+					<a href="{:url('user/info')}"> <img src="{$Think.session.user.avatar}" onerror="this.src='__TMPL__/public/assets/user/img/default.jpg'"/></a>
 				</div>
-				<div class="size11">咚巴拉</div>
-				<div style="padding-bottom: 10px;">13999999999</div>
+				<div class="size11">{$Think.session.user.user_nickname}</div>
+				<div style="padding-bottom: 10px;">{$Think.session.user.mobile}</div>
 			</div>
+
 			<div class="centerCon" style="padding: 20px 0 0;">
-				<a href="center/paper.html">
-					<img src="../../img/dcl.png" />
+				<a href="{:cmf_url('plan/index',['status'=>1])}">
+					<img src="__TMPL__/public/assets/user/img/dcl.png" />
 					<div>待处理</div>
 				</a>
-				<a href="center/paper.html">
-					<img src="../../img/ycl.png" />
+				<a href="{:cmf_url('plan/index',['status'=>2])}">
+					<img src="__TMPL__/public/assets/user/img/ycl.png" />
 					<div>已处理</div>
 				</a>
-				<a href="center/paper.html">
-					<img src="../../img/yjj.png" />
+				<a href="{:cmf_url('plan/index',['status'=>3])}">
+					<img src="__TMPL__/public/assets/user/img/yjj.png" />
 					<div>已拒绝</div>
 				</a>
-				<a href="center/paper.html">
-					<img src="../../img/yqx.png" />
+				<a href="{:cmf_url('plan/index',['status'=>4])}">
+					<img src="__TMPL__/public/assets/user/img/yqx.png" />
 					<div>已取消</div>
 				</a>
 			</div>
 			<div class="weui-cells" style="background: #f7f7f7;">
-	            <a class="weui-cell list" href="center/msg.html">
+	            <a class="weui-cell list" href="{:cmf_url('user/msg')}">
 	                <div class="weui-cell__hd">
-	                	<img src="../../img/bell.png" alt="">
+	                	<img src="__TMPL__/public/assets/user/img/bell.png" alt="">
 	                </div>
 	                <div class="weui-cell__bd">
 	                    <div class="numIcon">
 	                    	我的消息
-	                    	<span>99+</span>
+							<php>
+								echo $tips_my_msg>99?($tips_my_msg."+"):($tips_my_msg?'<span class="point point1">'.$tips_my_msg.'</span>':"");
+							</php>
 	                    </div>
 	                </div>
 	                <div class="weui-cell__ft"></div>
 	            </a>
 	            <a class="weui-cell list" @click="exitFn($event)">
 	                <div class="weui-cell__hd">
-	                	<img src="../../img/exit.png" alt="">
+	                	<img src="__TMPL__/public/assets/user/img/exit.png" alt="">
 	                </div>
 	                <div class="weui-cell__bd">
 	                    <div class="numIcon">
@@ -95,7 +100,7 @@
 				  	title: '提示',
 				  	text: '确定退出？',
 				  	onOK: function () {
-				    	//点击确认
+                        location = "{:url('login/loginOut')}"
 			  		},
 				  	onCancel: function () {
 				  	}

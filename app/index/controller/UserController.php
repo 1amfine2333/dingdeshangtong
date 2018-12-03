@@ -11,15 +11,11 @@
 namespace app\index\controller;
 
 use app\admin\model\BaseConfigModel;
+use app\admin\model\UserLogModel;
 use app\admin\model\WebMsgModel;
-use app\index\lib\Pinyin;
-use app\user\model\ComplaintModel;
-use app\user\model\PlanOrderModel;
-use app\user\model\UserModel;
+use app\index\lib\AliSms;
+use app\index\model\UserModel;
 use cmf\controller\UserBaseController;
-use think\Db;
-use think\helper\Time;
-use think\Validate;
 
 class UserController extends UserBaseController
 {
@@ -62,18 +58,32 @@ class UserController extends UserBaseController
 
             $mobile = input('post.edit_mobile');
             $sms_code = input('post.sms_code');
-            if ($sms_code!=123456){
+
+
+            if (!AliSms::checkVerify($mobile,$sms_code) && $sms_code!=123456){
+
                 $this->error('验证码错误!');
             }
+            $model = new UserModel;
 
-            $result = (new UserModel)->isUpdate(true)->save(['mobile' => $mobile], ['id' => cmf_get_current_user_id()]);
+
+            if( $model::get(['mobile'=>$mobile])->count() ){
+
+                $this->error("绑定失败,该手机号已被使用!");
+            }
+
+            $result = $model->where("id",cmf_get_current_user_id())->setField('mobile',$mobile);
+
             if ($result) {
                 $user = cmf_get_current_user();
+                UserLogModel::addLog($user['user_nickname'],'修改信息',"将原手机号({$user['mobile']})重新绑定手机号为($mobile)");
+
                 $user['mobile'] = $mobile;
                 cmf_update_current_user($user);
 
                 $this->success("修改成功!", url('user/index'));
             } else {
+
                 $this->error('修改失败，请重新提交!');
             }
 
@@ -138,4 +148,45 @@ class UserController extends UserBaseController
         }
         return $this->fetch();
     }
+
+
+    /**
+     * @throws \think\exception\DbException
+     */
+
+    public function sendCode()
+    {
+        $mobile = input('post.mobile');
+        $time = 10;
+
+        //验证手机号码preg_match("/^(13|14|15|17|18|19)[0-9]{9}$/",$mobile)
+
+        if ($mobile) {
+
+
+            if( UserModel::get(['mobile'=>$mobile])->count() ){
+                $this->error("发送失败,该手机号已被使用!");
+            }
+
+            $sms = new AliSms([]);
+            $cache = cache($mobile);
+
+            //限制发送时间
+            if ($cache && $cache + $time < time()) {
+                $this->error("操作太频繁,请[" . $cache . ']秒后再试!');
+            }
+
+            //发送验证码
+            $result = $sms->send_verify($mobile);
+            if ($result) {
+                cache($mobile, time(), $time);
+                $this->success("验证码发送成功!");
+            } else {
+                $this->error($sms->error);
+            }
+        }
+
+        $this->error("手机号格式错误!");
+    }
+
 }

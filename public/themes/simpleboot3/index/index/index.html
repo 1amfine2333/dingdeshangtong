@@ -19,28 +19,37 @@
 	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js" ></script>
 	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js" ></script>
 	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js?_=2" ></script>
+        <script type="text/javascript" src="http://api.map.baidu.com/api?key=&v=1.1&services=true"></script>
 	</head>
 	<style>
 		body .weui-vcode-btn.getCode.active{ color: #ccc;}
 		body .weui-vcode-btn.getCode{ color: #4c7db2;}
 		body .weui-vcode-btn{ font-size: 1rem;}
 		.underline{ text-decoration: underline;}
+		.result{    position: absolute;
+			z-index: 9999;background: #fff;width:90%;left: 10%;
+			top:103%;font-size: 12px;color: #666}
+		.map{position: relative;}
 	</style>
 	<body class="bgf7">
 		<section id="app" class="mainSec">
 			<div class="content" style="padding-bottom: 50px;">
 				<form action="" id="formData">
 				<div class="map">
-					<div>
-						<img src="__TMPL__/public/assets/user/img/map.png" width="100%" />
-					</div>
+                    <div id="allmap" style="width: 100%;height: 260px"></div>
+
 					<div class="mapInfo">
 						<div class="size9 bold">工程地址</div>
 						<div class="disbox">
-							<div class="disflex size9 address" :class="isedit?'underline':''" :contenteditable="isedit" v-text="project_address"></div>
-							<input type="hidden" name="project_address" >
+							<!--<div class="disflex size9 address" :class="isedit?'underline':''" :contenteditable="isedit" v-model="project_address" v-text="project_address"></div>-->
+							<input type="text" name="project_address"
+								   onkeyup="searchEnd(this.value)"
+                                   class="disflex size9 address"
+                                   :class="isedit?'underline':''"
+                                   v-model="project_address" v-bind:value="project_address"  />
 							<div class="pen" @click="isedit=!isedit"></div>
 						</div>
+						<div class="result"></div>
 					</div>
 				</div>
 				<div class="weui-cells index bgf7" style="margin: 1rem 1rem 0;">
@@ -51,7 +60,7 @@
 		                </div>
 		                <div class="weui-cell__bd relative">
 		                    <input type="text" class="right" required v-model="unit_name" maxlength="15"  name="unit_name" placeholder="请输入单位名称" />
-		                    <span class="history" data-val="unit_name">{{history.unit_name}}</span>
+		                    <span class="history" data-val="unit_name">{{history.unit_name||''}}</span>
 		                </div>
 		                <div class="weui-cell__ft"></div>
 		            </div>
@@ -62,7 +71,7 @@
 		                </div>
 		                <div class="weui-cell__bd relative">
 		                    <input type="text" class="right" required v-model="project_name" maxlength="15"  name="project_name"  placeholder="请输入/选择工程" />
-		                    <span class="history" data-val="project_name">{{history.project_name}}</span>
+		                    <span class="history" data-val="project_name">{{history.project_name||''}}</span>
 		                </div>
 		                <div class="weui-cell__ft" @click='choseFn($event,1)'> </div>
 		            </div>
@@ -73,7 +82,7 @@
 		                </div>
 		                <div class="weui-cell__bd relative">
 		                    <input type="text" class="right" required v-model="salesman" maxlength="6"   name="salesman" placeholder="请输入业务员姓名" />
-		                    <span class="history" data-val="salesman">{{history.salesman}}</span>
+		                    <span class="history" data-val="salesman">{{history.salesman||''}}</span>
 		                </div>
 		                <div class="weui-cell__ft"></div>
 		            </div>
@@ -84,7 +93,7 @@
 		                </div>
 		                <div class="weui-cell__bd relative">
 		                    <input type="text" class="right" required v-model="pouring_type"   name="pouring_type" maxlength="10" placeholder="请输入/选择浇筑方式" />
-		                    <span class="history" data-val="pouring_type">{{history.pouring_type}}</span>
+		                    <span class="history" data-val="pouring_type">{{history.pouring_type||''}}</span>
 		                </div>
 		                <div class="weui-cell__ft" @click='choseFn($event,2)'> </div>
 		            </div>
@@ -95,7 +104,7 @@
 		                </div>
 		                <div class="weui-cell__bd relative">
 		                    <input type="text" class="right" required v-model="pouring_part"   name="pouring_part" maxlength="10" placeholder="请输入/选择浇筑部位" />
-		                    <span class="history" data-val="pouring_part">{{history.pouring_part}}</span>
+		                    <span class="history" data-val="pouring_part">{{history.pouring_part||''}}</span>
 		                </div>
 		                <div class="weui-cell__ft" @click='choseFn($event,3)'> </div>
 		            </div>
@@ -106,7 +115,7 @@
 		                </div>
 		                <div class="weui-cell__bd relative">
 		                    <input type="text" class="right" required v-model="pouring_label"    name="pouring_label" maxlength="10" placeholder="请输入/选择浇筑标号" />
-		                    <span class="history" data-val="pouring_label">{{history.pouring_label}}</span>
+		                    <span class="history" data-val="pouring_label">{{history.pouring_label||''}}</span>
 		                </div>
 		                <div class="weui-cell__ft" @click='choseFn($event,4)'> </div>
 		            </div>
@@ -117,7 +126,7 @@
 		                </div>
 		                <div class="weui-cell__bd relative">
 		                    <input type="text" class="right" required v-model="slump"   name="slump" maxlength="10" placeholder="请输入/选择坍落度" />
-		                    <span class="history" data-val="slump">{{history.slump}}</span>
+		                    <span class="history" data-val="slump">{{history.slump||''}}</span>
 		                </div>
 		                <div class="weui-cell__ft" @click='choseFn($event,5)'> </div>
 		            </div>
@@ -129,7 +138,7 @@
 		                <div class="weui-cell__bd relative">
 		                    <input type="text" class="right" required v-model="pouring_time"  readonly placeholder="请选择浇筑时间" />
 		                    <input type="hidden" name="pouring_time"  value="" />
-		                    <span class="history" data-val="pouring_time">{{history.pouring_time}}</span>
+		                    <span class="history" data-val="pouring_time">{{history.pouring_time||''}}</span>
 		                </div>
 		                <div class="weui-cell__ft" onclick="choseTime(this)"> </div>
 		            </div>
@@ -140,7 +149,7 @@
 		                </div>
 		                <div class="weui-cell__bd relative">
 		                    <input type="text" class="right" required v-model="distance"   name="distance" maxlength="15" placeholder="请输入商砼运距" />
-		                    <span class="history" data-val="distance">{{history.distance}}</span>
+		                    <span class="history" data-val="distance">{{history.distance||''}}</span>
 		                </div>
 		                <div class="weui-cell__ft"> </div>
 		            </div>
@@ -151,7 +160,7 @@
 		                </div>
 		                <div class="weui-cell__bd relative">
 		                    <input type="text" class="right" required v-model="plan_square"   name="plan_square" maxlength="15" placeholder="请输入计划方量" />
-		                    <span class="history" data-val="plan_square">{{history.plan_square}}</span>
+		                    <span class="history" data-val="plan_square">{{history.plan_square||''}}</span>
 		                </div>
 		                <div class="weui-cell__ft"> </div>
 		            </div>
@@ -162,7 +171,7 @@
 		                </div>
 		                <div class="weui-cell__bd relative">
 		                    <input type="text" class="right" required v-model="principal"   name="principal" maxlength="6" placeholder="请输入现场负责人姓名" />
-		                    <span class="history" data-val="principal">{{history.principal}}</span>
+		                    <span class="history" data-val="principal">{{history.principal||''}}</span>
 		                </div>
 		                <div class="weui-cell__ft"> </div>
 		            </div>
@@ -173,7 +182,7 @@
 		                </div>
 		                <div class="weui-cell__bd relative">
 		                    <input type="text" class="right" required v-model="mobile"   name="mobile" placeholder="请输入现场负责人电话" />
-		                    <span class="history" data-val="mobile">{{history.mobile}}</span>
+		                    <span class="history" data-val="mobile">{{history.mobile||''}}</span>
 		                </div>
 		                <div class="weui-cell__ft"> </div>
 		            </div>
@@ -190,6 +199,149 @@
 		</section>
 	</body>
 </html>
+<script type="text/javascript">
+
+    //百度地图API功能
+    function loadJScript() {
+        let script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = "http://api.map.baidu.com/api?v=2.0&ak=cLx2ByWCm7OxxO65d8jKLp7iudhVNbtB&callback=init";
+        document.body.appendChild(script);
+    }
+
+    let  map= null;
+
+    function init() {
+ 		 map = new BMap.Map("allmap");            // 创建Map实例
+
+        //{"lng":116.413387,"lat":39.910924}
+        let point = new BMap.Point(116.413387, 39.910924); // 创建点坐标
+
+		console.log(point)
+
+        let marker = new BMap.Marker(point);// 创建标注
+        map.addOverlay(marker);
+
+
+        let geolocation = new BMap.Geolocation();
+        geolocation.getCurrentPosition(function(r){
+            if(this.getStatus() == BMAP_STATUS_SUCCESS){
+                var mk = new BMap.Marker(r.point);
+                console.log(r)
+                map.addOverlay(mk);
+                map.panTo(r.point);
+                let addComp =  r.address;
+                let address = addComp.province ;
+                addComp.city && (address+="," + addComp.city);
+                addComp.district && (address+="," + addComp.district);
+                addComp.street && (address+="," + addComp.street);
+                addComp.streetNumber && (address+="," + addComp.streetNumber);
+                app.project_address =address;
+            }
+            else {
+                $.toast('获取位置失败');
+            }
+        },{enableHighAccuracy: true});
+
+        let geoc = new BMap.Geocoder();
+        map.centerAndZoom(point,15);
+        map.enableScrollWheelZoom();
+
+
+
+        /**
+		 * 点击后获取地区地址
+		 * */
+        function showInfo(e){
+            console.log(e);
+
+            //map.centerAndZoom(e.point,15);
+            removeOver()
+            marker = new BMap.Marker(e.point);// 创建标注
+
+			console.log(marker)
+            map.addOverlay(marker);
+            let pt = e.point;
+
+            geoc.getLocation(pt, function(rs){
+                let addComp = rs.addressComponents;
+                let address = addComp.province ;
+
+                addComp.city && (address+=", " + addComp.city);
+                addComp.district && (address+=", " + addComp.district);
+                addComp.street && (address+=", " + addComp.street);
+                addComp.streetNumber && (address+=", " + addComp.streetNumber);
+                app.project_address = address;
+            });
+         //   e.preventDefault();//
+        }
+        map.addEventListener("click", showInfo);
+      //  getAddress(map);
+    }
+
+    /**
+	 * 删除标记
+	 * */
+    function removeOver(){
+        let allOverlay = map.getOverlays();
+        for (let i = 0; i < allOverlay.length; i++) {
+            if(allOverlay[i].toString()=="[object Marker]"){
+                map.removeOverlay(allOverlay[i]);
+            }
+        }
+	}
+
+
+    window.onload = loadJScript;  //异步加载地图
+
+	/**
+	 * 添加标记
+	 **/
+    function labelS(obj) {
+        removeOver();
+        let addr = obj.innerText;
+        let point=$(obj).data("point");
+        let pit = new BMap.Point(point.lng, point.lat); // 创建点坐标
+        console.log(pit);
+        app.project_address=addr;
+        map.centerAndZoom(pit, 16);
+        map.addOverlay(new BMap.Marker(pit));
+    }
+
+
+    /**
+	 * 搜过地区
+     * @param str
+     */
+    function searchEnd(str) {
+        if(str==cache("ADDRESS_CACHE")||!str)return;
+
+        cache("ADDRESS_CACHE",str);
+        var options = {
+            onSearchComplete: function(results){
+
+                // 判断状态是否正确
+                if (local.getStatus() == BMAP_STATUS_SUCCESS){
+
+                    var s = [];
+                    for (var i = 0; i < results.getCurrentNumPois(); i ++){
+                        console.log(results.getPoi(i))
+						let point= JSON.stringify(results.getPoi(i).point);
+                        s.push( "<div class='adr_item' data-point='"+point+"' onclick='labelS(this);'>"+results.getPoi(i).title + ", " + results.getPoi(i).address +"</div>");
+                    }
+                    document.querySelector(".result").innerHTML = s.join("");
+                    $(".result").show();
+                }
+            }
+        };
+        var local = new BMap.LocalSearch(map, options);
+        local.search(str);
+    }
+    document.body.onclick=function () {
+        $(".result").hide();
+    };
+
+</script>
 <script>
 
 	const data_category= {:json_encode($category)?:''};
@@ -199,7 +351,7 @@
 	let app = new Vue({
 		el:'#app',
 		data:{
-            project_address:'四川省成都市成华区二环路东三段212号',    //工程地址
+            project_address:'',    //工程地址四川省成都市成华区二环路东三段212号
 			isedit:false,    //地址是否可编辑
             unit_name:'',     //单位名称
             project_name:'',     //工程名称
@@ -213,7 +365,7 @@
             plan_square:'',    //计划方量
             principal:'',     //现场负责人姓名
             mobile:'',     //现场负责人联系电话
-			history:_cache||{
+			history:_cache ||{
                 unit_name:'重庆心联宇科技',     //单位名称
                 project_name:'希望工程',     //工程名称
                 salesman:'李世民',    //业务员
@@ -226,7 +378,7 @@
                 plan_square:'50',    //计划方量
                 principal:'张良',     //现场负责人姓名
                 mobile:'18725950959',     //现场负责人联系电话
-			},     //历史记录
+			} ,     //历史记录
 			gcmcList:[ ],    //工程名称列表
 			jzfsList:[ ],    //浇筑方式列表
 			jzbwList:[ ],     //浇筑部位列表
@@ -254,7 +406,6 @@
 				//picker.pickers[0].setSelectedIndex(4, 2000);
 				picker.pickers[0].setSelectedValue('fourth', 2000);
 				picker.show(function(SelectedItem) {
-					console.log(SelectedItem);
 					let text = SelectedItem[0].text;
 					if(type===1){
 						self.project_name=text ;
@@ -277,11 +428,13 @@
 		}
 	});
 
+	/**
+	 *
+	 * */
 	$("#submit").on("click",function () {
 
-        var project_address=$('.address').text();
-        $("[name=project_address]").val(project_address);
-
+        var project_address=$('.address').val();
+        console.log(project_address);
         let data = $("#formData").formData();
 
 		for(let i in data){
@@ -346,6 +499,14 @@
 		})
 	})
 
+    /**
+	 * 隐藏底部
+     */
+	$("#app input").focus(function () {
+		$(".mainFooter").hide()
+    }).blur(function () {
+        $(".mainFooter").show();
+    })
 </script>
 
 

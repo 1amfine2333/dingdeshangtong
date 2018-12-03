@@ -21,15 +21,32 @@ class UserBaseController extends HomeBaseController
         parent::_initialize();
         $web_msg = new WebMsgModel();
         $comPlaint = new ComplaintModel();
-        $tips_my_msg = $web_msg->getTips();
-        $tips_complaint = $comPlaint->getTip();
-        $data=[
-            'tips_my_msg'=>$tips_my_msg,
-            'tips_complaint'=>$tips_complaint,
-            'has_msg'=>($tips_my_msg||$tips_complaint)?1:0,
-        ];
-        $this->assign($data);
-        $this->checkUserLogin();
+
+
+        $module = $this->request->module();
+
+        if($module=='index'){
+            $tips_my_msg = $web_msg->getTips();
+            $tips_complaint = $comPlaint->getTip();
+            $data=[
+                'tips_my_msg'=>$tips_my_msg,
+                'tips_complaint'=>$tips_complaint,
+                'has_msg'=>($tips_my_msg||$tips_complaint)?1:0,
+            ];
+            $this->assign($data);
+
+        }elseif($module=='sales'){
+            $tips_my_msg = $web_msg->getTips($module);
+            $data=[
+                'tips_my_msg'=>$tips_my_msg,
+                'has_msg'=>($tips_my_msg)?1:0,
+            ];
+            $this->assign($data);
+        }
+
+
+
+       $this->checkUserLogin();
     }
 
 

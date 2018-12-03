@@ -22,14 +22,15 @@ use think\Model;
  */
 class UserLogModel extends  Model
 {
-    protected $autoWriteTimestamp=true;
 
 
     public static function addLog($user="",$type="",$content=""){
-            static::create([
+
+        return    self::create([
                 "user_login"=>$user,
                 "content"=>$content,
                 "action_type"=>$type,
+                "create_time"=>time(),
             ]);
     }
 

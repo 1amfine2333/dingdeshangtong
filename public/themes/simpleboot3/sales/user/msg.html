@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>我的消息</title>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/jquery-weui.css"/>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/weui.min.css"/>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/public.css?_=21"/>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css"/>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/jq/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js"></script>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js"></script>
+    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js"></script>
+</head>
+<style>
+    body .weui-vcode-btn.getCode.active {
+        color: #ccc;
+    }
+    body{
+        height: 100%;}
+
+    body .weui-vcode-btn.getCode {
+        color: #4c7db2;
+    }
+
+    body .weui-vcode-btn {
+        font-size: 1rem;
+    }
+    .underline {
+        text-decoration: underline;
+    }
+    .weui-cell__hd img{
+        width:13px;margin-right:5px;margin-top: 5px; display:block
+    }
+</style>
+<body class="bgf7">
+<section id="app" class="DetailSec">
+    <div class="empty" v-show="!pages">
+        <img src="__TMPL__/public/assets/user/img/empty.png"/>
+        <div>暂无内容！</div>
+    </div>
+    <div class="weui-cells " v-show="pages"  v-for="item in list">
+        <div class="weui-cell">
+            <div class="weui-cell__hd"  style="align-self: flex-start;">
+                <img v-bind:src="'__TMPL__/public/assets/user/img/'+(item['is_read']?'radio.png':'point.png')"  />
+            </div>
+            <div class="weui-cell__bd"  @click="location='/index/user/msg_detail/id/'+item.id">
+                <div v-bind:class="item.is_read?'color9':''" v-text="item.title"></div>
+                <div class="color9 size9" v-text="item['create_time']"></div>
+            </div>
+            <div class="weui-cell__ft"></div>
+        </div>
+    </div>
+    <div class="nomore" v-cloak v-show="pages" v-html="loading"></div>
+</section>
+</body>
+</html>
+<script>
+     app = new Vue({
+        el: '#app',
+        data: {
+            lock:false,
+            list:[],
+            page:1,
+            pages:0,
+            loading:'<div class="weui-loadmore"><i class="weui-loading"></i><span class="weui-loadmore__tips">正在加载</span></div>',
+            no_more: '<div class="weui-loadmore weui-loadmore_line"><span class="weui-loadmore__tips">没有更多了</span></div>'
+        },
+        created:function(){
+            $(window.document.body).infinite();
+        },
+        methods: {
+
+        }
+    });
+
+    loadData({page:1});
+
+     $(window.document.body).infinite().on("infinite", function () {
+         console.log("page:", app.page, "lock:", app.lock, "pages:", +app.pages);
+         if (app.lock) return;
+         app.lock = true;
+         app.page++;
+         loadData({page: app.page});
+     });
+
+    /**
+     * 操作数据
+     * */
+    function tempRender(data) {
+        let list = data.data.list;
+        let page = data.data.page;
+        app.pages = data.data.pages;
+        if(page===1){
+            app.list =list;
+        }else{
+            app.list = app.list.concat(list);
+        }
+        setTimeout(function () {
+            $(".nomore").html((app.page<app.pages)?app.loading:app.no_more);
+            app.lock=false;
+        },50);
+    }
+
+    /**
+     * 加载数据
+     * @param data
+     */
+    function loadData(data) {
+        //if(app.page===1){$("#app").html(app.loading);}
+        request({data: data, loading:false, success:tempRender});
+    }
+</script>
+
+
+
+
+

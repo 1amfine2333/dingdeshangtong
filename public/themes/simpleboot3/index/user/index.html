@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/jquery-weui.css"/>
     <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/weui.min.css"/>
     <link rel="stylesheet" href="__TMPL__/public/assets/user/css/public.css"/>
-    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css"/>
+    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css?_=1"/>
     <script type="text/javascript" src="__TMPL__/public/assets/user/lib/jq/jquery-1.10.2.js"></script>
     <script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js"></script>
     <script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js"></script>
@@ -36,7 +36,7 @@
 <section id="app" class="mainSec">
     <div class="headBg">
         <div class="headImg">
-            <a href="{:url('user/info')}"> <img src="__TMPL__/public/assets/user/img/map.png"/></a>
+            <a href="{:url('user/info')}"> <img src="{$Think.session.user.avatar}" onerror="this.src='__TMPL__/public/assets/user/img/default.jpg'"/></a>
         </div>
         <div class="size11">{$Think.session.user.user_nickname}</div>
         <div style="padding-bottom: 10px;">{$Think.session.user.mobile}</div>
@@ -68,7 +68,7 @@
     <div class="meng" v-show="isshow" @click="isshow=false"></div>
     <div class="contactBox" v-show="isshow">
         <div class="bold" style="padding: 1.5rem 0;">客服热线</div>
-        <div class="weui-cells weui-cells_checkbox">
+        <div class="weui-cells weui-cells_checkbox" >
             <foreach name="data.tel" id="item">
                 <label class="weui-cell weui-check__label center" style="width: -webkit-max-content; margin: 0 auto;">
                     <div class="weui-cell__hd">

@@ -15,11 +15,14 @@ function bgImg(obj, h) {
     });
 }
 
-function testTel(num){
-	var reg=/^1[3|4|5|6|7|8|9]\d{9}$/;
-	 return reg.test(num);
-}
+const api={
+    baidu_map:'http://api.map.baidu.com/location/ip?ak=cLx2ByWCm7OxxO65d8jKLp7iudhVNbtB&coor=bd09ll&ip=',
+};
 
+function testTel(num){
+    var reg=/^1[3|4|5|6|7|8|9]\d{9}$/;
+    return reg.test(num);
+}
 //拨打电话
 function call(obj,tel){
 	$('body').append('<div class="callBox meng"><div class="content"><p>确认拨打 '+tel+' ?</p><div class="btnBox disbox"><a class="cancel disflex" onclick="cancel(this)">取消</a><a class="sure disflex" href="tel:'+tel+'">确认</a></div></div></div>');
@@ -105,7 +108,7 @@ function request(option) {
     if(typeof(option.loading) !== 'boolean') {
         $.showLoading();
     }
-    option.url=option.url?option.url:$(".layui-form").attr("action");
+    option.url=option.url?option.url:$("form[action]").attr("action");
     $.ajax({
         url: option.url || location.pathname,
         data: option.data || null,
@@ -142,3 +145,36 @@ function request(option) {
         }
     });
 }
+
+/**
+ * 本地浏览器缓存
+ * @param key
+ * @param val
+ * @returns {string}
+ */
+function cache(key,val) {
+    let l = window.localStorage;
+    if(key){
+        if(typeof val==='undefined'){
+            let data =  l.getItem(key);
+            try {
+                data = JSON.parse(data);
+            }catch (e){
+                try {
+                    data = eval(data);
+                }catch (e){}
+            }
+            return data;
+        }else  if(typeof val==='object'){
+
+            let  data = JSON.stringify(val);
+            l.setItem(key,data );
+
+        }else if (val===null) {
+            l.removeItem(key);
+        }else{
+            l.setItem(key,val);
+        }
+    }
+}
+

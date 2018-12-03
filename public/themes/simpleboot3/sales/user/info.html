@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+	    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>基本信息</title>
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/jquery-weui.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/weui.min.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/public.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css" />
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/jq/jquery-1.10.2.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js" ></script>
+	</head>
+	<style>
+		body .weui-vcode-btn.getCode.active{ color: #ccc;}
+		body .weui-vcode-btn.getCode{ color: #4c7db2;}
+		body .weui-vcode-btn{ font-size: 1rem;}
+		.underline{ text-decoration: underline;}
+		body .weui-cell__hd{ min-width: 120px;}
+		.weui-prompt-input{
+			border: 1px solid #eee;
+			height: 30px;
+			width: 88%;
+			margin-top: 5px;
+		}
+	</style>
+	<body class="bgf7">
+		<section id="app" class="DetailSec">
+			<div class="weui-cells">
+	            <div class="weui-cell" style="padding: 0 15px;">
+	                <div class="weui-cell__bd" style="padding: 10px 0;">
+	                    <p>头像</p>
+	                </div>
+	                <div class="weui-cell__ft" style="padding: 5px 0;">
+	                	<img src="{$Think.session.user.avatar}" onerror="this.src='__TMPL__/public/assets/user/img/default.jpg'"  style="width: 3rem; height: 3rem; object-fit: cover; border-radius: 50%;" />
+	                </div>
+	            </div>
+	            <div class="weui-cell">
+	                <div class="weui-cell__bd">
+	                    <p style="line-height: 40px;">昵称</p>
+	                </div>
+	                <div class="weui-cell__ft"  id="nick">{$Think.session.user.user_nickname}</div>
+	            </div>
+	            <div class="weui-cell">
+	                <div class="weui-cell__bd">
+	                    <p style="line-height: 40px;">手机号</p>
+	                </div>
+	                <div class="weui-cell__ft" id="mobile"><span class="text">{$Think.session.user.mobile|default='未绑定'}</span><a href="{:url('user/mobile')}" class="editTel"></a></div>
+	            </div>
+	        </div>
+		</section>
+	</body>
+</html>
+<!--<script>
+
+    var app = new Vue({
+        el:'#app',
+        data:{
+
+        },
+        methods:{
+
+        }
+    })
+
+    $("#mobile .editTel").on("click",function () {
+        let that =$("#mobile").find(".text");
+        $.prompt({
+            title: '请输入手机号码',
+            text: false,
+            input: that.text(),
+            empty: false, // 是否允许为空
+            onOK: function (input) {
+                send({edit_mobile:input},function (data) {
+                    that.text(input)
+                })
+            },
+            onCancel: function () {
+                //点击取消
+            }
+        });
+    })
+
+    $("#nick").on("click",function () {
+        let that =$(this);
+        $.prompt({
+            title: '请输入昵称',
+            text: false,
+            input: that.text(),
+            empty: false, // 是否允许为空
+            onOK: function (input) {
+                send({nickname:input},function (data) {
+                    that.text(input);
+                })
+            },
+            onCancel: function () {
+                //点击取消
+            }
+        });
+    });
+
+    function send(data,done) {
+        request({
+            url:"{:url('user/editPost')}",
+            data:data,
+            success:done||function () {}
+        })
+    }
+
+</script>-->
+
+
+
+
+

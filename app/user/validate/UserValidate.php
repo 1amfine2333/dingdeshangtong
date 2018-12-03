@@ -18,7 +18,7 @@ class UserValidate extends Validate
     protected $regex = ['mobile'=>"/^(1[3-9])[0-9]{9}$/"];
     protected $rule = [
         'user_login' => 'unique:user,user_login',
-        'mobile' => 'require|regex:mobile|unique:user,mobile',
+        'mobile' => 'require|regex:mobile',//|unique:user,mobile
         'user_name'  => 'require',
         'user_pass'  => 'length:6,12',
     ];

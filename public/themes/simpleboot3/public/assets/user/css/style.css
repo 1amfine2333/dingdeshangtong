@@ -132,7 +132,7 @@ body .mui-pciker-list li.highlight{ color: #000;}
 .history{ position: absolute; right: 0; top: 100%; padding: .2rem .5rem; border: 1px solid #eee; border-radius: 3px; background: #fff; z-index: 99; display: none;}
 
 /*提交成功*/
-.sucessSec{ position: fixed; width: 100%; top: 40%; left: 50%; transform: translate(-50%,-50%);}
+.sucessSec{ position: fixed; width: 100%; top: 50%; left: 50%; transform: translate(-50%,-40%);}
 
 /*计划单*/
 .jihuanHeader{overflow: hidden; background: #fff; position: fixed; top: 0; left: 0; right: 0; z-index: 999; border-bottom: 1px solid #f7f7f7;}
@@ -163,7 +163,7 @@ body .mui-pciker-list li.highlight{ color: #000;}
 /*个人中心*/
 .headBg{ background: url(../img/bgimg.png) no-repeat center; background-size: cover; text-align: center; padding-top: 1.5rem; color: #fff;}
 .headBg .headImg{ width: 5rem; height: 5rem; border-radius: 50%; overflow: hidden; margin: 0 auto .5rem;}
-.headBg .headImg>img{ width: 100%; height: 100%; object-fit: cover;}
+.headBg .headImg img{ width: 100%; height: 100%; object-fit: cover;}
 .centerCon{ padding: 20px 10px; overflow: hidden;}
 .centerCon>a{ display: inline-block; float: left; background: #fff; border-radius: 10px; box-shadow: 0 2px 10px #ccc; margin: 0 20px 20px; padding: 15px 20px; text-align: center; font-weight: bold; position: relative;}
 .centerCon>a>img{ width: 80%;}
@@ -172,7 +172,7 @@ body .mui-pciker-list li.highlight{ color: #000;}
 .centerCon>a .point.point2{ width: 17px; height: 17px; background: url(../img/point.png) no-repeat center; background-size: cover;}
 
 /*联系公司*/
-.contactBox{ background: #fff; position: fixed; top: 50%; left: 50%; z-index: 999; text-align: center; transform: translate(-50%,-50%); border-radius: 10px; width: 80%;}
+.contactBox{ background: #fff;	position: fixed; top: 50%; left: 50%; z-index: 999; text-align: center; transform: translate(-50%,-50%); border-radius: 10px; width: 80%;}
 .contactBox .button .placeholder{ height: 3rem; line-height: 3rem; border-top: 1px solid #f7f7f7; margin-top: 1rem; display: block;}
 .contactBox .button>div:first-child{ border-right: 1px solid #f7f7f7; color: #999;}
 
@@ -183,12 +183,13 @@ body .mui-pciker-list li.highlight{ color: #000;}
 .msgpoint{ width: 25px; height: 25px; background: url(../img/point.png) no-repeat center; background-size: 13px;}
 /*投诉建议*/
 .sicon{ height: 1.5rem; line-height: 1.5rem; color: #fff; background: #5075FF; border-radius: 50px; box-shadow: 0 2px 10px #5075FF; padding: 0 15px;}
-.state{ color: #ccc;}
+.state{ color: #b9b9b9;}
 .state.active{ color: #ff5747;}
 .addBtn{ width: 3rem; height: 3rem; position: fixed; top: 50%; right: 20px;}
-.addBtn>img{ width: 100%; height: 100%;}
+.addBtn img{ width: 100%; height: 100%;}
 .backImgBox{ overflow: hidden; padding: 20px 0;}
-.backImgBox .backImgItem{ float: left; border-radius: 10px; background: url(../img/addpic.png) #f7f7f7 no-repeat center; background-size: 45%; margin: 0 10px 10px 10px; position: relative;}
+.backImgBox .backImgItem{ float: left;  border: 1px solid #f5f5f5;border-radius: 5px; background: url(../img/addpic.png) #f7f7f7 no-repeat center;  background-size: cover; margin: 0 10px 10px 10px; position: relative;}
+.backImgBox .addImg{background-size: 45%;}
 .backImgBox .backImgItem>img{ width: 100%; height: 100%; object-fit: cover; border-radius: 10px;}
 .backImgBox .backImgItem>i{ display: inline-block; width: 20px; height: 20px; background: url(../img/cancel.png) no-repeat center; background-size: cover; position: absolute; top: -8px; right: -8px;}
 

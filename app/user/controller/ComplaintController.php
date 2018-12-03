@@ -57,17 +57,21 @@ class ComplaintController extends AdminBaseController
             }
 
         }
-        $keywordComplex = [];
         if(!empty($request['type'])){
             $type = $request['type'];
-            $keywordComplex['type']    = $type;
+            $where['c.type']    = $type;
         }
+
+        if (!empty($request['keyword'])) {
+            $keyword = $request['keyword'];
+            $where['content']    =   ['like', "%$keyword%"];
+        }
+
 
         $list = Db::name('complaint')
             ->field('c.id,c.create_time,u.user_nickname,u.mobile,c.*')
             ->alias("c")->join('user u', 'c.user_id = u.id')
             ->order("c.create_time DESC")
-            ->whereOr($keywordComplex)
             ->where($where)
             ->paginate(10);
         $list->appends($param);
@@ -176,8 +180,9 @@ class ComplaintController extends AdminBaseController
         $id = $this->request->param('id', "", 'string');
         if ($len  = model('user')->where('id','in',$id)->delete() !== false) {
             Db::name("RoleUser")->where("user_id" ,"in", $id)->delete();
-            $this->success("删除成功！",url("admin_sales/index"));
+            $this->success("删除成功！",url("complaint/index"));
         } else {
+
             $this->error("删除失败！");
         }
     }
@@ -188,7 +193,7 @@ class ComplaintController extends AdminBaseController
         $key = 'COMPLAINT_IDS';
         $cacheId = cache($key)?:0;
         $ids =$complaint->whereNotIn('id',$cacheId)->where('status',0)->column('id');
-        if ($ids){
+        if (count($ids)){
             cache($key,$ids);
         }
         return json(['count'=>count($ids)]);

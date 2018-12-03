@@ -14,15 +14,14 @@ class AliSms
      * @var
      *
      * AccessKey ID  LTAIOzhRiKRIWqKM
-     *
      * Access Key Secret  1ge5bTKvqiP0mdjpOpsVdLVdAwRh9h
-     *
      * 短信模板code  SMS_151795670
      *
      */
     // 保存错误信息
-
     public $error;
+
+    public static $SESSION_KEY ='user_mobile_code';
 
     // Access Key ID
 
@@ -42,7 +41,7 @@ class AliSms
 
     public function __construct($cofig = array(), $templateCode = '')
     {
-        define('SESSION_KEY', 'user_mobile_code');
+
 
         $cofig = array(
 
@@ -64,7 +63,7 @@ class AliSms
 
         $this->signName = $cofig ['signName'];
 
-        $this->templateCode = 'SMS_151795670';
+        $this->templateCode = $cofig['templateCode']?:'SMS_151795670';
 
     }
 
@@ -122,21 +121,21 @@ class AliSms
     public static function checkVerify($mobile, $verify_code)
     {
 
-        $session = session(SESSION_KEY);
+        $session = session(static::$SESSION_KEY);
         if ($session) {
 
             if ($session['mobile'] == $mobile && $session['code'] == $verify_code && $session['check']<5) {
-                session(SESSION_KEY,null);
+                session( self::$SESSION_KEY,null);
                 return true;
             }else{
 
                 $session['check']++; // 验证次数限制
 
-                session(SESSION_KEY,$session);
+                session(static::$SESSION_KEY,$session);
             }
 
             if ($session['check']>=5){
-                session(SESSION_KEY,null);
+                session(static::$SESSION_KEY,null);
             }
         }
         return false;
@@ -222,7 +221,7 @@ class AliSms
             $this->error = $this->getErrorMessage($result['Code']);
 
             if ($result['Code'] == 'OK') {
-                session(SESSION_KEY, ['mobile' => $mobile, 'code' => $verify_code,'check'=>0]);
+                session(static::$SESSION_KEY, ['mobile' => $mobile, 'code' => $verify_code,'check'=>0]);
                 return 1;
 
             } else {

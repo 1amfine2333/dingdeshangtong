@@ -22,6 +22,7 @@ use think\Model;
  * @property $reply
  * @property $create_time
  * @property $status
+ * @property $is_read
  */
 class ComplaintModel extends Model
 {

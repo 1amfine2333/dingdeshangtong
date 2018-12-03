@@ -117,15 +117,13 @@ class AdminIndexController extends AdminBaseController
      */
     public function info()
     {
-
-        $w = [];
-        $id = intval(input("id"));
         $type = input("type")?:1;
+        $w = ['status'=>$type];
+        $id = intval(input("id"));
 
         $user = new UserModel();
         $plan = new PlanOrderModel();
 
-        $w['status']=$type;
         $list = $plan->where('user_id',$id)->where($w)->order("create_time DESC")->paginate(10);
         // 获取分页显示
         $page = $list->render();

@@ -20,13 +20,15 @@ class WebMsgModel extends Model
 
     /**
      * 获取未读消息数
+     * @param $module
+     * @return int
      */
-    public function getTips()
+    public function getTips($module='index')
     {
         $cache = cache($this->msgKey());
         $w = [];
 
-        $w['user_type'] = 1;
+        $w['user_type'] =$module=='sales'? 3 : 2;
 
         if ($cache !== false) {
 

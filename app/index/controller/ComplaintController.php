@@ -159,15 +159,26 @@ class ComplaintController extends UserBaseController
         $this->error('this file is Non-existent');
     }
 
+
     /**
-     * 上传
+     * 上传tcp.xiaomiqiu.cn
+     * ngrok -config=ngrok.cfg -hostname test.678down.com 8080
+     * ngrok -config=ngrok.cfg -subdomain http://test.678down.com/ 80 //(xxx 是你自定义的域名前缀)。
      */
     public function upload(){
         // 获取表单上传文件 例如上传了001.jpg
         $file = request()->file('file');
 
         if($file){
-            $info = $file->move(ROOT_PATH . 'public' . DS . 'upload'.DS.'user');
+
+            if (!$file->checkImg()){
+                $this->error('仅支持上传图片文件!');
+            }
+
+            $info = $file
+                ->validate(['size'=>156780,'ext'=>'jpg,png,gif'])
+                ->move(ROOT_PATH . 'public' . DS . 'upload'.DS.'user');
+
             if($info){
                 // 成功上传后 获取上传信息
                 $res = [

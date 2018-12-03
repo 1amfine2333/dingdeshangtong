@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 namespace cmf\controller;
 
+use app\sales\model\UserModel;
 use think\Db;
 use app\admin\model\ThemeModel;
 use think\Debug;
@@ -223,13 +224,20 @@ hello;
     {
 
         $userId = cmf_get_current_user_id();
+        $user = cmf_get_current_user();
+
         if (empty($userId)) {
-            $login_url =  cmf_url("login/index");
+
+            $login_url =cmf_url("login/index");
+
             if ($this->request->isAjax()) {
                 $this->error("您尚未登录",$login_url);
             } else {
                 $this->redirect($login_url);
             }
+        }elseif ($user && $user['user_status']!=1){
+            $login_url =cmf_url("login/index");
+            $this->redirect($login_url);
         }
     }
 

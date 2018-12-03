@@ -83,7 +83,6 @@
         methods: {
             //点击获取验证码
             getCode: function (evt) {
-                console.log(evt)
                 var self = this;
                 if (self.state === 0) {    //未点击
                     if (!testTel(self.edit_mobile)) {
@@ -91,8 +90,18 @@
                         return
                     }
                     self.state = 1;
-                    //ajax
-                    setTime();
+                   request({
+                       url:"{:url('user/sendCode')}",
+                       data:{mobile:app.edit_mobile},
+                       success:function (data) {
+                           if(data.code){
+                               self.setTime();
+                           }else{
+                               self.state = 0;
+                           }
+                           $.toast(data.msg,data.code?"":"cancel");
+                       }
+                   });
                 }
             }
         }
@@ -126,6 +135,7 @@
            return false;
        }
        request({
+
             data:data
        });
 

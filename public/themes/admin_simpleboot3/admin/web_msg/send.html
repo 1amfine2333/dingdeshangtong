@@ -67,11 +67,11 @@
 <script type="text/javascript">
     $(function () {
         editorcontent = new baidu.editor.ui.Editor();
+        $("#content").height(300);
 
         editorcontent.render('content');
         try {
             editorcontent.sync();
-            editorcontent.setHeight(300);
         } catch (err) {
 
         }
