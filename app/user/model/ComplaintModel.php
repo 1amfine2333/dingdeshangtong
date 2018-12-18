@@ -37,6 +37,7 @@ class ComplaintModel extends Model
       return  $this
           ->where('user_id',cmf_get_current_user_id())
           ->where('is_read',1)
+          ->whereIn('type',[1,2])
           ->where('status',1)
           ->count();
     }

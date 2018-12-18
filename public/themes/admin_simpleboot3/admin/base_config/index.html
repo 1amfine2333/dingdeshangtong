@@ -50,7 +50,7 @@
         <div class="layui-form-item">
             <!--<label class="layui-form-label">热线</label>-->
             <div class="layui-input-block">
-                <input type="tel" class="layui-input" placeholder="请输入电话号码" name="tel_no" value="{{d.tel_no}}">
+                <input type="tel" class="layui-input" placeholder="请输入电话号码" maxlength="11" name="tel_no" value="{{d.tel_no}}">
             </div>
         </div>
         <div class="layui-form-item">
@@ -83,12 +83,15 @@
                 msg({code:2,msg:"请先选择数据"});
             }else{
                 layer.confirm("删除后无法恢复, 确定删除这些配置吗？",function () {
-                    $.ajax({
+                    request({
                         url:"{:url('base_config/delMultiple')}",
-                        type:"post",
                         data:{id:values.join(',')},
-                        success:function (data) {   msg(data) }
-                    });
+                        loading:0,
+                        type:"post",
+                        done:function (result) {
+                            result.code&&layer.close(index);
+                        }
+                    })
                 })
             }
 
@@ -100,6 +103,7 @@
             openWin("{:url('base_config/addPost')}");
         });
 
+
         $(".editData").click(function () {
             var id = $(this).data("id");
             var url ="{:url('base_config/editPost')}";
@@ -107,8 +111,6 @@
                 openWin(url,result);
             });
         });
-
-
 
         function openWin(url,data) {
             if(!data){
@@ -124,24 +126,26 @@
                 btn:["保存"],
                 yes:function (index) {
                     var data = $("#formBox").formData();
-                    $.ajax({
+                   request({
                         url:url,
                         data:data,
+                        loading:0,
                         type:"post",
-                        success:function (result) {
-                            msg(result)
+                        done:function (result) {
+                            result.code&&layer.close(index);
                         }
                     })
                 },end:function () {
-                    layer.closeAll()
+                   // layer.closeAll()
                 }
             })
         }
 
         function msg(data) {
             let icon = data.code===1?1:2;
-            layer.msg(data.msg||"",{icon:icon, end:function () {
-                    data.url&&(location=data.url);
+            layer.msg(data.msg||"",{icon:icon,end:function () {
+                    data.url&&(window.location = data.url);
+                    layer.closeAll("loading")
             }});
         }
 

@@ -72,12 +72,17 @@ class CategoryController extends AdminBaseController
                 if(!$parent){
                     $this->error("不存在该一级分类");
                 }
+                $category = Db::name('Category')->where(array('parent_id'=>$parent['id'],'name'=>$data['name']))->find();
+                if($category){
+                    $this->error("分类名称已经存在");
+                }
                 Db::name('Category')->insert([
                     "parent_id"  => $parent['id'],
                     "name"   => $data['name'],
                     "create_time"  => time(),
                     "type" => $parent['type'],
                 ]);
+                addLogs("管理员添加","添加类目 {$data['name']} 成功");
                 $this->success("添加成功");
             }
         }
@@ -98,11 +103,19 @@ class CategoryController extends AdminBaseController
                 if(!$parent){
                     $this->error("不存在该一级分类");
                 }
+                $where['id'] = array('neq',$data['id']);
+                $where['parent_id'] = array('eq',$parent['id']);
+                $where['name'] = array('eq',$data['name']);
+                $category = Db::name('Category')->where($where)->find();
+                if($category){
+                    $this->error("分类名称已经存在");
+                }
                 Db::name('Category')->where(['id' => $data['id']])->update([
                     "parent_id"  => $parent['id'],
                     "name"   => $data['name'],
                     "type" => $parent['type'],
                 ]);
+                addLogs("管理员修改","编辑类目 {$data['name']} 成功");
                 $this->success("更新成功");
             }
         }
@@ -114,7 +127,9 @@ class CategoryController extends AdminBaseController
     public function delete()
     {
         $id = $this->request->param("id", 0, 'intval');
+        $category = Db::name('Category')->find($id);
         if (Db::name('Category')->delete($id) !== false) {
+            addLogs("管理员删除","删除类目 {$category['name']} 成功");
             $this->success("删除成功！");
         } else {
             $this->error("删除失败！");

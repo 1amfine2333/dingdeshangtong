@@ -25,7 +25,7 @@ class PlanController extends AdminBaseController
         $param = $this->request->param();
         if(!empty($param['keyword'])){
             $keyword = $param['keyword'];
-            $where['u.user_name|p.unit_name|p.project_name|p.principal|p.salesman'] = array('like',"%$keyword%");
+            $where['u.user_nickname|p.unit_name|p.project_name|p.principal|p.salesman'] = array('like',"%$keyword%");
         }
         if(!empty($param['mobile'])){
             $mobile = $param['mobile'];
@@ -52,7 +52,7 @@ class PlanController extends AdminBaseController
             ->alias('p')
             ->join('user u' ,'u.id=p.user_id')
             ->where($where)
-            ->field('p.*,u.user_name,u.mobile phone')
+            ->field('p.*,u.user_nickname,u.mobile phone')
             ->order('p.create_time desc')
             ->paginate(10);
         $plan->appends($param);
@@ -91,7 +91,8 @@ class PlanController extends AdminBaseController
                 $this->error("请选择至少一条计划单");
             }
             foreach ($list_array as $v){
-                Db::name('PlanOrder')->delete($v);
+                $len = Db::name('PlanOrder')->delete($v);
+                addLogs("管理员删除","删除{$len}条计划单");
             }
             $this->success("删除成功");
         }
@@ -114,6 +115,7 @@ class PlanController extends AdminBaseController
             }
             $planOrderModel = new PlanOrderModel();
             if($planOrderModel->saveAll($save_array) !== false){
+                addLogs("管理员删除","前端删除".count($save_array)."条计划单");
                 $this->success("前端删除成功");
             }else{
                 $this->error("前端删除失败");
@@ -128,8 +130,16 @@ class PlanController extends AdminBaseController
         $plan = $planOrderModel->alias('p')
             ->join('user u','u.id=p.user_id')
             ->where('p.id',$param['id'])
-            ->field('p.*,u.user_name,u.mobile phone')
+            ->field('p.*,u.user_nickname,u.mobile phone')
             ->find();
+        if($plan) {
+            $plan['reply'] = '';
+            $feedback = Db::name('Complaint')->where(array('plan_number' => $plan['number']))->find();
+            if($feedback){
+                $plan['reply'] = $feedback['content'];
+            }
+        }
+
         $this->assign("plan",$plan);
         return $this->fetch();
     }
@@ -141,7 +151,9 @@ class PlanController extends AdminBaseController
             if(!in_array($data['status'],array('2','3','4'))){
                 $data['status'] = 2;
             }
+            $order = Db::name('PlanOrder')->find($data['id']);
             if(Db::name('PlanOrder')->where(['id' => $data['id']])->update(["status"=>$data['status'],'update_time'=>time()]) !== false){
+                addLogs("管理员操作","处理计划单,单号:".$order['number']);
                 $this->success("提交成功");
             }else{
                 $this->error("提交失败");

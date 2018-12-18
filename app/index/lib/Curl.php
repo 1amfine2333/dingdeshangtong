@@ -21,20 +21,19 @@ class Curl
      * @param int $timeout
      * @return mixed
      */
-    public function get($url, array $params = array(),$hash='', $timeout = 20)
+    public function get($url, array $params = array(),$REFERER='', $timeout = 20)
     {
         if ($params) {
             $url = $url . "?" . http_build_query($params);
         }
-        if($hash){
-            $url.="#$hash";
-        }
+
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+        curl_setopt($ch, CURLOPT_REFERER, $REFERER);
         $file_contents = curl_exec($ch);
         $this->code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);

@@ -17,12 +17,11 @@ class CategoryValidate extends Validate
 {
     protected $rule = [
         'parent_id'  => 'require',
-        'name'       => 'require|unique:Category',
+        'name'       => 'require',
     ];
 
     protected $message = [
         'parent_id.require'  => '一级分类不能为空',
         'name.require'       => '分类名称不能为空',
-        'name.unique'        => '分类名称已经存在',
     ];
 }

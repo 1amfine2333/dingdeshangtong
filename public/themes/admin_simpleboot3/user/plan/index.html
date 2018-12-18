@@ -21,8 +21,8 @@
         </div>
     </form>
     <div style="margin-bottom: 12px;padding:12px 0;border:1px solid grey;width: 30%;" class="clearfix">
-        <label class="col-sm-12" style="margin-bottom: 10px;">总计划方量：<span>{$total_square}㎥</span></label>
-        <label class="col-sm-12">今日方量：<span>{$today_square}㎥</span></label>
+        <label class="col-sm-12" style="margin-bottom: 10px;">总计划方量：<span>{$total_square}m³</span></label>
+        <label class="col-sm-12">今日方量：<span>{$today_square}m³</span></label>
     </div>
     <div style="margin-bottom: 12px;">
         <a class="btn btn-danger" id="deleteTrue">删除</a>
@@ -59,13 +59,13 @@
                 <tr>
                     <td><input type="checkbox" class="js-check" name="plan_one" data-yid="js-check-y" data-xid="js-check-x" value="{$vp.id}"></td>
                     <td>{$vp.number}</td>
-                    <td>{$vp.user_name}</td>
+                    <td>{$vp.user_nickname}</td>
                     <td>{$vp.phone}</td>
                     <td>{$vp.principal}</td>
                     <td>{$vp.mobile}</td>
                     <td>{$vp.unit_name}</td>
                     <td>{$vp.project_name}</td>
-                    <td>{$vp.plan_square}</td>
+                    <td>{$vp.plan_square}m³</td>
                     <td>{$vp.salesman}</td>
                     <td><if condition="$vp['delete_time'] gt 0">已删除前端展示</if></td>
                     <td>{$vp.manager}</td>
@@ -114,7 +114,7 @@
                                     location.reload();
                                 })
                             }else{
-                                layer.msg(res.msg,{icon:5,time:2000});
+                                layer.msg(res.msg,{icon:2,time:2000});
                             }
                         }
                     })
@@ -148,7 +148,7 @@
                                     location.reload();
                                 })
                             }else{
-                                layer.msg(res.msg,{icon:5,time:2000});
+                                layer.msg(res.msg,{icon:2,time:2000});
                             }
                         }
                     })

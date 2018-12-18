@@ -29,7 +29,7 @@ class PlanController extends UserBaseController
         $plan = new PlanOrderModel();
         $request = input('request.');
         $page = intval(input('page'));
-        $where = [];
+        $where = ['delete_time'=>0];
         $limit = 10;
         if (!empty($request['status'])) {
             $where['status'] = intval($request['status']);
@@ -42,7 +42,8 @@ class PlanController extends UserBaseController
         /**
          * ajax 请求
          */
-        if (request()->isAjax()) {
+        if (request()->isAjax())
+        {
 
             $list = $plan->where($where)->order("create_time desc")->page($page, $limit)->select();
 
@@ -55,10 +56,13 @@ class PlanController extends UserBaseController
             }
 
             $data['list'] = $list;
-            $data['page'] = $page;
 
+            $data['page'] = $page;
             $this->success('success', null, $data);
-        }
+         }
+
+
+
 
         $this->assign('data', $data);
         return $this->fetch();
@@ -74,7 +78,9 @@ class PlanController extends UserBaseController
         $id = input("id", 0, 'intval');
 
         if ($id) {
-            $data = PlanOrderModel::get($id);
+            $plan = new  PlanOrderModel();
+
+            $data = $plan->where(['id'=>$id])->find();
 
             if (!empty($data)) {
                 $user = UserModel::get($data['user_id']);
@@ -84,6 +90,7 @@ class PlanController extends UserBaseController
                     $data['mobile'] = $user['mobile'];
                 }
             }
+            $data['isLogin']=cmf_is_user_login();
             $this->assign('data', $data);
         }
 
@@ -101,7 +108,8 @@ class PlanController extends UserBaseController
                 $this->error("状态异常,操作失败!");
             }
             $plan = new PlanOrderModel();
-            $result = $plan->where(['id' => $id,   'status' => 1])->update(["status" => $status,'manager_id'=>cmf_get_current_user_id()]);
+            $result = $plan->where(['id' => $id,   'status' => 1])
+                ->update(["status" => $status,'manager_id'=>cmf_get_current_user_id(),'manager'=>cmf_get_current_user()['user_name']]);
             if ($result) {
                 $status_text = ['2' => '安排', '3' => '拒绝', '4' => '取消'];
                 $this->success("{$status_text[$status]}成功!");
@@ -114,7 +122,7 @@ class PlanController extends UserBaseController
     }
 
 
-    public function delete()
+/*    public function delete()
     {
         $id = input("id", 0, 'intval');
         if ($id) {
@@ -128,6 +136,6 @@ class PlanController extends UserBaseController
         } else {
             $this->error("抱歉,参数错误删除失败!");
         }
-    }
+    }*/
 
 }

@@ -14,7 +14,7 @@ use think\Validate;
 
 class BaseConfigValidate extends Validate
 {
-    protected $regex = [ 'tel' => '\d{6,11}'];
+    protected $regex = [ 'tel' => '\d{11}'];
 
     protected $rule = [
         'tel_no' => 'require|regex:tel',

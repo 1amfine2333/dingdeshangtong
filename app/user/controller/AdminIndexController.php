@@ -56,7 +56,7 @@ class AdminIndexController extends AdminBaseController
         }
         $param = $this->request->param();
 
-        $where   = ['user_type'=>2];
+        $where   = ['user_type'=>2 ,'user_status'=>['in','0,1']];
         $request = input('request.');
 
         //时间段查询
@@ -84,7 +84,7 @@ class AdminIndexController extends AdminBaseController
         $plan = new PlanOrderModel();
         $list = $usersQuery->whereOr($keywordComplex)->where($where)->order("create_time DESC")->paginate(10);
         foreach ($list as $k=>$v){
-            $v['create']= $plan->where(['user_id'=> $v['id']  ,'status'=>1])->count();
+            $v['create']= $plan->where(['user_id'=> $v['id']])->count();
             $v['success']=$plan->where(['user_id'=> $v['id']  ,'status'=>2])->count();
             $v['refuse']= $plan->where(['user_id'=> $v['id']  ,'status'=>3])->count();
             $v['cancel']= $plan->where(['user_id'=> $v['id']  ,'status'=>4])->count();
@@ -117,8 +117,12 @@ class AdminIndexController extends AdminBaseController
      */
     public function info()
     {
-        $type = input("type")?:1;
-        $w = ['status'=>$type];
+
+        $w = [];
+        $type = input("type");
+        if($type){
+            $w['status']=$type;
+        }
         $id = intval(input("id"));
 
         $user = new UserModel();
@@ -129,11 +133,12 @@ class AdminIndexController extends AdminBaseController
         $page = $list->render();
 
         $count=[
-            'create'=> $plan->where(['user_id'=>$id  ,'status'=>1])->count(),
+            'create'=> $plan->where(['user_id'=>$id])->count(),
             'success'=>$plan->where(['user_id'=>$id  ,'status'=>2])->count(),
             'refuse'=>$plan->where(['user_id'=>$id  ,'status'=>3])->count(),
             'cancel'=>$plan->where(['user_id'=>$id  ,'status'=>4])->count(),
         ];
+
         $this->assign("info",$list->toArray()['data']);
         $this->assign('page', $page);
         $this->assign('count', $count);
@@ -160,8 +165,10 @@ class AdminIndexController extends AdminBaseController
     {
         $id = input('param.id', 0, 'intval');
         if ($id) {
+            $user = Db::name("user")->find($id);
             $result = Db::name("user")->where(["id" => $id, "user_type" => ['in','2,3']])->setField('user_status', 0);
             if ($result) {
+                addLogs("管理员操作","冻结会员,手机号:".$user['mobile']);
                 $this->success("会员冻结成功！", "adminIndex/index");
             } else {
                 $this->error('会员冻结失败,会员不存在,或者是管理员！');
@@ -188,7 +195,9 @@ class AdminIndexController extends AdminBaseController
     {
         $id = input('param.id', 0, 'intval');
         if ($id) {
+            $user = Db::name("user")->find($id);
             Db::name("user")->where(["id" => $id, "user_type" => 2])->setField('user_status', 1);
+            addLogs("管理员操作","启用会员,手机号:".$user['mobile']);
             $this->success("会员启用成功！", '');
         } else {
             $this->error('数据传入失败！');

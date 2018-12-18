@@ -20,7 +20,7 @@ class UserValidate extends Validate
         'user_login' => 'unique:user,user_login',
         'mobile' => 'require|regex:mobile',//|unique:user,mobile
         'user_name'  => 'require',
-        'user_pass'  => 'length:6,12',
+        'user_pass'  => 'require|length:6,12',
     ];
     protected $message = [
         'user_login.require' => '登录账号不能为空',
@@ -28,16 +28,16 @@ class UserValidate extends Validate
 
         'mobile.require'   => '请输入电话号码',
         'mobile.regex'   => '请输入正确的电话号码',
-        'mobile.unique'  => '该账号已存在',
 
-        'user_name.require' => '真实姓名不能为空',
+        'user_name.require' => '请输入真实姓名',
 
-        'user_pass.require'  => '密码不能为空',
+        'user_pass.require'  => '请输入密码',
         'user_pass.length'  => '请输入6~12位密码',
     ];
 
     protected $scene = [
         'add'  => ['user_login', 'user_pass', 'user_email'],
+        'addSales'  => ['mobile', 'user_pass', 'user_name'],
         'edit' => ['user_name', 'mobile'],
     ];
 }

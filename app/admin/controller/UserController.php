@@ -132,6 +132,7 @@ class UserController extends AdminBaseController
                     if ($result !== false) {
 
                         Db::name('RoleUser')->insert(["role_id" => $role_id, "user_id" => $result]);
+                        addLogs("管理员添加","添加管理员账号:".$_POST['user_login']);
                         $this->success("添加成功！", url("user/index"));
 
                     } else {
@@ -190,6 +191,7 @@ class UserController extends AdminBaseController
                         }
                         //更新数据增到权限关联表
                         DB::name("RoleUser")->where([ "user_id" => $uid])->update(["role_id" => $role_id]);
+                        addLogs("管理员编辑","编辑管理员账号:".$_POST['user_login']);
                         $this->success("保存成功！");
                     } else {
                         $this->error("保存失败！");
@@ -278,6 +280,7 @@ class UserController extends AdminBaseController
 
         if ($len  = model('user')->where('id','in',$id)->delete() !== false) {
             Db::name("RoleUser")->where("user_id" ,"in", $id)->delete();
+            addLogs("管理员删除","删除{$len}条管理员账号");
             $this->success("删除成功！",url("user/index"));
         } else {
             $this->error("删除失败！");
@@ -288,6 +291,7 @@ class UserController extends AdminBaseController
         $id = $this->request->param('id', "", 'string');
         $pass = cmf_password("123456");
         if ($len  = model('user')->where('id','in',$id)->update(['user_pass'=>$pass]) !== false) {
+            addLogs("管理员重置","重置{$len}条管理员账号的密码");
             $this->success("重置密码成功！",url("user/index"));
         } else {
             $this->error("重置密码失败！");

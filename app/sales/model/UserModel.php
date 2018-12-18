@@ -10,7 +10,6 @@
 // +----------------------------------------------------------------------
 namespace app\sales\model;
 
-use app\admin\model\UserLogModel;
 use app\index\lib\Curl;
 use think\Db;
 use think\Model;
@@ -61,59 +60,16 @@ class UserModel extends Model
         $sale_key = 'sales_wx';
 
         if ($code && $state == 'sales') {
-
             $userAccess = session($sale_key);//session 缓存用户OpenID
-
             //过期则重新获取
             if (!$userAccess || $userAccess['expires_in'] < time()) {
-
                 $userAccess = $this->getUserAccessToken($code);
-
-            }
-
-            if ($userAccess !=  false) {
-
-                $openid = $userAccess['openid'];
-                $access_token = $userAccess['access_token'];
-                $refresh_token = $userAccess['refresh_token'];
-
-                $user = $this->get(['open_id' => $openid, 'user_type' => 3]);
-
-                if (empty($user) && $userAccess['expires_in'] < 10000) {
-
-                    UserLogModel::addLog("", "销售经理登录", '新用户获取OpenID信息成功! OpenId: ' . $openid);
-                    //首次进入新用户
+                if ($userAccess['expires_in'] < 10000) {//判断过期则重新调用接口获取
                     $userAccess['expires_in'] = time() + $userAccess['expires_in'] - 200;
-
-                    session($sale_key, $userAccess);
-                } else if ($user) {
-
-                    if ($user->user_status == 1) {
-                        $result = $user->update([
-                            'access_token' => $access_token,
-                            'refresh_token' => $refresh_token,
-                            'last_login_ip' => request()->ip(),
-                            'last_login_time' => time(),
-                        ],['open_id' => $openid, 'user_type' => 3]);
-                        //正常用户
-                        if (!$result) {
-                            UserLogModel::addLog($user->user_nickname, "销售经理登录", '登录成功 ,登录信息更新失败!');
-                        } else {
-                            UserLogModel::addLog($user->user_nickname, "销售经理登录", '登录成功!');
-                        }
-
-                        cmf_update_current_user($user);
-                        return redirect(url('user/index'));
-                    } else {
-                        return redirect(url('login/index',['state'=>'loginOut']));
-                    }
-
                 }
-
-            } else {
-                echo("<a href='{$this->redirect_auth()}'>{$this->redirect_auth()}</a>");
-                   redirect($this->redirect_auth());
+                session($sale_key, $userAccess);
             }
+            return false;
         }
 
         return false;
@@ -159,8 +115,6 @@ class UserModel extends Model
 
             ]);
 
-        UserLogModel::addLog($userInfo['nickname'], "销售经理登录", "首次登录,  信息认证成功!");
-
         if ($result) {
             cmf_update_current_user($this->where($where)->find());
             return true;
@@ -184,7 +138,7 @@ class UserModel extends Model
         $result = $curl->get($api);
         $json = json_decode($result, true);
         if (isset($json['errcode'])) {
-            UserLogModel::addLog('', '销售经理登录', '获取Access Token失败 ' . @$json['errmsg']);
+
         } else if (isset($json['access_token'])) {
             return $json['access_token'];
         }
@@ -211,8 +165,6 @@ class UserModel extends Model
         $result = json_decode($curl->get($api), true);
 
         if (isset($result['errcode'])) {
-            $result['code']=$code;
-            dump($result);
             return false;
         }
         return $result;

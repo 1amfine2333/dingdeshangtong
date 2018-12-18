@@ -60,33 +60,28 @@ class UserController extends UserBaseController
             $sms_code = input('post.sms_code');
 
 
-            if (!AliSms::checkVerify($mobile,$sms_code) && $sms_code!=123456){
+            if (!AliSms::checkVerify($mobile,$sms_code) ){//&& $sms_code!=123456
 
-                $this->error('验证码错误!');
+                $this->error('请输入正确验证码!');
             }
             $model = new UserModel;
 
+            if( $model->where(['mobile'=>$mobile, 'user_type'=>2])->count()>0 ){
 
-            if( $model::get(['mobile'=>$mobile])->count() ){
-
-                $this->error("绑定失败,该手机号已被使用!");
+                $this->error("修改失败，请重新提交!");
             }
 
             $result = $model->where("id",cmf_get_current_user_id())->setField('mobile',$mobile);
 
             if ($result) {
                 $user = cmf_get_current_user();
-                UserLogModel::addLog($user['user_nickname'],'修改信息',"将原手机号({$user['mobile']})重新绑定手机号为($mobile)");
-
                 $user['mobile'] = $mobile;
                 cmf_update_current_user($user);
-
                 $this->success("修改成功!", url('user/index'));
             } else {
 
                 $this->error('修改失败，请重新提交!');
             }
-
 
         }
 
@@ -105,15 +100,16 @@ class UserController extends UserBaseController
         $page = $this->request->param('page');
         $limit = 15;
         if (request()->isAjax()) {
-            $web = new WebMsgModel();
-            //如果传入状态参数 则根据状态查询
-            $where['user_type'] = ['in', [0, cmf_get_current_user()['user_type']]];
 
-            $list = $web->field("id,title,create_time")->where($where)->order("create_time desc")->page($page, $limit)->select();
+            $web = new WebMsgModel();
+
+            $where = ["to_user_id"=>cmf_get_current_user_id(),'create_time'=>['<=',time()]];
+
+            $list = $web->getMsgList($where ,$page,$limit);
+
 
             foreach ($list as $k => $value) {
                 $value['create_time'] = date("Y-m-d H:i:s", $value['create_time']);
-                $value['is_read'] = $web->is_read($value['id']);
                 $list[$k] = $value;
             }
 
@@ -134,47 +130,56 @@ class UserController extends UserBaseController
     {
         $id = input("id", 0, 'intval');
 
-        $status = ['待处理', '已处理'];
         if ($id) {
             $web = new WebMsgModel();
-            $data = $web::get(['id' => $id, 'user_type' => ['in', [0, cmf_get_current_user()['user_type']]]]);
+            $data = $web::get($id);
             if ($data) {
+
                 $data['create_time'] = date("Y-m-d H:i:s", $data['create_time']);
+                $data['content'] = htmlspecialchars_decode($data['content']);
                 $web->joinRead($data['id']);
-                // $data['content'] = htmlspecialchars($data['content']);
+
             }
 
             $this->assign('data', $data);
         }
-        return $this->fetch();
+        return view();
     }
 
 
     /**
-     * @throws \think\exception\DbException
+     *
      */
 
     public function sendCode()
     {
         $mobile = input('post.mobile');
-        $time = 10;
+        $time = 60;
 
         //验证手机号码preg_match("/^(13|14|15|17|18|19)[0-9]{9}$/",$mobile)
 
         if ($mobile) {
 
 
-            if( UserModel::get(['mobile'=>$mobile])->count() ){
-                $this->error("发送失败,该手机号已被使用!");
+            $res = $this->validate(['mobile'=>$mobile],'Index.send');
+            if($res!==true){
+                $this->error($res);
             }
+
+ /*
+
+  $user = new UserModel;
+              if( $user->where(['mobile'=>$mobile])->count() ){
+                $this->error("发送失败,该手机号已被使用!");
+            }*/
 
             $sms = new AliSms([]);
             $cache = cache($mobile);
 
             //限制发送时间
-            if ($cache && $cache + $time < time()) {
-                $this->error("操作太频繁,请[" . $cache . ']秒后再试!');
-            }
+         /*   if ($cache && ($cache + $time) > time()) {
+                $this->error("操作太频繁,请[" . ( ($cache + $time) -time())  . ']秒后再试!');
+            }*/
 
             //发送验证码
             $result = $sms->send_verify($mobile);
@@ -186,7 +191,7 @@ class UserController extends UserBaseController
             }
         }
 
-        $this->error("手机号格式错误!");
+        $this->error("请输入正确的手机号!");
     }
 
 }

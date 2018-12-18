@@ -34,11 +34,36 @@ function cmf_get_current_admin_id()
 
 /**
  * 判断前台用户是否登录
+ * @param  $auth
  * @return boolean
+ * @throws
  */
-function cmf_is_user_login()
+function cmf_is_user_login($auth=null)
 {
-    $sessionUser = session('user');
+    $md_name = \request()->module();
+    $user_key ='user';
+    if($md_name=='sales'){
+        $user_key='sales';
+    }
+
+    $token = $auth?:cookie("token_$user_key");
+    $user_id = decrypt($token);
+   // dump($user_id);dump($token);
+    if ($token && $user_id ){
+
+        $user_id = json_decode($user_id,true);
+
+        $user = \app\user\model\UserModel::get($user_id);
+
+        if ($user){
+            if ($user->user_status==1){
+                cmf_update_current_user($user);
+            }else{
+                cmf_update_current_user(null);
+            }
+        }
+    }
+    $sessionUser = session($user_key);
     return !empty($sessionUser);
 }
 
@@ -48,7 +73,12 @@ function cmf_is_user_login()
  */
 function cmf_get_current_user()
 {
-    $sessionUser = session('user');
+    $md_name = \request()->module();
+    $user_key ='user';
+    if($md_name=='sales'){
+        $user_key='sales';
+    }
+    $sessionUser = session($user_key);
     if (!empty($sessionUser)) {
         unset($sessionUser['user_pass']); // 销毁敏感数据
         return $sessionUser;
@@ -63,7 +93,23 @@ function cmf_get_current_user()
  */
 function cmf_update_current_user($user)
 {
-    session('user', $user);
+    $md_name = \request()->module();
+    $user_key ='user';
+    if($md_name=='sales'){
+         $user_key='sales';
+    }
+
+    $times =  60*60*24*365;
+
+    if (empty($user['id'])) {
+        $token =null;
+    }else{
+        $token = json_encode(['id'=>$user['id']]);
+        $token = encrypt($token);
+    }
+
+    cookie("token_$user_key",$token,$times);
+    session($user_key, $user);
 }
 
 /**
@@ -72,8 +118,14 @@ function cmf_update_current_user($user)
  */
 function cmf_get_current_user_id()
 {
-    $sessionUserId = session('user.id');
+    $user_key ='user';
+    $md_name = \request()->module();
+    if($md_name=='sales'){
+        $user_key='sales';
+    }
+    $sessionUserId = session($user_key.'.id');
     if (empty($sessionUserId)) {
+
         return 0;
     }
 

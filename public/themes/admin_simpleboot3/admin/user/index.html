@@ -65,7 +65,7 @@
 					<input type="text" name="user_login"  value="{{d.user_login}}" required="" lay-verify="required" placeholder="请输入登录账号" autocomplete="off" class="layui-input">
 				</div>
 			</div>
-			<div class="layui-form-item">
+			<div class="layui-form-item" {{d.id?"hidden":""}}>
 				<label class="layui-form-label">登录密码：</label>
 				<div class="layui-input-block">
 					<input type="text" class="layui-input" autocomplete="off" placeholder='{{d.id?"*****":"请输入密码"}}' name="user_pass" value="">
@@ -111,12 +111,15 @@
                     msg({code:2,msg:"请先选择数据"});
                 }else{
                     layer.confirm("删除后无法恢复, 确定删除这些管理员吗？",function () {
-						$.ajax({
-							url:"{:url('user/delMultiple')}",
-							type:"post",
-							data:{id:values.join(',')},
-							success:function (data) {   msg(data) }
-						});
+                        request({
+                            url:"{:url('user/delMultiple')}",
+                            data:{id:values.join(',')},
+                            loading:0,
+                            type:"post",
+                            done:function (result) {
+                                result.code&&layer.close(index);
+                            }
+                        })
                     });
                 }
 
@@ -134,12 +137,15 @@
                     msg({code:2,msg:"请先选择数据"});
                 }else{
                     layer.confirm("确定将这些管理员密码重置为【123456】吗？",function () {
-						$.ajax({
-							url:"{:url('user/resetPass')}",
-							type:"post",
-							data:{id:values.join(',')},
-							success:function (data) {   msg(data); }
-						});
+                        request({
+                            url:"{:url('user/resetPass')}",
+                            data:{id:values.join(',')},
+                            loading:0,
+                            type:"post",
+                            done:function (result) {
+                                result.code&&layer.close(index);
+                            }
+                        })
                     });
                 }
 
@@ -155,6 +161,11 @@
 			 * 编辑
 			 * */
             $(".editData").click(function () {
+                let values = checked();
+                if(values.length > 1){
+                    msg({code:2,msg:"请点击单个数据编辑"});
+                    return false;
+                }
                 var id = $(this).data("id");
                 var url ="{:url('user/editPost')}";
                 $.getJSON(url,{id:id},function (result) {
@@ -193,16 +204,17 @@
                     btn:["确定","取消"],
                     yes:function (index) {
                         var data = $("#formBox").formData();
-                        $.ajax({
+                        request({
                             url:url,
                             data:data,
+                            loading:0,
                             type:"post",
-                            success:function (result) {
-                                msg(result)
+                            done:function (result) {
+                                result.code&&layer.close(index);
                             }
                         })
                     },end:function () {
-						layer.closeAll()
+						//layer.closeAll()
                     }
                 })
             }

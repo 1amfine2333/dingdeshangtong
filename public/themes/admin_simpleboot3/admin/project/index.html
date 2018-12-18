@@ -12,7 +12,7 @@
         <a class="btn btn-warning" href="javascript:;" id="deleteMore">删除</a>
     </div>
     <form class="js-ajax-form" id="projectList">
-        <table class="table table-hover table-bordered table-list">
+        <table class="table table-hover table-bordered table-list" id="table">
             <thead>
             <tr>
                 <th width="16"><label><input type="checkbox" class="js-check-all" data-direction="x" data-checklist="js-check-x"></label></th>
@@ -40,7 +40,7 @@
             </foreach>
             </tbody>
         </table>
-        <div class="pagination">{$page}</div>
+        <div class="pagination" data-show-jumpto="true">{$page}</div>
     </form>
 </div>
 <script src="__STATIC__/js/admin.js"></script>
@@ -92,7 +92,15 @@
                         layer.msg("请输入业务员姓名",{icon:2,time:2000});
                         return false;
                     }
-                    $.ajax({
+                    request({
+                        url: '{:url("Project/addPost")}',
+                        data: {name:project_name,salesman:sales_name},
+                        loading:0,
+                        type:"post",
+                        done:function (result) {
+                        }
+                    })
+                  /*  $.ajax({
                         type: 'POST',
                         url: '{:url("Project/addPost")}',
                         data: {name:project_name,salesman:sales_name},
@@ -105,7 +113,7 @@
                                 layer.msg(res.msg,{icon:2,time:2000});
                             }
                         }
-                    })
+                    })*/
                 }
             });
         });
@@ -151,7 +159,15 @@
                         layer.msg("请输入业务员姓名",{icon:2,time:2000});
                         return false;
                     }
-                    $.ajax({
+                    request({
+                        url: '{:url("Project/editPost")}',
+                        data: {id:data_id,name:project_name,salesman:sales_name},
+                        loading:0,
+                        type:"post",
+                        done:function (result) {
+                        }
+                    })
+                    /*$.ajax({
                         type: 'POST',
                         url: '{:url("Project/editPost")}',
                         data: {id:data_id,name:project_name,salesman:sales_name},
@@ -164,7 +180,7 @@
                                 layer.msg(res.msg,{icon:2,time:2000});
                             }
                         }
-                    })
+                    })*/
                 }
             });
         });
@@ -183,7 +199,7 @@
             }
             layer.confirm('确定删除选中的工程信息吗？',{icon: 3, title:'提示'}
                 , function(){
-                    $.ajax({
+                  /*  $.ajax({
                         type: 'POST',
                         url: '{:url("Project/deletePost")}',
                         data: {list:list_array},
@@ -195,6 +211,15 @@
                             }else{
                                 layer.msg(res.msg,{icon:2,time:2000});
                             }
+                        }
+                    })*/
+
+                    request({
+                        url: '{:url("Project/deletePost")}',
+                        data: {list:list_array},
+                        loading:0,
+                        type:"post",
+                        done:function (result) {
                         }
                     })
                 }, function(index){

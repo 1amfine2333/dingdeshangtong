@@ -80,16 +80,22 @@ class RbacController extends AdminBaseController
         if ($this->request->isPost()) {
             $user_login = UserModel::get(cmf_get_current_admin_id())->user_login;
             $result = $this->validate($data, 'role.add');
+
             if($result !== true) {
                 $this->error($result);
             }else {
+
+                if (sizeof(input("menuId/a"))<1){
+                    $this->error("请至少选择一项权限");
+                }
+
                 $roleId = Db::name("role")->insertGetId([
                     'name' => $this->request->param("name")
                     , 'status' => 1
                     , 'create_time' => time()
                     , 'user_login' => $user_login
                 ]);
-                foreach ($_POST['menuId'] as $menuId) {
+                foreach (input("menuId/a") as $menuId) {
                     $menu = Db::name("adminMenu")->where(["id" => $menuId])->field("app,controller,action")->find();
                     if ($menu) {
                         $app = $menu['app'];
@@ -99,12 +105,15 @@ class RbacController extends AdminBaseController
                         Db::name("authAccess")->insert(["role_id" => $roleId, "rule_name" => $name, 'type' => 'admin_url']);
                     }
                 }
+
+                if ($result) {
+                    addLogs("管理员添加","添加角色 {$data['name']} 成功");
+                    $this->success("添加角色成功", url("rbac/index"));
+                } else {
+                    $this->error("添加角色失败");
+                }
             }
-            if ($result) {
-                $this->success("添加角色成功", url("rbac/index"));
-            } else {
-                $this->error("添加角色失败");
-            }
+
         }
     }
 
@@ -135,6 +144,7 @@ class RbacController extends AdminBaseController
         } else {
             $status = Db::name('role')->where('id' ,"in", $id)->delete();
             if (!empty($status)) {
+                addLogs("管理员删除","删除 {$status} 条角色成功");
                 $this->success("删除成功！", url('rbac/index'));
             } else {
                 $this->error("删除失败！");
@@ -246,11 +256,12 @@ class RbacController extends AdminBaseController
                     }
                 }
                 cache(null, 'admin_menus');// 删除后台菜单缓存
+                addLogs("管理员编辑","编辑 {$data['name']} 角色权限成功");
                 $this->success("授权成功！");
             } else {
                 //当没有数据时，清除当前角色授权
-                Db::name("authAccess")->where(["role_id" => $roleId])->delete();
-                $this->success("没有接收到数据，执行清除授权成功！");
+               // Db::name("authAccess")->where(["role_id" => $roleId])->delete();
+                $this->error("请至少选择一项权限");
             }
         }
     }

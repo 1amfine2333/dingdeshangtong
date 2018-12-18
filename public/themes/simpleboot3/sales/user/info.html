@@ -35,84 +35,22 @@
 	                    <p>头像</p>
 	                </div>
 	                <div class="weui-cell__ft" style="padding: 5px 0;">
-	                	<img src="{$Think.session.user.avatar}" onerror="this.src='__TMPL__/public/assets/user/img/default.jpg'"  style="width: 3rem; height: 3rem; object-fit: cover; border-radius: 50%;" />
+	                	<img src="{$Think.session.sales.avatar}" onerror="this.src='__TMPL__/public/assets/user/img/default.jpg'"  style="width: 3rem; height: 3rem; object-fit: cover; border-radius: 50%;" />
 	                </div>
 	            </div>
 	            <div class="weui-cell">
 	                <div class="weui-cell__bd">
 	                    <p style="line-height: 40px;">昵称</p>
 	                </div>
-	                <div class="weui-cell__ft"  id="nick">{$Think.session.user.user_nickname}</div>
+	                <div class="weui-cell__ft"  id="nick">{$Think.session.sales.user_nickname}</div>
 	            </div>
 	            <div class="weui-cell">
 	                <div class="weui-cell__bd">
 	                    <p style="line-height: 40px;">手机号</p>
 	                </div>
-	                <div class="weui-cell__ft" id="mobile"><span class="text">{$Think.session.user.mobile|default='未绑定'}</span><a href="{:url('user/mobile')}" class="editTel"></a></div>
+	                <div class="weui-cell__ft" id="mobile"><span class="text">{$Think.session.sales.mobile|default='未绑定'}</span></div>
 	            </div>
 	        </div>
 		</section>
 	</body>
 </html>
-<!--<script>
-
-    var app = new Vue({
-        el:'#app',
-        data:{
-
-        },
-        methods:{
-
-        }
-    })
-
-    $("#mobile .editTel").on("click",function () {
-        let that =$("#mobile").find(".text");
-        $.prompt({
-            title: '请输入手机号码',
-            text: false,
-            input: that.text(),
-            empty: false, // 是否允许为空
-            onOK: function (input) {
-                send({edit_mobile:input},function (data) {
-                    that.text(input)
-                })
-            },
-            onCancel: function () {
-                //点击取消
-            }
-        });
-    })
-
-    $("#nick").on("click",function () {
-        let that =$(this);
-        $.prompt({
-            title: '请输入昵称',
-            text: false,
-            input: that.text(),
-            empty: false, // 是否允许为空
-            onOK: function (input) {
-                send({nickname:input},function (data) {
-                    that.text(input);
-                })
-            },
-            onCancel: function () {
-                //点击取消
-            }
-        });
-    });
-
-    function send(data,done) {
-        request({
-            url:"{:url('user/editPost')}",
-            data:data,
-            success:done||function () {}
-        })
-    }
-
-</script>-->
-
-
-
-
-

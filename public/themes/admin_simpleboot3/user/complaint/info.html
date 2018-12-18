@@ -24,7 +24,7 @@
             <php>$type = ['1'=>'建议','2'=>'投诉','3'=>'计划单反馈',];</php>
             <div class="layui-input-block">{$type[ $data['type'] ]}</div>
         </div>
-        <php>$status =['0'=>"待处理","1"=>"已处理","2"=>"已拒绝"];</php>
+        <php>$status =['0'=>"待处理","1"=>"已回复","2"=>"已拒绝"];</php>
         <div class="layui-form-item">
             <label class="layui-form-label">状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：</label>
             <div class="layui-input-block">{$status[ $data['status'] ]}</div>
@@ -40,11 +40,11 @@
             <label class="layui-form-label">反馈内容：</label>
             <div class="layui-input-block" id="callBackContent">{:htmlspecialchars_decode($data.content)}</div>
         </div>
-        <if condition="$data['reply']">
+        <if condition="$data['status']==1">
             <div class="layui-form-item">
                 <label class="layui-form-label">回&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;复：</label>
                 <div class="layui-input-block">
-                    <pre>{:htmlspecialchars_decode($data.reply)}</pre>
+                    <div class="content">{:htmlspecialchars_decode($data.reply)}</div>
                 </div>
             </div>
         <else/>
@@ -52,7 +52,7 @@
             <label class="layui-form-label">回&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;复：</label>
             <div class="layui-input-block">
                 <input type="hidden" name="id" value="{$data.id}">
-               <textarea name="reply" class="layui-textarea" id="" cols="30" rows="10"></textarea>
+               <textarea name="reply" class="layui-textarea" id="" cols="30" rows="10" maxlength="100"></textarea>
             </div>
         </div>
         <div class="layui-form-item">
@@ -72,30 +72,38 @@
         const layer = layui.layer;
 
         $("#callBackContent img").on('click',function () {
-            let img = $(this);
-            //let src = this.src;
-            layer.open({
-                title:false
-                ,type:1
-                ,area:['90%',"auto"]
-                ,shadeClose:true
-                ,content:img
-            })
+//            let img = "<img src='"+this.src+"'/>";
+//            //let src = this.src;
+//            layer.open({
+//                title:false
+//                ,type:1
+//                ,area:['90%',"100%"]
+//                ,shadeClose:true
+//                ,content:img
+//            });
+            window.open(this.src);
         });
 
         form.on('submit(reply)', function(data){
-
-            let action = data.form.action;
-            $.ajax({
-                url:action,
-                type:"post",
-                data:data.field,
-                success:function (data) {
-                    msg(data);
+            if(data.field.reply == ''){
+                layer.msg("请输入回复内容!",{icon:2,time:2000});
+                return;
+            }
+            layer.confirm('是否提交回复？',{icon: 3, title:'提示'}
+                , function(){
+                    let action = data.form.action;
+                    $.ajax({
+                        url:action,
+                        type:"post",
+                        data:data.field,
+                        success:function (data) {
+                            msg(data);
+                        }
+                    });
+                }, function(index){
+                    layer.close(index);
                 }
-            });
-
-            return false;
+            );
         });
 
 

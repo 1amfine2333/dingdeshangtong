@@ -47,13 +47,13 @@
                 <tr><td colspan="10">暂无数据</td></tr>
             </if>
             <php>
-                $user_statuses=array("0"=>lang('USER_STATUS_BLOCKED'),"1"=>lang('USER_STATUS_ACTIVATED'),"2"=>lang('USER_STATUS_UNVERIFIED'));
+                $user_statuses=array("0"=>'冻结',"1"=>'正常',"2"=>'正常');
             </php>
             <foreach name="list" item="vo">
                 <tr>
                     <td><input type="checkbox" lay-skin="primary" name="check_id" value="{$vo.id}"/></td>
-                    <td>{$vo['user_nickname']?$vo['user_nickname']:lang('NOT_FILLED')}</td>
-                    <td>{$vo.mobile|default="未绑定"}</td>
+                    <td>{$vo['user_nickname']}</td>
+                    <td>{$vo.mobile|default=""}</td>
                     <td>{$vo.user_name}</td>
                     <td>{$vo['success']}</td>
                     <td>{$vo['refuse']}</td>
@@ -104,15 +104,15 @@
             </div>
         </div>
 
+        {{# if(!d.id){ }}
         <div class="layui-form-item">
             <label class="layui-form-label">密码：</label>
             <div class="layui-input-block">
                 <input type="text" class="layui-input" autocomplete="off" minlength="6" maxlength="12" placeholder='{{d.id?"*****":"请输入密码"}}' name="user_pass" value="">
             </div>
         </div>
-        {{# if(!d.id){ }}
         <div class="layui-form-item">
-            <label class="layui-form-label">确认密码：</label>
+            <label class="layui-form-label"></label>
             <div class="layui-input-block">
                 <input type="text" class="layui-input" autocomplete="off" minlength="6" maxlength="12" placeholder='再次确认密码' name="password_confirm" value="">
             </div>
@@ -128,12 +128,10 @@
         laydate.render({
             elem: '#start'
             ,type: 'datetime'
-            ,max: "{:date('Y-m-d H:i:s')}"
         });
         laydate.render({
             elem: '#end'
             ,type: 'datetime'
-            ,max: "{:date('Y-m-d H:i:s')}"
         });
 
         form.on('checkbox(layTableAllChoose)', function(data){
@@ -225,19 +223,32 @@
          * @param data 请求参数 object
          * */
         function openWin(url,data) {
+            let open_height = 230;
             if(!data){
                 data = {id:"",user_name:"",user_pass:"" ,mobile:""};
+                open_height = 350;
             }
             let html  =  laytpl($("#temp").html()).render(data);
             layer.open({
                 title:false,
-                area:["420px","350px"],
+                area:["420px",open_height+"px"],
                 content:html,
                 shadeClose:1,
                 type:1,
                 btn:["保存"],
                 yes:function (index) {
                     let data = $("#formBox").formData();
+
+                    if(url.indexOf('addPost')!==-1){
+
+                       if( data.password.length ){
+                           msg({"code":0,"msg":"请输入密码"})
+                       }
+
+                       if( data.password.length ){
+                           msg({"code":0,"msg":"请确认密码"})
+                       }
+                    }
                     $.ajax({
                         url:url,
                         data:data,

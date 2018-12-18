@@ -15,13 +15,13 @@ use think\Validate;
 class PlanOrderValidate extends Validate
 {
 
-    protected $regex = ['mobile'=>"^0{0,1}(13[0-9]|15[7-9]|153|156|18[7-9])[0-9]{8}$"];
+    protected $regex = ['mobile'=>"^(13|14|15|17|18|19)[0-9]{9}$"];
 
     protected $rule = [
         'project_address' => 'require',
         'unit_name' => 'require',
         'project_name' => 'require',
-        'salesman' => 'require',
+       // 'salesman' => 'require',
         'pouring_type' => 'require',
         'pouring_part' => 'require',
         'pouring_label' => 'require',
@@ -37,14 +37,14 @@ class PlanOrderValidate extends Validate
         'project_address' => '请输入工程地址',
         'unit_name' => '请输入单位名称',
         'project_name' => '请输入工程名',
-        'salesman' => '请输入业务员姓名',
+       // 'salesman' => '请输入业务员姓名',
         'pouring_type' => '选择浇筑方式',
         'pouring_part' => '请选择浇筑部位',
         'pouring_label' => '请选择浇筑标号',
         'slump' => '请选择坍落度',
         'pouring_time' => '请选择浇筑时间',
         'distance' => '输输入商砼距离',
-        'plan_square' => '请输入计划方量',
+        'plan_square' => '提交失败,请重试',
         'principal' => '请填写现场负责人',
         'mobile.require' => '请输入现场负责人电话',
         'mobile.regex' => '请输入正确的手机号',
@@ -55,6 +55,5 @@ class PlanOrderValidate extends Validate
     ];
 
     protected $scene = [
-        'add'=>['']
     ];
 }

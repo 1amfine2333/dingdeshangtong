@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 namespace app\index\controller;
 
+use app\admin\model\WebMsgModel;
 use app\user\model\ComplaintModel;
 use app\user\model\PlanOrderModel;
 use app\user\model\UserModel;
@@ -29,7 +30,7 @@ class ComplaintController extends UserBaseController
         $plan = new ComplaintModel();
         $request = $this->request->param();
         $page = $this->request->param('page');
-        $where = ['user_id' => cmf_get_current_user_id()];
+        $where = ['user_id' => cmf_get_current_user_id(),'type'=>['in',[1,2]]];
         $limit = 10;
         if (request()->isAjax()) {
 
@@ -39,19 +40,19 @@ class ComplaintController extends UserBaseController
             }
             $list = $plan->field('user_id,reply,update_time,plan_number',true)->where($where)->order("create_time desc")->page($page, $limit)->select();
 
-            $status = [0 => '未回复', 1 => '已回复'];
+            $status = [0 => '待处理', 1 => '已回复'];
 
             foreach ($list as $k => $value) {
                 $value['create_time'] = date("Y-m-d H:i:s", $value['create_time']);
                 $value['status_text'] = @$status[$value['status']];
-                $value['content'] = html($value['content'], 50);// htmlspecialchars_decode($value['content']);
-
+                $value['content'] = html($value['content'], 20);
                 $list[$k] = $value;
             }
 
             $data['list'] = $list;
             $data['pages'] = ceil($plan->where($where)->count() / $limit);
 
+            (new WebMsgModel())->clearMsg(2);
             $this->success('success', null, $data);
         }
 
@@ -71,7 +72,7 @@ class ComplaintController extends UserBaseController
     {
         $id = input("id", 0, 'intval');
 
-        $status = ['待处理', '已处理'];
+        $status = ['待处理', '已回复'];
 
         if ($id) {
             $data = ComplaintModel::get(['id' => $id, 'user_id' => cmf_get_current_user_id()]);
@@ -135,7 +136,7 @@ class ComplaintController extends UserBaseController
             $res = $Complain::create($data, "user_id,type,content,plan_number");
 
             if ($res !== false) {
-                $this->success("提交成功!");
+                $this->success("提交成功!",url("complaint/index"));
             } else {
                 $this->error("提交失败!");
             }
@@ -161,9 +162,7 @@ class ComplaintController extends UserBaseController
 
 
     /**
-     * 上传tcp.xiaomiqiu.cn
-     * ngrok -config=ngrok.cfg -hostname test.678down.com 8080
-     * ngrok -config=ngrok.cfg -subdomain http://test.678down.com/ 80 //(xxx 是你自定义的域名前缀)。
+     * 上传
      */
     public function upload(){
         // 获取表单上传文件 例如上传了001.jpg
@@ -176,17 +175,19 @@ class ComplaintController extends UserBaseController
             }
 
             $info = $file
-                ->validate(['size'=>156780,'ext'=>'jpg,png,gif'])
+                //->validate(['size'=>1567800,'ext'=>'jpg,png,gif'])
                 ->move(ROOT_PATH . 'public' . DS . 'upload'.DS.'user');
 
             if($info){
                 // 成功上传后 获取上传信息
+                $src = cmf_get_image_preview_url('user/'.$info->getSaveName());
+                image("upload/user/".$info->getSaveName());
                 $res = [
-                    'src' => cmf_get_image_preview_url('user/'.$info->getSaveName()),
+                    'src' => str_ireplace("\\",'/',$src) ,
                     'saveName' => $info->getSaveName(),
                 ];
 
-                $this->success('success','complaint/index',$res);
+                $this->success('success',null,$res);
             }else{
                 // 上传失败获取错误信息
                 $this->error($file->getError()) ;

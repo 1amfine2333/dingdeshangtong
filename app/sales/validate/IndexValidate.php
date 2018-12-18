@@ -35,6 +35,7 @@ class  IndexValidate extends Validate
 
     protected $scene = [
         'salesLogin'=>['password','mobile'],
-        'edit'=>['edit_mobile','sms_mobile']
+        'edit'=>['edit_mobile','sms_mobile'],
+        'send'=>['mobile'],
     ];
 }

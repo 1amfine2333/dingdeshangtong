@@ -47,6 +47,7 @@ class ProjectController extends AdminBaseController
                     "salesman" => $data['salesman'],
                     "create_time"  => time(),
                 ]);
+                addLogs("管理员添加","添加工程 {$data['name']} 成功");
                 $this->success("添加成功");
             }
         }
@@ -67,6 +68,7 @@ class ProjectController extends AdminBaseController
                     "name"   => $data['name'],
                     "salesman" => $data['salesman'],
                 ]);
+                addLogs("管理员编辑","编辑工程 {$data['name']} 成功");
                 $this->success("更新成功");
             }
         }
@@ -78,7 +80,9 @@ class ProjectController extends AdminBaseController
     public function delete()
     {
         $id = $this->request->param("id", 0, 'intval');
+        $project = Db::name('Project')->find($id);
         if (Db::name('Project')->delete($id) !== false) {
+            addLogs("管理员删除","删除工程 {$project['name']} 成功");
             $this->success("删除成功！");
         } else {
             $this->error("删除失败！");
@@ -99,6 +103,8 @@ class ProjectController extends AdminBaseController
             foreach ($list_array as $v){
                 Db::name('Project')->delete($v);
             }
+            addLogs("管理员删除","删除".count($list_array)."条工程成功");
+
             $this->success("删除成功");
         }
     }

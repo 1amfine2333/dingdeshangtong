@@ -224,20 +224,35 @@ hello;
     {
 
         $userId = cmf_get_current_user_id();
-        $user = cmf_get_current_user();
 
         if (empty($userId)) {
 
+
             $login_url =cmf_url("login/index");
+
+            $module = $this->request->module();
+            $action = request()->action();
+            $controller = request()->controller();
+            $url = "{$module}{$controller}{$action}";
+
+            if (strtolower($url)=='salesplandetail'){
+                return;
+            }
 
             if ($this->request->isAjax()) {
                 $this->error("您尚未登录",$login_url);
             } else {
                 $this->redirect($login_url);
             }
-        }elseif ($user && $user['user_status']!=1){
-            $login_url =cmf_url("login/index");
-            $this->redirect($login_url);
+        }elseif ($userId){
+
+            $user_info = UserModel::get($userId);
+            if ($user_info && $user_info->user_status!=1){
+
+                cmf_update_current_user(null);
+                $login_url =cmf_url("login/index",['state'=>'loginOut']);
+                $this->redirect($login_url);
+            }
         }
     }
 

@@ -12,7 +12,7 @@
 	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/jq/jquery-1.10.2.js" ></script>
 	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js" ></script>
 	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js" ></script>
-	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js?_=1" ></script>
 	</head>
 	<style>
 		body .weui-vcode-btn.getCode.active{ color: #ccc;}
@@ -30,13 +30,15 @@
 				<div class="inputBox">
 					<div class="bold">手机号</div>
 					<div class="input">
-						<input type="tel" name="mobile" v-model="mobile" value="" pattern="[0-9]" placeholder="请输入手机号"/>
+						<input type="tel" name="mobile" v-model="mobile" value="" maxlength="11" pattern="[0-9]" placeholder="请输入手机号"/>
+						<i></i>
 					</div>
 				</div>
 				<div class="inputBox">
 					<div class="bold">密码</div>
 					<div class="input disbox">
-						<input type="password" value="" v-model="password" name="password" pattern="[0-9]" class="disflex" placeholder="请输入密码"/>
+						<input type="password" value="" v-model="password" name="password" maxlength="20" pattern="[0-9]" class="disflex" placeholder="请输入密码"/>
+						<i></i>
 					</div>
 				</div>
 				<div class="btn" style="margin-top: 4rem;cursor: pointer">登 录</div>
@@ -44,36 +46,58 @@
 		</section>
 	</body>
 </html>
+<if condition="input('state')=='loginOut'">
+	<script>
+        var userKey = "sales_auth";
+        cache(userKey,null);
+	</script>
+</if>
 <script>
+    var userKey = "sales_auth";
+    var auth = cache(userKey);
 
+    if (auth){
+        request({
+            url:"{:url('sales/login/index')}",
+            data:{auth:auth},success:function (result) {
+                if ( result.code){
+                   window.location=result.url;
+                }
+            }
+        })
+    }
 	var app = new Vue({
 		el:'#app',
 		data:{
 			mobile:'',    //手机号
-            password:'123456',    //验证码
-			yzmText:'获取验证码',    //获取验证码文字
-			times:60,     //验证码倒计时
-			isget:0,    //是否已点击获取验证码按钮(0.未点击，1.已点击)
-		},
-		methods:{
-
+            password:'',    //验证码
 		}
-	})
+	});
 
 	$("div.btn").on("click",function () {
 	    let form = $("#login_form");
 		let data = form.formData();
-        if(!(/^(13|14|15|17|18|19)[0-9]{9}$/.test(data.mobile))){
-            $.toast("手机号码有误",'cancel');
+
+        if( data.mobile.length<1){
+            $.toast(" 请输入账号！",'cancel');
             return false;
         }
         if( data.password.length<1){
-            $.toast("请输入密码",'cancel');
+            $.toast(" 请输入密码！",'cancel');
             return false;
         }
+
+
+        if(!(/^(13|14|15|17|18|19)[0-9]{9}$/.test(data.mobile))){
+            $.toast("请输入正确的账号!",'cancel');
+            return false;
+        }
+
         request({
-			url:form[0].action,
 			data:data,
+            done:function (result) {
+                result.code && cache(userKey,result.data)
+            }
 		})
     })
 </script>

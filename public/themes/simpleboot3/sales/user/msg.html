@@ -47,7 +47,7 @@
             <div class="weui-cell__hd"  style="align-self: flex-start;">
                 <img v-bind:src="'__TMPL__/public/assets/user/img/'+(item['is_read']?'radio.png':'point.png')"  />
             </div>
-            <div class="weui-cell__bd"  @click="location='/index/user/msg_detail/id/'+item.id">
+            <div class="weui-cell__bd"  @click="location.href='msg_detail/id/'+item.id">
                 <div v-bind:class="item.is_read?'color9':''" v-text="item.title"></div>
                 <div class="color9 size9" v-text="item['create_time']"></div>
             </div>
@@ -66,8 +66,8 @@
             list:[],
             page:1,
             pages:0,
-            loading:'<div class="weui-loadmore"><i class="weui-loading"></i><span class="weui-loadmore__tips">正在加载</span></div>',
-            no_more: '<div class="weui-loadmore weui-loadmore_line"><span class="weui-loadmore__tips">没有更多了</span></div>'
+            loading:'<div class="weui-loadmore"><i class="weui-loading"></i><span class="weui-loadmore__tips">上拉可以加载更多哦</span></div>',
+            no_more: '<div class="weui-loadmore weui-loadmore_line"><span class="weui-loadmore__tips">到底啦~</span></div>'
         },
         created:function(){
             $(window.document.body).infinite();

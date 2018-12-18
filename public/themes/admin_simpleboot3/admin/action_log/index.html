@@ -8,7 +8,7 @@
 			模糊查询：
 			<input class="form-control" type="text" autocomplete="off" name="keyword" style="width: 200px; margin-right: 10px" value="{:input('request.keyword')}"
 				   placeholder="操作员账号">
-			注册时间：
+			操作时间：
 			<input type="text" class="form-control"  autocomplete="off" placeholder="开始时间" id="start" name="start_time"
 				   value="{$start_time|default=''}"  style="width: 155px;">
 			<span>—</span>
@@ -58,12 +58,10 @@
             laydate.render({
                 elem: '#start'
                 ,type: 'datetime'
-                ,max: "{:date('Y-m-d H:i:s')}"
             });
             laydate.render({
                 elem: '#end'
                 ,type: 'datetime'
-                ,max: "{:date('Y-m-d H:i:s')}"
             });
 		});
   </script>

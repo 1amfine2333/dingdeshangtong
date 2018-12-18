@@ -32,10 +32,10 @@
 		<section id="app" class="mainSec">
 			<div class="headBg">
 				<div class="headImg">
-					<a href="{:url('user/info')}"> <img src="{$Think.session.user.avatar}" onerror="this.src='__TMPL__/public/assets/user/img/default.jpg'"/></a>
+					<a href="{:cmf_url('user/info')}"><img src="{$Think.session.sales.avatar}" onerror="this.src='__TMPL__/public/assets/user/img/default.jpg'"/></a>
 				</div>
-				<div class="size11">{$Think.session.user.user_nickname}</div>
-				<div style="padding-bottom: 10px;">{$Think.session.user.mobile}</div>
+				<div class="size11">{$Think.session.sales.user_nickname}</div>
+				<div style="padding-bottom: 10px;">{$Think.session.sales.mobile}</div>
 			</div>
 
 			<div class="centerCon" style="padding: 20px 0 0;">
@@ -87,7 +87,6 @@
 	</body>
 </html>
 <script>
-
 	var app = new Vue({
 		el:'#app',
 		data:{

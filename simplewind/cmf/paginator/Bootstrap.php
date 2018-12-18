@@ -24,7 +24,7 @@ class Bootstrap extends Paginator
 
         if (empty($text)) {
             if (empty($this->options['prev'])) {
-                $text = "&laquo;";
+                $text = "上一页";
             } else {
                 $text = $this->options['prev'];
             }
@@ -50,7 +50,7 @@ class Bootstrap extends Paginator
     {
         if (empty($text)) {
             if (empty($this->options['next'])) {
-                $text = "&raquo;";
+                $text = "下一页";
             } else {
                 $text = $this->options['next'];
             }

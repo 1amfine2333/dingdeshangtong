@@ -9,7 +9,6 @@
 namespace app\sales\controller;
 
 
-use app\admin\model\UserLogModel;
 use app\index\lib\AliSms;
 use app\sales\model\UserModel;
 use cmf\controller\HomeBaseController;
@@ -31,21 +30,27 @@ class LoginController extends HomeBaseController
         if (input('state') == 'loginOut') {
             return view(":login");
         }
+        if (request()->isAjax()){
+            $auth = input("auth");
+            if (cmf_is_user_login($auth)){
+                $this->success("success",url("user/index"));
+            }
+        }
 
         if ($code) {
-            $res =$user->login($code);
 
-            if($res){
-                return $res;
-            }
+            $user->login($code);
 
         } else {
             $this->redirect($user->redirect_auth());
         }
 
+        if (cmf_is_user_login()) {
+            $this->redirect(url("user/index"));
+        }
+
         return view(":login");
     }
-
 
     /**
      * 登录提交
@@ -54,7 +59,8 @@ class LoginController extends HomeBaseController
     public function loginPost()
     {
 
-        if (request()->isPost()) {
+        if (request()->isPost())
+        {
             $data = input('request.');
 
             $userModel = new UserModel();
@@ -68,65 +74,75 @@ class LoginController extends HomeBaseController
             $mobile = $data['mobile'];
             $password = $data['password'];
 
-            $user = $userModel->where(['mobile' => $mobile,'user_pass'=>cmf_password($password), 'user_type' => 3])-> find();
+            $user = $userModel->where(['mobile' => $mobile, 'user_type' => 3])->find();
 
-            if (empty($user)) {
-                $this->error("请输入正确的账号/密码!");
-            }
+            //通过账号未找到用户
+            if (empty($user))
+            {
 
-            if ($user) {
+                $this->error("请输入正确的账号!");
 
-                if ($user['user_status'] == 1) {
+            } elseif ($user) {
 
-                    cmf_update_current_user($user);
-                    $this->success("登录成功", url('user/index'), [], 1);
+                if ($user['user_pass'] !== cmf_password($password)) {
+                    $this->error("请输入正确的密码!");
+                }
+
+                $sales = session("sales_wx");
+
+                //未获取到
+                if (empty($sales)) {
+
+                    $this->error("获取微信授权失败!");
+                }
+
+                //用户状态正常
+                if ($user['user_status'] == 1  )
+                {
+                    //此用户微信ID 和此微信匹配 登录成功
+                    if($sales['openid'] == $user['open_id']){
+
+                        cmf_update_current_user($user);
+                        $auth = encrypt(json_encode(['id'=>cmf_get_current_user_id()]));
+                        $this->success("登录成功", url('user/index'), $auth, 1);
+                    }else{
+
+                        $this->error("请使用当前微信绑定的账号登录!");
+                    }
+
 
                 } else if ($user['user_status'] == 2) {
 
-                    $result = $userModel->register($mobile);
+                 //用户状态未微信认证时
 
-                    if ($result === true) {
-                        $this->success('登录成功!',   url('user/index'));
-                    } else {
-                        $this->error("登录失败!");
+                    //查找此微信是否已被注册
+                    $userinfo = $userModel->where(["open_id" => $sales['openid'], 'user_type' => 3])->find();
+
+                    //此微信已注册并且已绑定手机 则不允许登录
+                    if ($userinfo)
+                    {
+
+                        $this->error("请使用当前微信绑定的账号登录!");
+                    }else{
+
+                        //此微信为注册  则绑定此手机号码
+                        $result = $userModel->register($mobile);
+
+                        if ($result === true) {
+                            $auth = encrypt(json_encode(['id'=>cmf_get_current_user_id()]));
+                            $this->success('登录成功!', url('user/index'),$auth);
+                        } else {
+                            $this->error("获取用户数据失败,登录失败!");
+                        }
                     }
 
+
                 } else {
+                    //用户被管理员冻结
                     $this->error(" 您的账号已冻结 解冻请联系平台！");
                 }
-
-            } else {
-                //在为微信未授权登录的状态下
-                $this->error('该手机号尚未认证!', url("login/index"), [], 1);
             }
         }
-
-        $this->success('login', url("login/index", ['state' => 'sales']));
-    }
-
-
-
-
-    /**
-     * 前台ajax 判断用户登录状态接口
-     */
-    function isLogin()
-    {
-        if (cmf_is_user_login()) {
-            $this->success("用户已登录", null, ['user' => cmf_get_current_user()]);
-        } else {
-            $this->error("此用户未登录!");
-        }
-    }
-
-
-    /**
-     * 前台ajax 判断用户登录状态接口
-     */
-    function disabled()
-    {
-
-        return view(":disable");
     }
 
     /**
@@ -134,7 +150,7 @@ class LoginController extends HomeBaseController
      */
     function loginOut()
     {
-        session("user", null);
+        cmf_update_current_user( null);
         $this->redirect(url("login/index", ['state' => 'loginOut']));
     }
 }

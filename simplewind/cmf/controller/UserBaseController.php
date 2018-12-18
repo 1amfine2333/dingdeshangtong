@@ -24,27 +24,33 @@ class UserBaseController extends HomeBaseController
 
 
         $module = $this->request->module();
-
+        $hasMsg = $web_msg->hasMsg();
         if($module=='index'){
+            //需要
+
             $tips_my_msg = $web_msg->getTips();
             $tips_complaint = $comPlaint->getTip();
+
             $data=[
                 'tips_my_msg'=>$tips_my_msg,
                 'tips_complaint'=>$tips_complaint,
-                'has_msg'=>($tips_my_msg||$tips_complaint)?1:0,
+                'has_msg'=>$hasMsg,
             ];
+
+            
+
             $this->assign($data);
 
         }elseif($module=='sales'){
-            $tips_my_msg = $web_msg->getTips($module);
+
+            $tips_my_msg = $web_msg->getTips();
+
             $data=[
                 'tips_my_msg'=>$tips_my_msg,
-                'has_msg'=>($tips_my_msg)?1:0,
+                'has_msg'=>$hasMsg,
             ];
             $this->assign($data);
         }
-
-
 
        $this->checkUserLogin();
     }

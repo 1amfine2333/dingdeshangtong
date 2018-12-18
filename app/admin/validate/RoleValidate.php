@@ -15,11 +15,12 @@ use think\Validate;
 class RoleValidate extends Validate
 {
     protected $rule = [
-        'name' => 'require',
+        'name' => 'require|unique:role,name',
     ];
 
     protected $message = [
         'name.require' => '角色名称不能为空',
+        'name.unique' => '角色名称已存在'
     ];
 
     protected $scene = [

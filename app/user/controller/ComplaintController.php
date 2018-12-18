@@ -11,6 +11,7 @@
 
 namespace app\user\controller;
 
+use app\admin\model\WebMsgModel;
 use app\user\model\ComplaintModel;
 use app\user\model\UserModel;
 use cmf\controller\AdminBaseController;
@@ -69,8 +70,9 @@ class ComplaintController extends AdminBaseController
 
 
         $list = Db::name('complaint')
-            ->field('c.id,c.create_time,u.user_nickname,u.mobile,c.*')
-            ->alias("c")->join('user u', 'c.user_id = u.id')
+            ->alias("c")
+            ->field('c.id,c.create_time,c.status,u.user_nickname,u.mobile,c.*')
+            ->join('user u', 'c.user_id = u.id')
             ->order("c.create_time DESC")
             ->where($where)
             ->paginate(10);
@@ -107,12 +109,14 @@ class ComplaintController extends AdminBaseController
      */
     public function info()
     {
-        $user = new UserModel();
-        $data = $user->alias("u")
-            ->field('c.id,c.create_time,u.user_nickname,u.mobile,c.*')
-            ->join('complaint c','c.user_id=u.id')
+        $user = new ComplaintModel();
+        $data = $user->alias("c")
+            ->field('u.user_nickname,u.mobile,c.status,c.*')
+            ->join('user u','c.user_id=u.id')
+            ->where("c.id",intval(input('id')))
             ->order("c.create_time DESC")->find();
         // 获取分页显示
+
         $this->assign('data', $data);
         return $this->fetch();
     }
@@ -145,16 +149,24 @@ class ComplaintController extends AdminBaseController
                 $id = input("id",0,'intval');
 
                 $data = $complaint::get($id);
-                if ($data && $data->status===0 && empty($data->reply)){
+                if ($data && $data->status===0){
                     $_POST['status']=1;
+                    $_POST['is_read']=1;
                     $result = $complaint->isUpdate(true)->save($_POST);
-                }
 
-                if ($result !== false) {
-                    $this->success("回复成功！", url("complaint/index"));
-                } else {
+                    if ($result) {
+                        if($data['type']!==3){
+                            (new WebMsgModel())->setMsg([$data['user_id']],2);
+                        }
+                        addLogs("管理员回复","回复一条投诉建议");
+                        $this->success("回复成功！", url("complaint/index"));
+                    } else {
+                        $this->error("计划单不存在或已回复！");
+                    }
+                }else{
                     $this->error("计划单不存在或已回复！");
                 }
+
             }
         }
     }
@@ -178,12 +190,13 @@ class ComplaintController extends AdminBaseController
     public function delMultiple()
     {
         $id = $this->request->param('id', "", 'string');
-        if ($len  = model('user')->where('id','in',$id)->delete() !== false) {
-            Db::name("RoleUser")->where("user_id" ,"in", $id)->delete();
-            $this->success("删除成功！",url("complaint/index"));
+        $len  = model('Complaint')->whereIn('id',$id)->delete();
+        if ( $len) {
+            addLogs("管理员删除","删除{$len}条投诉建议");
+            $this->success("删除成功！",url("complaint/index"),$id);
         } else {
 
-            $this->error("删除失败！");
+            $this->error("删除失败！",null,$id);
         }
     }
 
@@ -192,11 +205,18 @@ class ComplaintController extends AdminBaseController
         $complaint = new ComplaintModel();
         $key = 'COMPLAINT_IDS';
         $cacheId = cache($key)?:0;
-        $ids =$complaint->whereNotIn('id',$cacheId)->where('status',0)->column('id');
-        if (count($ids)){
+        $count =$complaint->whereNotIn('id',$cacheId)->where('status',0)->count('id');
+        return json(['count'=>$count]);
+    }
+
+    public function setMsg(){
+        $complaint = new ComplaintModel();
+        $key = 'COMPLAINT_IDS';
+        $ids = $complaint->where('status',0)->column('id');
+        if (count($ids)>0){
             cache($key,$ids);
         }
-        return json(['count'=>count($ids)]);
+        return json(['set_length'=>count($ids)]);
     }
 
 

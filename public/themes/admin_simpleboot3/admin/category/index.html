@@ -5,8 +5,8 @@
     table tr td{text-align: left !important;}
     .treeTable tr td .expander{margin-left: 0 !important;}
     .layui-layer-btn-{text-align: center !important;}
-    .treeTable tr.collapsed td .expander{background-image:url(__STATIC__/images/open.png) !important;padding: 20px;background-size: 25px;}
-    .treeTable tr.expanded td .expander{background-image:url(__STATIC__/images/close.png) !important;padding: 20px;background-size: 22px;}
+    .treeTable tr.collapsed td .expander{background-image:url(/themes/admin_simpleboot3/public/assets/images/tv-expandable.gif) !important;padding: 15px;background-size: 15px;}
+    .treeTable tr.expanded td .expander{background-image:url(/themes/admin_simpleboot3/public/assets/images/tv-collapsable.gif) !important;padding: 15px;background-size: 15px;}
 </style>
 </head>
 <body>
@@ -99,18 +99,12 @@
                 layer.msg("请输入子分类名称",{icon:2,time:2000});
                 return false;
             }
-            $.ajax({
-                type: 'POST',
+            request({
                 url: '{:url("Category/addPost")}',
                 data: {parent_id:pid,name:category},
-                success: function (res) {
-                    if(res.code === 1){
-                        layer.msg(res.msg,{icon:1,time:2000},function () {
-                            location.reload();
-                        })
-                    }else{
-                        layer.msg(res.msg,{icon:2,time:2000});
-                    }
+                loading:0,
+                type:"post",
+                done:function (result) {
                 }
             })
         }
@@ -212,7 +206,7 @@
                         layer.msg("请输入子分类名称",{icon:2,time:2000});
                         return false;
                     }
-                    $.ajax({
+                 /*   $.ajax({
                         type: 'POST',
                         url: '{:url("Category/editPost")}',
                         data: {id:data_id,parent_id:pid,name:category},
@@ -225,7 +219,20 @@
                                 layer.msg(res.msg,{icon:2,time:2000});
                             }
                         }
+                    })*/
+
+
+
+                    request({
+                        url: '{:url("Category/editPost")}',
+                        data: {id:data_id,parent_id:pid,name:category},
+                        loading:0,
+                        type:"post",
+                        done:function (result) {
+                        }
                     })
+
+
                 }
             });
         });

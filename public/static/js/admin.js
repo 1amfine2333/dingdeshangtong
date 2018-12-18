@@ -67,7 +67,7 @@
             var $btn;
             $('button.js-ajax-submit').on('click', function (e) {
                 var btn = $(this), form = btn.parents('form.js-ajax-form');
-                $btn    = btn;
+                $btn = btn;
                 if (btn.data("loading")) {
                     return;
                 }
@@ -305,12 +305,12 @@
         Wind.use('artDialog', 'noty', function () {
             $('.js-ajax-delete').on('click', function (e) {
                 e.preventDefault();
-                var $_this  = this,
-                    $this   = $($_this),
-                    href    = $this.data('href'),
+                var $_this = this,
+                    $this = $($_this),
+                    href = $this.data('href'),
                     refresh = $this.data('refresh'),
-                    msg     = $this.data('msg');
-                href        = href ? href : $this.attr('href');
+                    msg = $this.data('msg');
+                href = href ? href : $this.attr('href');
 
                 art.dialog({
                     title: false,
@@ -377,12 +377,12 @@
         Wind.use('artDialog', 'noty', function () {
             $('.js-ajax-dialog-btn').on('click', function (e) {
                 e.preventDefault();
-                var $_this  = this,
-                    $this   = $($_this),
-                    href    = $this.data('href'),
+                var $_this = this,
+                    $this = $($_this),
+                    href = $this.data('href'),
                     refresh = $this.data('refresh'),
-                    msg     = $this.data('msg');
-                href        = href ? href : $this.attr('href');
+                    msg = $this.data('msg');
+                href = href ? href : $this.attr('href');
                 if (!msg) {
                     msg = "您确定要进行此操作吗？";
                 }
@@ -454,12 +454,12 @@
             $('.js-ajax-btn').on('click', function (e) {
                 e.preventDefault();
                 var $_this = this,
-                    $this  = $($_this),
-                    href   = $this.data('href'),
-                    msg    = $this.data('msg');
-                refresh    = $this.data('refresh');
-                href       = href ? href : $this.attr('href');
-                refresh    = refresh == undefined ? 1 : refresh;
+                    $this = $($_this),
+                    href = $this.data('href'),
+                    msg = $this.data('msg');
+                refresh = $this.data('refresh');
+                href = href ? href : $this.attr('href');
+                refresh = refresh == undefined ? 1 : refresh;
 
 
                 $.getJSON(href).done(function (data) {
@@ -522,7 +522,7 @@
 
             //分组各纵横项
             var check_all_direction = check_all.data('direction');
-            check_items             = $('input.js-check[data-' + check_all_direction + 'id="' + check_all.data('checklist') + '"]').not(":disabled");
+            check_items = $('input.js-check[data-' + check_all_direction + 'id="' + check_all.data('checklist') + '"]').not(":disabled");
 
             //点击全选框
             check_all.change(function (e) {
@@ -642,8 +642,8 @@
     var $js_address_select = $('.js-address-select');
     if ($js_address_select.length > 0) {
         $('.js-address-province-select,.js-address-city-select').change(function () {
-            var $this                   = $(this);
-            var id                      = $this.val();
+            var $this = $(this);
+            var id = $this.val();
             var $child_area_select;
             var $this_js_address_select = $this.parents('.js-address-select');
             if ($this.is('.js-address-province-select')) {
@@ -675,8 +675,8 @@
 
                             $.each(data.data.areas, function (i, area) {
                                 var area_html = '<option value="[id]">[name]</option>';
-                                area_html     = area_html.replace('[name]', area.name);
-                                area_html     = area_html.replace('[id]', area.id);
+                                area_html = area_html.replace('[name]', area.name);
+                                area_html = area_html.replace('[id]', area.id);
                                 html.push(area_html);
                             });
                             html = html.join('', html);
@@ -705,7 +705,7 @@
 
 //重新刷新页面，使用location.reload()有可能导致重新提交
 function reloadPage(win) {
-    var location  = win.location;
+    var location = win.location;
     location.href = location.pathname + location.search;
 }
 
@@ -744,7 +744,7 @@ function getCookie(name) {
 function setCookie(name, value, options) {
     options = options || {};
     if (value === null) {
-        value           = '';
+        value = '';
         options.expires = -1;
     }
     var expires = '';
@@ -758,9 +758,9 @@ function setCookie(name, value, options) {
         }
         expires = '; expires=' + date.toUTCString(); // use expires attribute, max-age is not supported by IE
     }
-    var path        = options.path ? '; path=' + options.path : '';
-    var domain      = options.domain ? '; domain=' + options.domain : '';
-    var secure      = options.secure ? '; secure' : '';
+    var path = options.path ? '; path=' + options.path : '';
+    var domain = options.domain ? '; domain=' + options.domain : '';
+    var secure = options.secure ? '; secure' : '';
     document.cookie = [name, '=', encodeURIComponent(value), expires, path, domain, secure].join('');
 }
 
@@ -779,7 +779,7 @@ function openIframeDialog(url, title, options) {
         width: "95%",
         height: '90%'
     };
-    params     = options ? $.extend(params, options) : params;
+    params = options ? $.extend(params, options) : params;
     Wind.use('artDialog', 'iframeTools', function () {
         art.dialog.open(url, params);
     });
@@ -803,19 +803,19 @@ function openMapDialog(url, title, options, callback) {
         height: 400,
         ok: function () {
             if (callback) {
-                var d            = this.iframe.contentWindow;
-                var lng          = $("#lng_input", d.document).val();
-                var lat          = $("#lat_input", d.document).val();
-                var address      = {};
-                address.address  = $("#address_input", d.document).val();
+                var d = this.iframe.contentWindow;
+                var lng = $("#lng_input", d.document).val();
+                var lat = $("#lat_input", d.document).val();
+                var address = {};
+                address.address = $("#address_input", d.document).val();
                 address.province = $("#province_input", d.document).val();
-                address.city     = $("#city_input", d.document).val();
+                address.city = $("#city_input", d.document).val();
                 address.district = $("#district_input", d.document).val();
                 callback.apply(this, [lng, lat, address]);
             }
         }
     };
-    params     = options ? $.extend(params, options) : params;
+    params = options ? $.extend(params, options) : params;
     Wind.use('artDialog', 'iframeTools', function () {
         art.dialog.open(url, params);
     });
@@ -832,9 +832,9 @@ function openMapDialog(url, title, options, callback) {
  */
 function openUploadDialog(dialog_title, callback, extra_params, multi, filetype, app) {
     Wind.css('artDialog');
-    multi      = multi ? 1 : 0;
-    filetype   = filetype ? filetype : 'image';
-    app        = app ? app : GV.APP;
+    multi = multi ? 1 : 0;
+    filetype = filetype ? filetype : 'image';
+    app = app ? app : GV.APP;
     var params = '&multi=' + multi + '&filetype=' + filetype + '&app=' + app;
     Wind.use("artDialog", "iframeTools", function () {
         art.dialog.open(GV.ROOT + 'user/Asset/webuploader?' + params, {
@@ -849,7 +849,7 @@ function openUploadDialog(dialog_title, callback, extra_params, multi, filetype,
             ok: function () {
                 if (typeof callback == 'function') {
                     var iframewindow = this.iframe.contentWindow;
-                    var files        = iframewindow.get_selected_files();
+                    var files = iframewindow.get_selected_files();
                     console.log(files);
                     if (files && files.length > 0) {
                         callback.apply(this, [this, files, extra_params]);
@@ -873,7 +873,7 @@ function openUploadDialog(dialog_title, callback, extra_params, multi, filetype,
  * @param app  应用名,CMF的应用名
  */
 function uploadOne(dialog_title, input_selector, filetype, extra_params, app) {
-    filetype   = filetype ? filetype : 'file';
+    filetype = filetype ? filetype : 'file';
     openUploadDialog(dialog_title, function (dialog, files) {
         $(input_selector).val(files[0].filepath);
         $(input_selector + '-preview').attr('href', files[0].preview_url);
@@ -897,7 +897,7 @@ function uploadOneImage(dialog_title, input_selector, extra_params, app) {
 
         $(input_selector + '-name').val(files[0].name);
         $(input_selector + '-name-text').text(files[0].name);
-        
+
     }, extra_params, 0, 'image', app);
 }
 
@@ -911,15 +911,15 @@ function uploadOneImage(dialog_title, input_selector, extra_params, app) {
  */
 function uploadMultiImage(dialog_title, container_selector, item_tpl_wrapper_id, extra_params, app) {
     openUploadDialog(dialog_title, function (dialog, files) {
-        var tpl  = $('#' + item_tpl_wrapper_id).html();
+        var tpl = $('#' + item_tpl_wrapper_id).html();
         var html = '';
         $.each(files, function (i, item) {
             var itemtpl = tpl;
-            itemtpl     = itemtpl.replace(/\{id\}/g, item.id);
-            itemtpl     = itemtpl.replace(/\{url\}/g, item.url);
-            itemtpl     = itemtpl.replace(/\{preview_url\}/g, item.preview_url);
-            itemtpl     = itemtpl.replace(/\{filepath\}/g, item.filepath);
-            itemtpl     = itemtpl.replace(/\{name\}/g, item.name);
+            itemtpl = itemtpl.replace(/\{id\}/g, item.id);
+            itemtpl = itemtpl.replace(/\{url\}/g, item.url);
+            itemtpl = itemtpl.replace(/\{preview_url\}/g, item.preview_url);
+            itemtpl = itemtpl.replace(/\{filepath\}/g, item.filepath);
+            itemtpl = itemtpl.replace(/\{name\}/g, item.name);
             html += itemtpl;
         });
         $(container_selector).append(html);
@@ -939,15 +939,15 @@ function uploadMultiImage(dialog_title, container_selector, item_tpl_wrapper_id,
 function uploadMultiFile(dialog_title, container_selector, item_tpl_wrapper_id, filetype, extra_params, app) {
     filetype = filetype ? filetype : 'file';
     openUploadDialog(dialog_title, function (dialog, files) {
-        var tpl  = $('#' + item_tpl_wrapper_id).html();
+        var tpl = $('#' + item_tpl_wrapper_id).html();
         var html = '';
         $.each(files, function (i, item) {
             var itemtpl = tpl;
-            itemtpl     = itemtpl.replace(/\{id\}/g, item.id);
-            itemtpl     = itemtpl.replace(/\{url\}/g, item.url);
-            itemtpl     = itemtpl.replace(/\{preview_url\}/g, item.preview_url);
-            itemtpl     = itemtpl.replace(/\{filepath\}/g, item.filepath);
-            itemtpl     = itemtpl.replace(/\{name\}/g, item.name);
+            itemtpl = itemtpl.replace(/\{id\}/g, item.id);
+            itemtpl = itemtpl.replace(/\{url\}/g, item.url);
+            itemtpl = itemtpl.replace(/\{preview_url\}/g, item.preview_url);
+            itemtpl = itemtpl.replace(/\{filepath\}/g, item.filepath);
+            itemtpl = itemtpl.replace(/\{name\}/g, item.name);
             html += itemtpl;
         });
         $(container_selector).append(html);
@@ -1023,7 +1023,7 @@ function openIframeLayer(url, title, options) {
             layer.close(index); //如果设定了yes回调，需进行手工关闭
         }
     };
-    params     = options ? $.extend(params, options) : params;
+    params = options ? $.extend(params, options) : params;
 
     Wind.css('layer');
 
@@ -1043,3 +1043,174 @@ $.fn.formData = function () {
     }
     return data;
 };
+
+
+/**
+ * @param option
+ * @returns {boolean}
+ */
+function request(option) {
+    if (typeof(option) !== 'object') {
+        console.warn("option is not a 'object'");
+        return false;
+    }
+    let load = -1;
+    if (typeof(option.loading) !== 'boolean') {
+        load = layer.load(1);
+    }
+    option.url = option.url || $("form[action]").attr("action");
+    $.ajax({
+        url: option.url || location.pathname,
+        data: option.data || null,
+        dataType: option.dataType || 'JSON',
+        type: option.type || 'post',
+        async: typeof(option.async) === 'boolean' ? option.async : true,
+        success: option.success || function (res) {
+            let url = res.url;
+            if (url) {
+                setTimeout(function () {
+                    window.location = url;
+                }, 1000)
+            }
+
+            let icon = res.code === 1 ? 1 : 2;
+            setTimeout(function () {
+                layer.msg(res.msg, {
+                    icon: icon, end: function () {
+                        layer.closeAll("loading");
+                    }
+                });
+            }, 10);
+            option.done && option.done(res);
+        },
+        complete: function (res) {
+            if (load !== -1) {
+                if (option.loading === 0) {
+                    $("#layui-layer" + load).html("");
+                } else {
+                    layer.close(load);
+                }
+            }
+            let ret = option.reload || false;
+            if (ret) {
+                ret = (typeof(ret === 'number')) ? ret : 0;
+                setTimeout(function () {
+                    location.reload();
+                }, ret * 1000);
+            }
+        },
+        error: option.error || function (e) {
+            // layer.msg('error:' + e.statusText || e.statusMessage);
+        }
+    });
+}
+
+
+jumpPage();
+/**
+ * 跳页组件
+ */
+function jumpPage() {
+    let pageBox = $(".pagination");
+    let page_item = pageBox.find('.page-item');
+    //少于2页数不处理
+    if (pageBox.length < 1 || page_item.length < 3) {return}
+    let style = 'border: 1px solid #ddd;height:34px;background:#f5f5f5; width: 60px;padding:5px;';
+    let html= '<li class="page-item"> <span style="padding: 0;height: 100%;border: none" class="page-link">' +
+        '<input style="'+style+'" type="number" placeholder="页数" id="jump_to"></span></li> <li><span  style="cursor: pointer" id="jump_href">跳转</span></li>';
+    pageBox.append(html);
+    let pageUrl = pageBox.find("a.page-link").eq(0).attr("href");
+    let max_page = page_item.eq(page_item.length - 2).text();
+    $("#jump_href").on("click",function () {
+        let jump_to = $("#jump_to").val();
+        if (pageUrl.indexOf("?") !== -1 && jump_to) {
+            //地址参数
+            let search = pageUrl.substring(pageUrl.indexOf("?"));
+            //地址参数转换对象
+            let param_object = get_all_param(search);
+            jump_to<1 &&(jump_to=1);
+            jump_to>parseInt(max_page)&&(jump_to=max_page);
+            param_object.page =  jump_to;//修正页数
+            if (get_param(null,'page')!=jump_to){
+
+                window.location = pageUrl.split("?")[0]+"?"+build_url(param_object)
+
+                console.log(pageUrl.split("?")[0]+"?"+build_url(param_object))
+            }
+        }
+    });
+
+}
+
+/**
+ * json 转 url 参数
+ * @param json
+ * @returns {string}
+ */
+function build_url(json) {
+    return Object.keys(json).map(function (key) {
+        return key + "=" + decodeURIComponent(json[key])//encodeURIComponent();
+    }).join("&")
+}
+
+/**
+ * @param url
+ * @param name
+ * @returns {*}
+ */
+function get_param(url, name) {
+    let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+    let r = (url || location.search).substr(1).match(reg);
+    if (r != null) return unescape(r[2]);
+    return null;
+}
+
+/**
+ * 获取全部参数转换json
+ * @param url
+ * @returns {Object}
+ */
+function get_all_param(url) {
+    url = url || location.search; //获取url中"?"符后的字串
+    let theRequest = {};
+    let str = ((url.indexOf("?") !== -1) ? url.substr(1) : url).split("&");
+    for (let i = 0; i < str.length; i++) {
+        theRequest[str[i].split("=")[0]] = unescape(str[i].split("=")[1]);
+    }
+    return theRequest;
+}
+
+
+/**
+ * 本地浏览器缓存
+ * @param key
+ * @param val
+ * @returns {string|object}
+ */
+function cache(key, val) {
+    let l = window.localStorage;
+    if (key) {
+        if (typeof val === 'undefined') {
+            let data = l.getItem(key);
+            try {
+                data = JSON.parse(data);
+            } catch (e) {
+                try {
+                    data = eval(data);
+                } catch (e) {
+
+                }
+            }
+            return data;
+        } else if (typeof val === 'object') {
+
+            let data = JSON.stringify(val);
+            l.setItem(key, data);
+
+        } else if (val === null) {
+            l.removeItem(key);
+        } else {
+            l.setItem(key, val);
+        }
+    }
+}

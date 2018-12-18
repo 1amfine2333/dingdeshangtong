@@ -35,7 +35,7 @@ class UserController extends UserBaseController
         return $this->fetch();
     }
 
-    public function mobile()
+    /*public function mobile()
     {
 
         if ($this->request->isPost()) {
@@ -52,10 +52,9 @@ class UserController extends UserBaseController
 
 
             if (!AliSms::checkVerify($mobile,$sms_code) && $sms_code!=123456){
-                $this->error('验证码错误!');
+                $this->error('请输入正确验证码!');
             }
             $model = new UserModel;
-
 
             if( $model->where(['mobile'=>$mobile,'user_type'=>3])->count() ){
                 $this->error("绑定失败,该手机号已被使用!");
@@ -80,7 +79,7 @@ class UserController extends UserBaseController
         }
 
         return $this->fetch();
-    }
+    }*/
 
 
     /**
@@ -94,15 +93,16 @@ class UserController extends UserBaseController
         $page = $this->request->param('page');
         $limit = 15;
         if (request()->isAjax()) {
-            $web = new WebMsgModel();
-            //如果传入状态参数 则根据状态查询
-            $where['user_type'] = ['in', [0, cmf_get_current_user()['user_type']]];
 
-            $list = $web->field("id,title,create_time")->where($where)->order("create_time desc")->page($page, $limit)->select();
+            $web = new WebMsgModel();
+
+            $where = ["to_user_id"=>cmf_get_current_user_id(),'create_time'=>['<=',time()]];
+
+            $list = $web->getMsgList($where ,$page,$limit);
+
 
             foreach ($list as $k => $value) {
                 $value['create_time'] = date("Y-m-d H:i:s", $value['create_time']);
-                $value['is_read'] = $web->is_read($value['id']);
                 $list[$k] = $value;
             }
 
@@ -130,7 +130,7 @@ class UserController extends UserBaseController
             if ($data) {
                 $data['create_time'] = date("Y-m-d H:i:s", $data['create_time']);
                 $web->joinRead($data['id']);
-                // $data['content'] = htmlspecialchars($data['content']);
+                $data['content'] = htmlspecialchars_decode($data['content']);
             }
 
             $this->assign('data', $data);
@@ -143,7 +143,7 @@ class UserController extends UserBaseController
      * @throws \think\exception\DbException
      */
 
-    public function sendCode()
+   /* public function sendCode()
     {
         $mobile = input('post.mobile');
         $time = 10;
@@ -160,8 +160,8 @@ class UserController extends UserBaseController
             $cache = cache($mobile);
 
             //限制发送时间
-            if ($cache && $cache + $time < time()) {
-                $this->error("操作太频繁,请[" . $cache . ']秒后再试!');
+            if ($cache && ($cache + $time) > time()) {
+                $this->error("操作太频繁,请[" . ( ($cache + $time) -time()) . ']秒后再试!');
             }
 
             //发送验证码
@@ -175,6 +175,6 @@ class UserController extends UserBaseController
         }
 
         $this->error("手机号格式错误!");
-    }
+    }*/
 
 }

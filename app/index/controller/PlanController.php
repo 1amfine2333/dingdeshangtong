@@ -29,22 +29,26 @@ class PlanController extends UserBaseController
         $plan  = new PlanOrderModel();
         $request = input('request.');
         $page = intval(input('page'));
-        $where = ['user_id'=>cmf_get_current_user_id()];
+        $where = ['user_id'=>cmf_get_current_user_id(),'delete_time'=>0];
 
         //如果传入状态参数 则根据状态查询
         if (!empty($request['status'])){
             $where['status'] = intval($request['status']);
         }
 
-        $limit = 3;
+        $limit = 10;
         $list = $plan->where($where)->order("create_time desc")->page($page,$limit)->select();
 
         $status = [1=>'待处理',2=>'已处理',3=>'已拒绝',4=>'已取消'];
 
         foreach ($list as $k => $value)
         {
+
+            $complain =ComplaintModel::get(['plan_number'=>$value['number'],'user_id'=>cmf_get_current_user_id()]);
+
             $value['pouring_time']=date("Y-m-d H:i:s",$value['pouring_time']);
             $value['status_text']= @$status[$value['status']];
+            $value['is_read'] = $complain?$complain->is_read:0;
             $list[$k]= $value;
         }
 
@@ -72,13 +76,17 @@ class PlanController extends UserBaseController
             $data = PlanOrderModel::get($id);
             $data['isBack']= 0;
             $data['back']=['content'=>'','reply'=>''];
-            $complain =(new ComplaintModel())->where(['plan_number'=>$data['number'],'user_id'=>cmf_get_current_user_id()])->find();
+            $complain =ComplaintModel::get(['plan_number'=>$data['number'],'user_id'=>cmf_get_current_user_id()]);
             if(!empty($complain)){
                 $data['isBack'] = 1;
                 $data['back']=[
                     'content'=>$complain['content'],
                     'reply'=>$complain['reply'],
                 ];
+
+                $complain->is_read=2;
+                $complain->save();
+
             }
             $this->assign('data',$data);
         }

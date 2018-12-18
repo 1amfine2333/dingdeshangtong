@@ -1,54 +1,151 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title></title>
-<meta name="keywords" content="" />
-<meta name="description" content="">
-<include file="public@head" />
-</head>
-
-<body class="body-white">
-	<include file="public@nav" />
-
-	<div class="container tc-main">
-		<div class="row">
-			<div class="col-md-4 col-md-offset-4">
-				<h2 class="text-center">用户登录</h2>
-				<form class="js-ajax-form" action="{:url('user/login/doLogin')}" method="post">
-					<div class="form-group">
-						<input type="text" id="input_username" name="username" placeholder="手机号/邮箱/用户名" class="form-control">
+	<head>
+		<meta charset="utf-8" />
+	    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>用户登录 - 鼎德商砼</title>
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/jquery-weui.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/weui.min.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/public.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css" />
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/jq/jquery-1.10.2.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js?_=1" ></script>
+	</head>
+	<style>
+		body .weui-vcode-btn.getCode.active{ color: #ccc;}
+		body .weui-vcode-btn.getCode{ color: #4c7db2;}
+		body .weui-vcode-btn{ font-size: 1rem;}
+	</style>
+	<body>
+		<section id="app" class="loginSec">
+			<form action="{:url('index/login/loginPost')}" id="login_form">
+				<div class="logo">
+					<img src="__TMPL__/public/assets/user/img/logo.png"/>
+					<div>鼎德商砼</div>
+				</div>
+				<div class="inputBox">
+					<div class="bold">手机号</div>
+					<div class="input">
+						<input type="tel" name="mobile" v-model="mobile" pattern="[0-9]" placeholder="请输入手机号"/>
 					</div>
-
-					<div class="form-group">
-						<input type="password" id="input_password" name="password" placeholder="密码" class="form-control">
+				</div>
+				<div class="inputBox">
+					<div class="bold">验证码</div>
+					<div class="input disbox">
+						<input type="number" v-model="yzm" name="sms_code" pattern="[0-9]" class="disflex" placeholder="请输入验证码"/>
+						<div class="yzm" style="cursor: pointer" @click="gerYzm($event)">{{yzmText}}</div>
 					</div>
-
-					<div class="form-group">
-						<div style="position: relative;">
-							<input type="text" name="captcha" placeholder="验证码" class="form-control captcha" style="width: 170px;float: left;margin-right: 30px">
-							<captcha height="38" width="160" font-size="20"/>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<input type="hidden" name="redirect" value="">
-						<button class="btn btn-primary btn-block js-ajax-submit" type="submit" style="margin-left: 0px">确定</button>
-					</div>
-
-					<div class="form-group" style="text-align: center;">
-						<ul class="list-inline">
-							<li><a href="{:cmf_url('user/Register/index')}">现在注册</a></li>
-							<li><a href="{:cmf_url('user/Login/findPassword')}">忘记密码</a></li>
-						</ul>
-					</div>
-				</form>
-			</div>
-		</div>
-
-
-	</div>
-	<!-- /container -->
-
-	<include file="public@scripts" />
-</body>
+				</div>
+				<div class="btn" style="margin-top: 4rem;cursor: pointer">登 录</div>
+			</form>
+		</section>
+	</body>
 </html>
+<script>
+
+	let msg = '{:input("msg")}';
+	if (msg){$.toast(msg,'cancel');}
+
+	var app = new Vue({
+		el:'#app',
+		data:{
+			mobile:'',    //手机号
+			yzm:'',    //验证码
+			yzmText:'获取验证码',    //获取验证码文字
+			times:60,     //验证码倒计时
+			isget:0,    //是否已点击获取验证码按钮(0.未点击，1.已点击)
+		},
+		methods:{
+			//获取验证码
+			gerYzm:function(evt){
+				var self=this;
+				if(self.isget===0){
+					self.isget=1;
+					let yzm = $(".yzm");
+                    if(yzm.hasClass('disable')){
+                        return;
+					}
+                    if(app.mobile.length<1){
+                        $.toast("请输入手机号! ",'cancel');
+                        yzm.removeClass('disable');
+                        self.isget=0;
+                        return false;
+                    }
+                    if(!(/^(13|14|15|17|18|19)[0-9]{9}$/.test(app.mobile))){
+                        $.toast("请输入正确的手机号! ",'cancel');
+                        yzm.removeClass('disable');
+                        self.isget = 0;
+                        return false;
+                    }
+
+                    request({
+						url:"{:url('login/sendCode')}",
+						data:{mobile:app.mobile},
+						//loading:false,
+						success:function (res) {
+                            setTimeout(function () {
+                                $.toast(res.msg,res.code?"":"cancel");
+                            },100);
+                            if(res.code){
+                                self.setTime();
+                            }else{
+                                self.isget = 0;
+                            }
+                        }
+					});
+
+				}
+			},
+			setTime:function(){
+				var self=this;
+				if(self.times<1){
+					self.yzmText="获取验证码";
+					self.times=60;
+					self.isget=0;
+					return
+				}else{
+					self.yzmText=self.times+"s后重新获取";
+					self.times--;
+				}
+				setTimeout(function(){
+					self.setTime();
+				},1000)
+			}
+		}
+	})
+
+	$("div.btn").on("click",function () {
+	    let form = $("#login_form");
+		let data = form.formData();
+		if(data.mobile.length<1){
+		    $.toast('请输入手机号 ! ','cancel');
+            return false;
+		}
+        if(data.sms_code.length<1){
+            $.toast('请输入验证码 ! ','cancel');
+            return false;
+        }
+
+        if(!(/^(13|14|15|17|18|19)[0-9]{9}$/.test(data.mobile))){
+            $.toast("请输入正确的手机号! ",'cancel');
+            return false;
+        }
+
+        if(!(/^\d{6}$/.test(data.sms_code))){
+            $.toast("请输入正确的验证码! ",'cancel');
+            return false;
+        }
+        request({
+			url:form[0].action,
+			data:data,
+		})
+    })
+</script>
+
+
+
+
+

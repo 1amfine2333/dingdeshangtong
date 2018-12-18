@@ -1,0 +1,10 @@
+array (
+  'pages' => 0,
+  'list' => 
+  think\model\Collection::__set_state(array(
+     'items' => 
+    array (
+    ),
+  )),
+  'page' => 1,
+)

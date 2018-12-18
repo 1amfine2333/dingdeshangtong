@@ -1,7 +1,7 @@
 
 /*按钮色*/
 body .weui-btn-area{ margin: 2rem 20px .3rem;}
-body .weui-btn_primary{    
+body .weui-btn_primary{
 	background-color: #4c7db2;
 	color: #fff;
 	font-size: 16px;
@@ -9,6 +9,11 @@ body .weui-btn_primary{
 body .weui-btn_primary:not(.weui-btn_disabled):active{
 	background-color: #4c7db2;
 }
+
+/*提示语背景色*/
+body .weui-loadmore_line .weui-loadmore__tips{ background-color: rgba(0,0,0,0);}
+body .weui-loadmore_line{ border-top: none !important;}
+
 /*点击背景色*/
 .weui-cell_access:active{ background-color: #fff;}
 
@@ -30,7 +35,7 @@ body .weui-cell_access .weui-cell__ft:after{
 }
 
 /*提示框*/
-body .weui-toast{margin-left: 0; background: rgba(0,0,0,.7); color: #fff; text-align: center; padding: 2rem 0; border-radius: 10px; z-index: 1000; width: 60%; right: 20%; transform: translate(-50% -50%); min-height: auto;}
+body .weui-toast{position: fixed; top: 50%; left: 50%; margin-left: 0; background: rgba(0,0,0,.7); color: #fff; text-align: center; padding: 2rem 0; border-radius: 10px; z-index: 1000; width: 50%; transform: translate(-50% -50%); min-height: auto;}
 body .weui-toast>p{ color: #fff;}
 body .weui-mask{ background: rgba(0,0,0,.5);}
 body .weui-dialog{ border-radius: 5px;}
@@ -120,8 +125,11 @@ body .mui-pciker-list li.highlight{ color: #000;}
 .loginSec .logo{ text-align: center; padding: 3rem 0 2rem;}
 .loginSec .logo img{ width: 6.5rem;;}
 .loginSec .logo>div{ color: #5075ff; font-size: 1.5rem; padding-top: 1rem; font-weight: bold;}
-.loginSec .inputBox .input{ margin: 1rem 0; background: #f7f7f7; border-radius: 5px; height: 3rem; line-height: 3rem;}
-.loginSec .inputBox .input>input{ height: 3rem; line-height: 3rem; padding: 10px;}
+.loginSec .inputBox .input{ margin: 1rem 0; background: #f7f7f7; border-radius: 5px; height: 3rem; line-height: 3rem; position: relative;}
+.loginSec .inputBox .input>input{ height: 2rem; line-height: 2rem; margin: .5rem;}
+/*.loginSec .inputBox*/
+.input>i{ display: none; width: 15px; height: 3rem; background: url(../img/cancel.png) no-repeat center; background-size: 15px; position: absolute; right: 10px; top: 0; }
+/*inline-block*/
 .loginSec .inputBox .input .yzm{ padding: 0 10px; font-size: 13px; color: #5075FF;}
 
 /*首页*/
@@ -129,7 +137,7 @@ body .mui-pciker-list li.highlight{ color: #000;}
 .mapInfo{ padding: .3rem .5rem .3rem 50px; color: #fff; background: url(../img/location.png) #5075FF no-repeat; background-size: 20px; background-position: 15px center; margin: 0 auto; border-radius: 50px; box-shadow: 0 2px 10px #5075FF; z-index: 99; position: absolute; left: 10%; right: 10%; bottom: 0;}
 .mapInfo .pen{ width: 20px; height: 20px; background: url(../img/edit.png) no-repeat center right; background-size: 15px;}
 /*输入框下面的记录文字*/
-.history{ position: absolute; right: 0; top: 100%; padding: .2rem .5rem; border: 1px solid #eee; border-radius: 3px; background: #fff; z-index: 99; display: none;}
+.history{ position: absolute; right: 0; top: 100%; padding: .2rem .5rem; border: 1px solid #eee; border-radius: 3px; background: #fff; z-index: 99999; display: none;}
 
 /*提交成功*/
 .sucessSec{ position: fixed; width: 100%; top: 50%; left: 50%; transform: translate(-50%,-40%);}
@@ -141,7 +149,7 @@ body .mui-pciker-list li.highlight{ color: #000;}
 .jihuanHeader>div.active{ color: #5075ff; font-weight: bold;}
 .jihuanHeader>div.active:after{ background: #5075ff;}
 
-.jihuaList{ padding: 10px; margin-top: 45px; padding-bottom: 50px;}
+.jihuaList{ padding: 50px 10px;}
 .listItem{ background: #fff; border-radius: 5px; box-shadow: 0 2px 10px #ccc; padding: 0 10px; margin-bottom: 10px;}
 .listItem .tit{ padding: 15px 0;}
 .listItem .tit.active{ background: url(../img/point.png) no-repeat left 55%; background-size: 12px; padding-left: 20px;}
@@ -192,8 +200,7 @@ body .mui-pciker-list li.highlight{ color: #000;}
 .backImgBox .addImg{background-size: 45%;}
 .backImgBox .backImgItem>img{ width: 100%; height: 100%; object-fit: cover; border-radius: 10px;}
 .backImgBox .backImgItem>i{ display: inline-block; width: 20px; height: 20px; background: url(../img/cancel.png) no-repeat center; background-size: cover; position: absolute; top: -8px; right: -8px;}
-
-
-
-
+.btn{
+	cursor: pointer;
+}
 

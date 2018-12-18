@@ -10,6 +10,7 @@ namespace app\admin\controller;
 
 
 use app\admin\model\WebMsgModel;
+use app\sales\model\UserModel;
 use cmf\controller\AdminBaseController;
 use FontLib\Table\Type\name;
 use think\Db;
@@ -71,7 +72,7 @@ class WebMsgController extends AdminBaseController
         }
         $Query= Db::name('web_msg');
 
-        $list = $Query->whereOr($keywordComplex)->where($where)->order("create_time DESC")->paginate(10);
+        $list = $Query->whereOr($keywordComplex)->where($where)->group("create_time")->order("create_time DESC")->paginate(10);
         $list->appends($param);
 
         $this->assign("data",$list->toArray()['data']);
@@ -101,13 +102,14 @@ class WebMsgController extends AdminBaseController
      *     'remark' => '发送站内信',
      *     'param'  => ''
      * )
+     * @throws
      */
     public function addPost()
     {
         if ($this->request->isPost()) {
 
             $data      = $this->request->param('post/a');
-            $config    = model("web_msg");
+            $config    = new WebMsgModel();
 
             if(empty($data['create_time'])){
                 $data['create_time'] = time();
@@ -118,13 +120,39 @@ class WebMsgController extends AdminBaseController
                     $this->error("发布时间不能小于当前时间！");
                 }
             }
-
-            $result = $config->validate(true)->allowField(true)->save($data);
-
-            if ($result === false) {
-                $this->error($config->getError());
+            $res = $this->validate($data,'WebMsg');
+            if ($res!==true){
+                $this->error($res);
             }
-            $this->success("发送成功！", url("web_msg/index"));
+
+            $w = [];
+            $model = new UserModel();
+
+            //如果不是全部
+            if($data['user_type']!=0){
+                $w['user_type']=$data['user_type'];
+            }
+
+            $all_id = $model->where($w)->column('id');
+
+            $msg = [];
+            //拼装信息
+            foreach ($all_id as $value){
+
+                $data['user_id']=cmf_get_current_admin_id();
+                $data['to_user_id']=$value;
+                $msg[] = $data;
+            }
+
+            $result = $config->saveAll($msg);
+
+            if ($result) {
+                $config->setMsg($all_id);//设置消息刷新
+                addLogs("管理员发布","发布站内信:".$data['title']);
+                $this->success("发送成功！", url("web_msg/index"));
+            }
+
+            $this->error("站内信发送失败!");
         }
     }
 
@@ -147,9 +175,15 @@ class WebMsgController extends AdminBaseController
     public function delete()
     {
         $id = $this->request->param('id', 0, 'intval');
-        $res =  Db::name("web_msg")->delete($id);
+        $msg = Db::name("web_msg")->find($id);
 
-        $this->success("删除".($res?"成功":"失败")."！", url("web_msg/index"));
+        $res =  Db::name("web_msg")->where(["title"=>$msg['title'],'create_time'=>$msg['create_time']])->delete();
+        addLogs("管理员删除","删除站内信:".$msg['title']);
+        if ($res){
+            $this->success("删除成功！", url("web_msg/index"));
+        }else{
+            $this->error("删除失败！", url("web_msg/index"));
+        }
     }
 
     /**

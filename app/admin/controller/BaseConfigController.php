@@ -53,16 +53,19 @@ class BaseConfigController extends AdminBaseController
             $data      = $this->request->param();
             $config = new BaseConfigModel();
             if($config->count()<5){
-                $title = input('post.tel_no');
-                $tel_no = input('post.title');
-                if(empty($title) && empty($tel_no)){
+                $tel_no= input('post.tel_no',0);
+                $title = input('post.title');
+
+                if(empty($title) || empty($tel_no)){
                     $this->error("请完善输入信息");
                 }
+
                 $result = $config->validate(true)->allowField(true)->save($data);
 
                 if ($result === false) {
                     $this->error($config->getError());
                 }
+                addLogs("管理员添加","添加热线电话成功");
                 $this->success("添加成功！", url("base_config/index"));
             }
 
@@ -91,16 +94,20 @@ class BaseConfigController extends AdminBaseController
         $data = $this->request->param();
         $BaseModel = new BaseConfigModel();
         if ($this->request->isPost()) {
-            $title = input('post.tel_no');
-            $tel_no = input('post.title');
-            if(empty($title) && empty($tel_no)){
+
+             $tel_no= input('post.tel_no',0);
+             $title = input('post.title');
+
+            if(empty($title) || empty($tel_no)){
                 $this->error("请完善输入信息");
             }
+
             $result = $BaseModel->validate(true)->allowField(true)->isUpdate(true)->save($data);
             if ($result === false) {
                 $this->error($BaseModel->getError());
             }
 
+            addLogs("管理员编辑","修改热线电话成功");
             $this->success("保存成功！", url("base_config/index"));
         }
         if (isset($data['id'])){
@@ -123,9 +130,8 @@ class BaseConfigController extends AdminBaseController
      */
     public function index()
     {
-
         $config = new BaseConfigModel();
-        $this->assign('base_config',$config->select());
+        $this->assign('base_config',$config->order('create_time desc')->select());
         $this->assign('len',$config->count());
         return $this->fetch();
     }
@@ -148,6 +154,7 @@ class BaseConfigController extends AdminBaseController
         $id = $this->request->param('id', 0, 'string');
         $config = new BaseConfigModel();
         $res = $config->where('id','in',$id)->delete();
+        addLogs("管理员删除","删除{$res}条热线电话成功");
         $this->success("成功删除{$res}条数据！", url("base_config/index"));
     }
 
@@ -168,7 +175,7 @@ class BaseConfigController extends AdminBaseController
     {
         $id = $this->request->param('id', 0, 'intval');
         BaseConfigModel::destroy($id);
-
+        addLogs("管理员删除","删除热线电话成功");
         $this->success("删除成功！", url("base_config/index"));
     }
 }

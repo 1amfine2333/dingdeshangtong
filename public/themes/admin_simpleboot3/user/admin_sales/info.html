@@ -82,9 +82,9 @@
         <div class="row">
             <div class="col-sm-12">
                 <php>$id = input('id');$type=input('type')?:2;</php>
-                <a href="{:url('admin_sales/info',['id'=>$id,'type'=>2])}" class="btn btn-success <if $type==2>active</if>">已处理 <span class="badge">{$count.success}</span></a>
-                <a href="{:url('admin_sales/info',['id'=>$id,'type'=>3])}" class="btn btn-danger <if $type==3>active</if>">已拒绝 <span class="badge">{$count.refuse}</span></a>
-                <a href="{:url('admin_sales/info',['id'=>$id,'type'=>4])}" class="btn btn-default <if $type==4>active</if>">已取消 <span class="badge">{$count.cancel}</span></a>
+                <a href="{:url('admin_sales/info',['id'=>$id,'type'=>2])}" class="btn btn-success <if $type==2>active</if>">已处理</a>
+                <a href="{:url('admin_sales/info',['id'=>$id,'type'=>3])}" class="btn btn-danger <if $type==3>active</if>">已拒绝</a>
+                <a href="{:url('admin_sales/info',['id'=>$id,'type'=>4])}" class="btn btn-default <if $type==4>active</if>">已取消</a>
             </div>
         </div>
     </div>

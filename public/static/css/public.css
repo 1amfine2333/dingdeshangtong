@@ -40,6 +40,7 @@
 
 .table-bordered td a{
     text-decoration: none !important;margin-right: 5px;
+    color:#18bc9c;
 }
 .btn {
     margin-right: 10px;
@@ -64,3 +65,12 @@ select.select{
 .pagination{
     float: right;
 }
+/*在谷歌下移除input[number]的上下箭头*/
+.pagination input[type='number']::-webkit-outer-spin-button,
+.pagination input[type='number']::-webkit-inner-spin-button{
+    -webkit-appearance: none !important;
+    margin: 0;
+}
+/*在firefox下移除input[number]的上下箭头*/
+.pagination input[type="number"]{-moz-appearance:textfield; text-align: center}
+.pagination input[type="number"]::placeholder{ color: #ddd}

@@ -11,14 +11,14 @@
 	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/jquery-weui.css" />
 	    <link rel="stylesheet" href="__TMPL__/public/assets/user/lib/weui/weui.min.css" />
 	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/public.css" />
-	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css" />
+	    <link rel="stylesheet" href="__TMPL__/public/assets/user/css/style.css?_=1" />
 	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/jq/jquery-1.10.2.js" ></script>
 	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/mui/mui.js" ></script>
 	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/mui/mui.picker.min.js" ></script>
 	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/mui/mui.poppicker.js" ></script>
 	    <script type="text/javascript" src="__TMPL__/public/assets/user/lib/weui/jquery-weui.js" ></script>
 	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/v.min.js" ></script>
-	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js?_=2" ></script>
+	    <script type="text/javascript" src="__TMPL__/public/assets/user/js/common.js?_=1" ></script>
         <script type="text/javascript" src="http://api.map.baidu.com/api?key=&v=1.1&services=true"></script>
 	</head>
 	<style>
@@ -26,10 +26,9 @@
 		body .weui-vcode-btn.getCode{ color: #4c7db2;}
 		body .weui-vcode-btn{ font-size: 1rem;}
 		.underline{ text-decoration: underline;}
-		.result{    position: absolute;
-			z-index: 9999;background: #fff;width:90%;left: 10%;
-			top:103%;font-size: 12px;color: #666}
-		.map{position: relative;}
+		.result{position: absolute;line-height: 20px;z-index: 9999;background: #fff;width: 100%;left: 10%;top: 103%;font-size: 13px;color: #666;}
+		.map{ position: relative;}
+		.btn{ cursor:pointer}
 	</style>
 	<body class="bgf7">
 		<section id="app" class="mainSec">
@@ -46,8 +45,10 @@
 								   onkeyup="searchEnd(this.value)"
                                    class="disflex size9 address"
                                    :class="isedit?'underline':''"
-                                   v-model="project_address" v-bind:value="project_address"  />
+								   maxlength="30" placeholder=""
+                                   v-model="project_address"  />
 							<div class="pen" @click="isedit=!isedit"></div>
+							<input type="hidden" v-model="longitude_and_latitude" name="longitude_and_latitude">
 						</div>
 						<div class="result"></div>
 					</div>
@@ -136,8 +137,8 @@
 		                	浇筑时间
 		                </div>
 		                <div class="weui-cell__bd relative">
-		                    <input type="text" class="right" required v-model="pouring_time"  readonly placeholder="请选择浇筑时间" />
-		                    <input type="hidden" name="pouring_time"  value="" />
+		                    <input type="text" class="right" required id="pouring_time"  readonly unselectable="on" onfocus="this.blur()"placeholder="请选择浇筑时间"  />
+		                    <input type="hidden" name="pouring_time"  id="pouring_time2" value="" />
 		                    <span class="history" data-val="pouring_time">{{history.pouring_time||''}}</span>
 		                </div>
 		                <div class="weui-cell__ft" onclick="choseTime(this)"> </div>
@@ -145,10 +146,10 @@
 		            <div class="weui-cell">
 		                <div class="weui-cell__hd">
 		                	<img src="__TMPL__/public/assets/user/img/styj.png" class="icon" alt="">
-		                	商拓运距
+		                	商砼运距
 		                </div>
 		                <div class="weui-cell__bd relative">
-		                    <input type="text" class="right" required v-model="distance"   name="distance" maxlength="15" placeholder="请输入商砼运距" />
+		                    <input type="number" class="right" required v-model="distance"  pattern="[0-9]"  name="distance" maxlength="15" placeholder="请输入商砼运距" />
 		                    <span class="history" data-val="distance">{{history.distance||''}}</span>
 		                </div>
 		                <div class="weui-cell__ft"> </div>
@@ -159,7 +160,8 @@
 		                	计划方量
 		                </div>
 		                <div class="weui-cell__bd relative">
-		                    <input type="text" class="right" required v-model="plan_square"   name="plan_square" maxlength="15" placeholder="请输入计划方量" />
+		                    <input type="number" class="right" required v-model="plan_square"  pattern="[0-9]"
+								   name="plan_square" maxlength="15" placeholder="请输入计划方量" />
 		                    <span class="history" data-val="plan_square">{{history.plan_square||''}}</span>
 		                </div>
 		                <div class="weui-cell__ft"> </div>
@@ -181,13 +183,13 @@
 		                	联系电话
 		                </div>
 		                <div class="weui-cell__bd relative">
-		                    <input type="text" class="right" required v-model="mobile"   name="mobile" placeholder="请输入现场负责人电话" />
+		                    <input type="tel" pattern="[0-9]" class="right" required v-model="mobile"   name="mobile" placeholder="请输入现场负责人电话" />
 		                    <span class="history" data-val="mobile">{{history.mobile||''}}</span>
 		                </div>
 		                <div class="weui-cell__ft"> </div>
 		            </div>
 		        </div>
-		        <div class="btn" style="margin-bottom:1rem;" id="submit">提 交</div>
+		        <div class="btn submitstr" style="margin-bottom:1rem;cursor: pointer">提 交</div>
 				</form>
 			</div>
 			
@@ -200,7 +202,30 @@
 	</body>
 </html>
 <script type="text/javascript">
-
+ 	mui.init();
+	//点击浇筑时间出现历史记录
+	function openTime(obj){
+		$('.history').hide();
+		$(obj).siblings('.history').show();
+	}
+	//选择时间
+	function choseTime(obj){
+		$('input').blur();
+		setTimeout(function(){
+			var dtpickerStartTime = new mui.DtPicker({
+				type : "hour",
+				beginDate:new Date(),
+				endDate:'',
+				labels: ['年', '月', '日', '点'],//设置默认标签区域提示语
+				customData : {
+				}
+			});
+			dtpickerStartTime.show(function(e){
+				$("#pouring_time").val(e.y.value+"年"+e.m.value+"月"+e.d.value+"日"+e.h.value+"点");				
+    			$('input[name=pouring_time]').val(e.text+":00:00");
+			})
+		},500)
+	}
     //百度地图API功能
     function loadJScript() {
         let script = document.createElement("script");
@@ -217,49 +242,48 @@
         //{"lng":116.413387,"lat":39.910924}
         let point = new BMap.Point(116.413387, 39.910924); // 创建点坐标
 
-		console.log(point)
-
         let marker = new BMap.Marker(point);// 创建标注
         map.addOverlay(marker);
+
+        map.centerAndZoom(point,16);
+        map.enableScrollWheelZoom();
 
 
         let geolocation = new BMap.Geolocation();
         geolocation.getCurrentPosition(function(r){
             if(this.getStatus() == BMAP_STATUS_SUCCESS){
                 var mk = new BMap.Marker(r.point);
-                console.log(r)
+               	let pt =  r.point;
                 map.addOverlay(mk);
-                map.panTo(r.point);
+                map.panTo(pt);
                 let addComp =  r.address;
                 let address = addComp.province ;
-                addComp.city && (address+="," + addComp.city);
-                addComp.district && (address+="," + addComp.district);
-                addComp.street && (address+="," + addComp.street);
-                addComp.streetNumber && (address+="," + addComp.streetNumber);
-                app.project_address =address;
+                addComp.city && (address+= addComp.city);
+                addComp.district && (address+=  addComp.district);
+                addComp.street && (address+=  addComp.street);
+                addComp.streetNumber && (address+= addComp.streetNumber);
+                app.project_address = address;
+                app.longitude_and_latitude= pt.lat+","+pt.lng;
             }
             else {
-                $.toast('获取位置失败');
+                $.toast('获取位置失败',"cancel");
+                window.close();
             }
         },{enableHighAccuracy: true});
 
+
+
         let geoc = new BMap.Geocoder();
-        map.centerAndZoom(point,15);
-        map.enableScrollWheelZoom();
-
-
 
         /**
 		 * 点击后获取地区地址
 		 * */
         function showInfo(e){
-            console.log(e);
-
             //map.centerAndZoom(e.point,15);
-            removeOver()
+
+            removeOver();
             marker = new BMap.Marker(e.point);// 创建标注
 
-			console.log(marker)
             map.addOverlay(marker);
             let pt = e.point;
 
@@ -267,16 +291,18 @@
                 let addComp = rs.addressComponents;
                 let address = addComp.province ;
 
-                addComp.city && (address+=", " + addComp.city);
-                addComp.district && (address+=", " + addComp.district);
-                addComp.street && (address+=", " + addComp.street);
-                addComp.streetNumber && (address+=", " + addComp.streetNumber);
+                addComp.city && (address+= addComp.city);
+                addComp.district && (address+=  addComp.district);
+                addComp.street && (address+=  addComp.street);
+                addComp.streetNumber && (address+= addComp.streetNumber);
                 app.project_address = address;
+                app.longitude_and_latitude= pt.lat+","+pt.lng;
             });
-         //   e.preventDefault();//
         }
+
+       // console.log(isAndroid())
+
         map.addEventListener("click", showInfo);
-      //  getAddress(map);
     }
 
     /**
@@ -293,7 +319,6 @@
 
 
     window.onload = loadJScript;  //异步加载地图
-
 	/**
 	 * 添加标记
 	 **/
@@ -302,9 +327,9 @@
         let addr = obj.innerText;
         let point=$(obj).data("point");
         let pit = new BMap.Point(point.lng, point.lat); // 创建点坐标
-        console.log(pit);
         app.project_address=addr;
-        map.centerAndZoom(pit, 16);
+        app.longitude_and_latitude= point.lat+","+point.lng;
+        map.centerAndZoom(pit, 17);
         map.addOverlay(new BMap.Marker(pit));
     }
 
@@ -327,11 +352,13 @@
                     for (var i = 0; i < results.getCurrentNumPois(); i ++){
                         console.log(results.getPoi(i))
 						let point= JSON.stringify(results.getPoi(i).point);
-                        s.push( "<div class='adr_item' data-point='"+point+"' onclick='labelS(this);'>"+results.getPoi(i).title + ", " + results.getPoi(i).address +"</div>");
+                        s.push( "<div class='adr_item' data-point='"+point+"' onclick='labelS(this);'>"+results.getPoi(i).title  + results.getPoi(i).address +"</div>");
                     }
                     document.querySelector(".result").innerHTML = s.join("");
                     $(".result").show();
-                }
+                }else{
+                    $(".result").hide();
+				}
             }
         };
         var local = new BMap.LocalSearch(map, options);
@@ -341,10 +368,22 @@
         $(".result").hide();
     };
 
+    function isAndroid() {
+        if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+            //alert(navigator.userAgent);
+
+            //苹果端
+        } else if (/(Android)/i.test(navigator.userAgent)) {
+            //Android
+            return true;
+        }
+        return false;
+    }
+
 </script>
 <script>
 
-	const data_category= {:json_encode($category)?:''};
+	const data_category= JSON.parse('{:json_encode($category)?:"null"}');
     mui.init();
 	let key = "history";
 	let _cache = cache(key);
@@ -353,6 +392,7 @@
 		data:{
             project_address:'',    //工程地址四川省成都市成华区二环路东三段212号
 			isedit:false,    //地址是否可编辑
+            longitude_and_latitude:'',    //工程地址经纬度
             unit_name:'',     //单位名称
             project_name:'',     //工程名称
             salesman:'',    //业务员
@@ -365,19 +405,21 @@
             plan_square:'',    //计划方量
             principal:'',     //现场负责人姓名
             mobile:'',     //现场负责人联系电话
+
+
 			history:_cache ||{
-                unit_name:'重庆心联宇科技',     //单位名称
-                project_name:'希望工程',     //工程名称
-                salesman:'李世民',    //业务员
-                pouring_type:'1',     //浇筑方式
-                pouring_part:'2',     //浇筑部位
-                pouring_label:'180-521-54',     //浇筑标号
-                slump:'10',     //坍落度
-                pouring_time:'{:date("Y-m-d H:i:s")}',     //浇筑时间
-                distance:'100',    //商砼运距
-                plan_square:'50',    //计划方量
-                principal:'张良',     //现场负责人姓名
-                mobile:'18725950959',     //现场负责人联系电话
+                unit_name:'',     //单位名称
+                project_name:'',     //工程名称
+                salesman:'',    //业务员
+                pouring_type:'',     //浇筑方式
+                pouring_part:'',     //浇筑部位
+                pouring_label:'',     //浇筑标号
+                slump:'',     //坍落度
+                pouring_time:'',     //浇筑时间
+                distance:'',    //商砼运距
+                plan_square:'',    //计划方量
+                principal:'',     //现场负责人姓名
+                mobile:'',     //现场负责人联系电话
 			} ,     //历史记录
 			gcmcList:[ ],    //工程名称列表
 			jzfsList:[ ],    //浇筑方式列表
@@ -390,7 +432,8 @@
 			choseFn:function(evt,type){
 				let self=this,data=null;
 				if(type===1){
-					  data= self.gcmcList;
+					  data= eval('{:json_encode($project)}');
+
 				}else if(type===2){
 					  data=data_category[2]['subsets'];
 				}else if(type===3){
@@ -404,17 +447,17 @@
                 let picker = new mui.PopPicker();
 				picker.setData(data);
 				//picker.pickers[0].setSelectedIndex(4, 2000);
-				picker.pickers[0].setSelectedValue('fourth', 2000);
+				picker.pickers[0].setSelectedValue('fourth', 0);
 				picker.show(function(SelectedItem) {
 					let text = SelectedItem[0].text;
-					if(type===1){
+					if(type==1){
 						self.project_name=text ;
-						//self.unit_name=SelectedItem[0].value;
-					}else if(type===2){
+						self.salesman=SelectedItem[0].value;
+					}else if(type==2){
 						self.pouring_type=text;
-					}else if(type===3){
+					}else if(type==3){
 						self.pouring_part=text;
-					}else if(type===4){
+					}else if(type==4){
 						self.pouring_label=text;
 					}else{
 						self.slump=text;
@@ -424,86 +467,89 @@
 
 		},
 		watch:{
-			
+
 		}
 	});
 
-	/**
-	 *
-	 * */
-	$("#submit").on("click",function () {
-
-        var project_address=$('.address').val();
-        console.log(project_address);
-        let data = $("#formData").formData();
-
-		for(let i in data){
-            if(!data[i].length){
-                $.toast("请完善计划单信息!","cancel");return;
-			}
-		}
-        if(!testTel(data.mobile)){
-            $.toast("请输入正确格式手机号!","cancel");
-            return
-        }
-        request({
-            url:"{:url('index/indexPost')}",
-            data:data,
-			done:function (result) {
-                cache(key,data);
-				result.url&&(location = result.url)
-            }
-        })
-
-    });
-
-
-	//选择时间
-	function choseTime(obj){
-		/*mui.init();*/
-		$('input').blur();
-		setTimeout(function(){
-			var dtpickerStartTime = new mui.DtPicker({
-				type : "hour",
-				beginDate:new Date(),
-				endDate:'',
-				labels: ['年', '月', '日', '点'],//设置默认标签区域提示语 
-				customData : {
-				}
-			});
-			dtpickerStartTime.show(function(e){
-				app.pouring_time=e.y.value+"年"+e.m.value+"月"+e.d.value+"日"+e.h.value+"点";
-//				$(obj).find('input').val(e.y.value+"年"+e.m.value+"月"+e.d.value+"日");
-    			$('input[name=pouring_time]').val(e.text+":00:00");
-			})
-		},500)
+/*
+ 	for (let a in _cache){
+	    app[a]=_cache[a]
 	}
+*/
+
+	
+
+	
 	$(function(){
 		//输入框获得焦点，读取历史记录
 		$('input').focus(function(){
+
 			$('.history').hide();
+            if(this.value.length>0){
+                return;
+            }
 			var hist=$(this).siblings('.history');
-			if(hist.html()!=''){
+			if(hist.text().trim()!==''){
 				hist.show();
 			}
-		});
-		
+		}).keyup(function () {
+            if(this.value.length>0){
+                $('.history').hide();
+            }else{
+
+			}
+        });
+
+
+
 		//点击历史记录，填充内容至输入框
 		$('.history').click(function(){
 			var val=$(this).attr('data-val');
 			var script = "app."+val +"=$(this).html()";
-			if(val==='pouring_time'){
+			if(val=='pouring_time'){
                 $('input[name=pouring_time]').val($(this).html());
+                $('#pouring_time').val($(this).html());
 			}
+			
+			
+			if(val=='distance'||val=='plan_square'){
+			  script = "app."+val+"= parseFloat($(this).html())";
+			}
+			
 			eval(script); $(this).hide();
+		});
+
+
+
+		$(".submitstr").click(function(){
+	        let data = $("#formData").formData();
+	
+			for(let i in data){
+	            if(!data[i].length && i!=='salesman' && i!=='longitude_and_latitude'){
+	                $.toast("请完善计划单信息!","cancel");return;
+				}
+			}
+	        if(!testTel(data.mobile)){
+	            $.toast("请输入正确的手机号!","cancel");
+	            return
+	        }
+	        request({
+	            url:"{:url('index/indexPost')}",
+	            data:data,
+				done:function (result) {
+                    result.code&&cache(key,data);
+					result.url&&(window.location = result.url)
+	            }
+	        })
 		})
-	})
+		
+	});
 
     /**
 	 * 隐藏底部
      */
 	$("#app input").focus(function () {
-		$(".mainFooter").hide()
+		$(".mainFooter").hide();
     }).blur(function () {
         $(".mainFooter").show();
     })

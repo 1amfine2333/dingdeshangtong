@@ -79,7 +79,6 @@ class AdminSalesController extends AdminBaseController
             $keywordComplex['user_nickname|mobile']    =   ['like', "%$keyword%"];
         }
 
-
         $plan = new PlanOrderModel();
         $list = Db::name('user')
            ->field('id,create_time,user_nickname,mobile,user_name,user_status')
@@ -87,12 +86,14 @@ class AdminSalesController extends AdminBaseController
             ->where($where)
             ->order("create_time DESC")
             ->paginate(10);
+
         foreach ($list as $k=>$v){
             $v['success']= $plan->where(['manager_id'=>$v['id']  ,'status'=>2])->count();
             $v['refuse']= $plan->where(['manager_id'=>$v['id']  ,'status'=>3])->count();
             $v['cancel']= $plan->where(['manager_id'=>$v['id']  ,'status'=>4])->count();
             $list[$k] = $v;
         }
+
         $list->appends($param);
 
         $this->assign("data",$list->toArray()['data']);
@@ -123,10 +124,14 @@ class AdminSalesController extends AdminBaseController
 
         $w = [];
         $id = intval(input("id"));
-        $type = input("type")?:3;
+        $type = input("type")?:2;
 
         $user = new UserModel();
         $plan = new PlanOrderModel();
+        $data = $user::get($id);
+        if(empty($data)){
+            $this->error("用户不存在!");
+        }
 
         $w['status']=$type;
         $list = $plan->where('manager_id',$id)->where($w)->order("create_time DESC")->paginate(10);
@@ -139,10 +144,10 @@ class AdminSalesController extends AdminBaseController
             'cancel'=>$plan->where(['manager_id'=>$id  ,'status'=>4])->count(),
         ];
 
-        $this->assign("info",$list->toArray()['data']);
+
         $this->assign('page', $page);
         $this->assign('count', $count);
-        $this->assign('data', $user::get($id));
+        $this->assign('data', $data);
         $this->assign('list',$list);
         return $this->fetch();
     }
@@ -167,18 +172,12 @@ class AdminSalesController extends AdminBaseController
         if ($this->request->isPost()) {
 
 
-                $result = $this->validate($this->request->param(), 'User');
+                $result = $this->validate($this->request->param(), 'User.addSales');
 
                 if ($result !== true) {
                     $this->error($result);
                 } else {
-
-                    $mobile = input('mobile');
-                    if(DB::name('user')->where(['mobile'=>$mobile,"user_type"=>3])->count()){
-                        $this->error("该手机号已存在!");
-                    }
-
-                    if (isset($_POST['user_pass'])){
+                    if (!empty($_POST['user_pass'])){
                         if (@$_POST['user_pass'] !==@$_POST['password_confirm']){
                             $this->error("密码输入不一致!");
                         }
@@ -186,7 +185,12 @@ class AdminSalesController extends AdminBaseController
                         $_POST['user_pass']="123456";
                     }
 
-                    unset($_POST['password_confirm']);
+                    $mobile = input('mobile');
+                    if(DB::name('user')->where(['mobile'=>$mobile,"user_type"=>3])->count()){
+                        $this->error("该账号已存在!");
+                    }
+
+                     unset($_POST['password_confirm']);
                     $_POST['user_type']    =   3;
                     $_POST['user_status']    =   2;
                     $_POST['user_pass']    =   cmf_password($_POST['user_pass']);
@@ -195,6 +199,7 @@ class AdminSalesController extends AdminBaseController
                     $result    = DB::name('user')->insertGetId($_POST);
 
                     if ($result !== false) {
+                        addLogs("管理员添加","添加销售经理,账号:".$mobile);
                         $this->success("添加成功！", url("admin_sales/index"));
                     } else {
                         $this->error("添加失败！");
@@ -225,18 +230,25 @@ class AdminSalesController extends AdminBaseController
         $id = input('id');
         if ($this->request->isPost()) {
 
-            $result = $this->validate($this->request->param(), 'User');
+            $result = $this->validate($this->request->param(), 'User.edit');
 
             if ($result !== true) {
 
                 $this->error($result);
             } else {
-
+                $mobile = input('mobile');
+                $where['mobile'] = array('eq',$mobile);
+                $where['user_type'] = array('eq',3);
+                $where['id'] = array('neq',$id);
+                if(DB::name('user')->where($where)->count()){
+                    $this->error("该账号已存在!");
+                }
                 isset($_POST['user_pass'] ) && $_POST['user_pass']    =   cmf_password($_POST['user_pass']);
 
                 $result    = $user->isUpdate(true)->save($_POST);
 
                 if ($result !== false) {
+                    addLogs("管理员编辑","编辑销售经理,账号:".$mobile);
                     $this->success("保存成功！", url("admin_sales/index"));
                 } else {
                     $this->error("保存失败！");
@@ -271,6 +283,7 @@ class AdminSalesController extends AdminBaseController
 
         if ($len  = model('user')->where('id','in',$id)->delete() !== false) {
             Db::name("RoleUser")->where("user_id" ,"in", $id)->delete();
+            addLogs("管理员删除","删除{$len}条销售经理账号");
             $this->success("删除成功！",url("admin_sales/index"));
         } else {
             $this->error("删除失败！");
@@ -295,6 +308,7 @@ class AdminSalesController extends AdminBaseController
         $id = $this->request->param('id', "", 'string');
         $pass = cmf_password("123456");
         if ($len  = model('user')->where('id','in',$id)->update(['user_pass'=>$pass]) !== false) {
+            addLogs("管理员重置","重置{$len}条销售经理的密码");
             $this->success("重置密码成功！",url("admin_sales/index"));
         } else {
             $this->error("重置密码失败！");
@@ -319,8 +333,10 @@ class AdminSalesController extends AdminBaseController
     {
         $id = input('id', 0, 'intval');
         if ($id) {
+            $user = model("user")->find($id);
             $result =model("user")->where(["id" => $id, "user_type" => 3  ])->setField('user_status', 0);
             if ($result) {
+                addLogs("管理员操作","冻结销售经理账号:".$user['mobile']);
                 $this->success("冻结成功！", "admin_sales/index");
             } else {
                 $this->error('冻结失败,该销售经理不存在,或者是管理员！');
@@ -347,7 +363,9 @@ class AdminSalesController extends AdminBaseController
     {
         $id = input('param.id', 0, 'intval');
         if ($id) {
+            $user = model("user")->find($id);
             model("user")->where(["id" => $id, "user_type" =>3 ])->setField('user_status', 1);
+            addLogs("管理员操作","启用销售经理账号:".$user['mobile']);
             $this->success("启用成功！", '');
         } else {
             $this->error('数据传入失败！');

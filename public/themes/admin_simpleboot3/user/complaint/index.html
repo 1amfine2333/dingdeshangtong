@@ -52,15 +52,15 @@
                     <td><input type="checkbox" lay-skin="primary" name="check_id" value="{$vo.id}"/></td>
                     <td>{$vo['user_nickname']?$vo['user_nickname']:lang('NOT_FILLED')}</td>
                     <td>{$vo.mobile|default="未绑定"}</td>
-                    <td>{:html($vo['content'])}...</td>
+                    <td>{:html($vo['content'])}</td>
                     <td>{$type[ $vo['type'] ]}</td>
                     <td>{$vo.plan_number|default="/"}</td>
-                    <php>$status = ['0'=>'待处理','1'=>'已处理'];</php>
+                    <php>$status = ['0'=>'待处理','1'=>'已回复'];</php>
                     <td>{$status[$vo['status']]}</td>
                     <td>{:date('Y-m-d H:i:s',$vo['create_time'])}</td>
                     <td>
                         <a href="{:url('complaint/info',['id'=>$vo['id']])}" >查看详情</a>
-                        <a href="javaScript:void(0);" style="color: red" class="delete" data-id="{$vo.id}">删除</a>
+                        <a href="javaScript:void(0);" class="delete" data-id="{$vo.id}">删除</a>
                     </td>
                 </tr>
             </foreach>
@@ -78,12 +78,10 @@
         laydate.render({
             elem: '#start'
             ,type: 'datetime'
-            ,max: "{:date('Y-m-d H:i:s')}"
         });
         laydate.render({
             elem: '#end'
             ,type: 'datetime'
-            ,max: "{:date('Y-m-d H:i:s')}"
         });
 
         form.on('checkbox(layTableAllChoose)', function(data){
@@ -119,12 +117,15 @@
         $(".delete").click(function () {
             let id = $(this).data("id");
             layer.confirm("删除后无法恢复，确定删除这条吗？",function () {
-                $.ajax({
+                request({
                     url:"{:url('complaint/delMultiple')}",
-                    type:"post",
                     data:{id:id},
-                    success:function (data) {   msg(data) }
-                });
+                    loading:0,
+                    type:"post",
+                    done:function (result) {
+                        result.code&&layer.close(index);
+                    }
+                })
             });
         });
 
@@ -134,7 +135,7 @@
          **/
         function checked() {
             let values = [];
-            $("[name=check_id]:checked").each(function (i,e) {
+            $("tbody [name=check_id]:checked").each(function (i,e) {
                 values.push(e.value);
             });
             return values;
@@ -151,8 +152,14 @@
                     data.url&&(location=data.url);
                 }});
         }
-
     });
+    window.onload=function () {
+        request({
+            url:"{:url('complaint/setMsg')}",
+            loading:false,
+            success:function () {  }
+        });
+    }
 </script>
 </body>
 </html>

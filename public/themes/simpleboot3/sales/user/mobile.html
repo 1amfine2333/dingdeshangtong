@@ -49,14 +49,14 @@
         <form id="formData">
             <div class="weui-cell">
                 <div class="weui-cell__bd">
-                    <input type="tel" class="weui-input" name="edit_mobile" placeholder="输入手机号" v-model="edit_mobile"
+                    <input type="tel" class="weui-input" name="edit_mobile" maxlength="11" placeholder="输入手机号" v-model="edit_mobile"
                            style="line-height: 40px;"/>
                 </div>
                 <div class="weui-cell__ft" style="padding: 5px 0;"></div>
             </div>
             <div class="weui-cell">
                 <div class="weui-cell__bd">
-                    <input type="text" class="weui-input" name="sms_code" placeholder="输入短信验证码" v-model="sms_code"
+                    <input type="text" class="weui-input" name="sms_code" maxlength="6" placeholder="输入短信验证码" v-model="sms_code"
                            style="line-height: 40px;"/>
                 </div>
                 <div class="weui-cell__ft">
@@ -78,32 +78,35 @@
             sms_code: '',     //验证码
             state: 0,    //是否点击获取验证码按钮
             sms_codeText: '获取验证码',    //验证码文字
-            times: 10,    //倒计时
+            times: 60,    //倒计时
         },
         methods: {
             //点击获取验证码
             getCode: function (evt) {
                 var self = this;
+
                 if (self.state === 0) {    //未点击
-                    if (!testTel(self.edit_mobile)) {
-                        $.toast('请输入正确的手机号', "cancel");
+                    self.state = 1;
+                    if (self.edit_mobile.length<1) {
+                        $.toast('请输入手机号', "cancel");
+                        self.state = 0;
                         return
                     }
-                    self.state = 1;
-                   request({
-                       url:"{:url('user/sendCode')}",
-                       data:{mobile:app.edit_mobile},
-                       success:function (data) {
-                           if(data.code){
-                               self.setTime();
-                           }else{
-                               self.state = 0;
-                           }
-                          setTimeout(function () {
-                              $.toast(data.msg,data.code?"":"cancel");
-                          },50)
-                       }
-                   });
+                    if (!testTel(self.edit_mobile)) {
+                        $.toast('请输入正确的手机号', "cancel");
+                        self.state = 0;
+                        return
+                    }
+                    request({
+                        url:"{:url('user/sendCode')}",
+                        data:{mobile:app.edit_mobile},
+                        success:function (data) {
+                            setTimeout(function () {
+                                $.toast(data.msg,data.code?"":"cancel");
+                            },200);
+                            if(data.code){setTime();}else{self.state = 0;}
+                        }
+                    });
                 }
             }
         }
@@ -113,12 +116,12 @@
 
     function setTime() {
         if (app.times < 1) {
-            app.yzmText = "获取验证码";
-            app.times = 10;
+            app.sms_codeText = "获取验证码";
+            app.times = 60;
             app.state = 0;
         } else {
             app.times--;
-            app.yzmText = app.times + "秒后重新获取";
+            app.sms_codeText = app.times + "秒后重新获取";
             setTimeout(function () {
                 setTime();
             }, 1000)
@@ -126,25 +129,31 @@
     }
 
     $("#submit").on('click',function () {
-       let data = $("#formData").formData();
+        let data = $("#formData").formData();
+        if (data.edit_mobile.length<1) {
+            $.toast('请输入手机号！', "cancel");
+            return false;
+        }
 
-       if (!testTel(data.edit_mobile)){
-           $.toast('请输入正确的手机号', "cancel");
-           return false;
-       }
-       if (!data.sms_code.length){
-           $.toast('验证码不能为空', "cancel");
-           return false;
-       }
-       request({
+        if (!testTel(data.edit_mobile)){
+            $.toast('请输入正确的手机号', "cancel");
+            return false;
+        }
+        if (data.sms_code.length<1) {
+            $.toast('请输入验证码！', "cancel");
+            return false;
+        }
+
+        if (data.sms_code.length!==6){
+            $.toast('请输入正确验证码', "cancel");
+            return false;
+        }
+        request({
             data:data
-       });
+        });
 
     });
 
-    $(function () {
-
-    })
 
 </script>
 

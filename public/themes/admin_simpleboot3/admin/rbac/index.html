@@ -106,12 +106,15 @@
                 msg({code:2,msg:"请先选择数据"});
             }else{
                 layer.confirm("删除后无法恢复, 确定删除这些角色吗？",function () {
-                    $.ajax({
+                    request({
                         url:"{:url('rbac/roleDelete')}",
-                        type:"post",
                         data:{id:values.join(',')},
-                        success:function (data) {   msg(data) }
-                    });
+                        loading:0,
+                        type:"post",
+                        done:function (result) {
+                            result.code&&layer.close(index);
+                        }
+                    })
                 });
             }
 
@@ -121,6 +124,11 @@
          * 编辑
          * */
         $(".editData").click(function () {
+            let values = checked();
+            if(values.length > 1){
+                msg({code:2,msg:"请点击单个数据编辑"});
+                return false;
+            }
             let id = $(this).attr("data-id");
             $.getJSON("{:url('rbac/authorize_json')}", {id: id}, function (result) {
                 result.id=id;
@@ -159,16 +167,17 @@
                 btn: ["保存"],
                 yes: function (index) {
                     let data = $("#formBox").serializeArray();
-                    $.ajax({
+                    request({
                         url: url,
                         data: data,
-                        type: "post",
-                        success: function (result) {
-                            msg(result);
+                        loading:0,
+                        type:"post",
+                        done:function (result) {
+                            result.code&&layer.close(index);
                         }
                     })
+
                 },end:function () {
-                   layer.closeAll()
                }
             });
             tree();

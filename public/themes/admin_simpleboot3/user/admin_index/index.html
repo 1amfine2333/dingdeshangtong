@@ -7,7 +7,7 @@
     <form class="well form-inline margin-top-20" method="post" action="{:url('user/adminIndex/index')}">
         模糊查询：
         <input class="form-control" type="text" autocomplete="off" name="keyword" style="width: 200px; margin-right: 10px" value="{:input('request.keyword')}"
-               placeholder="微信昵称/手机">
+               placeholder="微信昵称/手机号">
         注册时间：
         <input type="text" class="form-control"  autocomplete="off" placeholder="开始时间" id="start" name="start_time"
                value="{$start_time|default=''}"  style="width: 155px;">
@@ -37,7 +37,7 @@
                 <tr><td colspan="9">暂无数据</td></tr>
             </if>
             <php>
-                $user_statuses=array("0"=>lang('USER_STATUS_BLOCKED'),"1"=>lang('USER_STATUS_ACTIVATED'),"2"=>lang('USER_STATUS_UNVERIFIED'));
+                $user_statuses=array("0"=>'冻结',"1"=>'正常', "2"=>lang('USER_STATUS_UNVERIFIED'));
             </php>
             <foreach name="list" item="vo">
                 <tr>
@@ -82,12 +82,10 @@
         laydate.render({
             elem: '#start'
             ,type: 'datetime'
-            ,max: "{:date('Y-m-d H:i:s')}"
         });
         laydate.render({
             elem: '#end'
             ,type: 'datetime'
-            ,max: "{:date('Y-m-d H:i:s')}"
         });
 
     });

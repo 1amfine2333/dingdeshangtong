@@ -126,12 +126,13 @@ class PublicController extends AdminBaseController
     public function logout()
     {
         session('ADMIN_ID', null);
-        return redirect(url('/', [], false, true));
+        return redirect(url('/admin/', [], false, true));
     }
 
 
     public function captcha(){
-        $captcha = new Captcha();
+
+        ob_clean();
         $captcha = new Captcha();
         $captcha->fontSize = 18;
         $captcha->length   = 4;
@@ -139,6 +140,7 @@ class PublicController extends AdminBaseController
         $captcha->imageH   = 40;
         $captcha->useNoise = false;
         $captcha->fontttf = "2.ttf";
+
         return $captcha->entry();
     }
 }

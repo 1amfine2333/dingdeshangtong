@@ -24,7 +24,7 @@ class AdminBaseController extends BaseController
         if (!empty($session_admin_id)) {
             $user = Db::name('user')->where(['id' => $session_admin_id])->find();
 
-            if (!$this->checkAccess($session_admin_id)) {
+            if (!$this->checkAccess($session_admin_id)  ) {
                 $this->error("您没有访问权限！");
             }
             $this->assign("admin", $user);
@@ -95,7 +95,7 @@ class AdminBaseController extends BaseController
         $action     = $this->request->action();
         $rule       = $module . $controller . $action;
 
-        $notRequire = ["adminIndexindex", "adminMainindex"];
+        $notRequire = ["adminIndexindex", "adminMainindex",'adminSettingpassword','adminSettingpasswordpost','adminUseruserinfo','adminUseruserinfopost'];
         if (!in_array($rule, $notRequire)) {
             return cmf_auth_check($userId);
         } else {

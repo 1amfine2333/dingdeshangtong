@@ -19,7 +19,7 @@ class ComplaintValidate extends Validate
         'reply' => 'require|max:100',
     ];
     protected $message = [
-        'reply.require' => '请填写回复内容',
+        'reply.require' => '请输入回复内容!',
         'reply.max'  => '回复内容最多输入100个字符',
     ];
 

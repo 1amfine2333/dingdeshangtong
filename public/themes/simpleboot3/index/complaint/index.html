@@ -31,12 +31,12 @@
 
 			<div class="weui-cell" v-for="item in list">
 				<div class="weui-cell__hd"  style="align-self: flex-start;">
-					<img v-bind:src="'__TMPL__/public/assets/user/img/'+(item['is_read']===1?'point.png':'radio.png')">
+					<img  :src="'__TMPL__/public/assets/user/img/'+(item['is_read']===1?'point.png':'radio.png')">
 				</div>
 					<div class="weui-cell__bd" style="width: 1%;" @click="location='/index/complaint/detail/id/'+item.id">
 						<div class="disbox" v-cloak >
 							<div class="sicon" >{{type[item.type]}}</div>
-							<div class="disflex right state"  v-if="item.status">已处理</div>
+							<div class="disflex right state"  v-if="item.status">已回复</div>
 							<div class="disflex right state active" v-else>待处理</div>
 						</div>
 						<div class="ellipsis" style="padding: 5px 0;" v-text="item.content"></div>
@@ -51,7 +51,7 @@
 			<span class="a"></span>
 			<span class="b"></span>
 		</div>
-		<div class="nomore" v-cloak v-show="pages" v-html="(page<pages)?loading:no_more"></div>
+		<div class="nomore" v-cloak v-show="pages" v-html="loading"></div>
 	</section>
 	</body>
 </html>
@@ -65,8 +65,8 @@
             list:[],
             page:1,
             pages:0,
-            loading:'<div class="weui-loadmore"><i class="weui-loading"></i><span class="weui-loadmore__tips">正在加载</span></div>',
-			no_more: '<div class="weui-loadmore weui-loadmore_line"><span class="weui-loadmore__tips">没有更多了</span></div>'
+            loading:'<div class="weui-loadmore"><i class="weui-loading"></i><span class="weui-loadmore__tips">上拉可以加载更多哦</span></div>',
+			no_more: '<div class="weui-loadmore weui-loadmore_line"><span class="weui-loadmore__tips">到底啦~</span></div>'
         },
         created() {
             console.log(11);
@@ -108,6 +108,7 @@
 
 
     function tempRender(data) {
+
         $("#content").find(".weui-loadmore").remove()
         let list = data.data.list;
         let page = data.data.page;
@@ -117,6 +118,11 @@
         }else{
             app.list = app.list.concat(list);
         }
+        setTimeout(function () {
+            $(".nomore").html((app.page<app.pages)?app.loading:app.no_more);
+            app.lock=true;
+        },50);
+
     }
 
 	
