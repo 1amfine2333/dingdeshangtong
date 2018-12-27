@@ -11,6 +11,26 @@
 </head>
 <body>
 <div class="wrap">
+    <ul class="nav nav-tabs">
+       <!-- // $_SERVER['HTTP_REFERER']-->
+        <assign name="ref" value="$Think.server.http_referer" />
+
+        <php>
+           $uri = @$_SERVER['REQUEST_URI'];
+            $ref = session('ref');
+           if(strpos($uri,'admin_index')!==false||strpos($uri,'admin_sales')!==false ||strpos($uri,'plan/index')!==false){
+                 $ref = @$_SERVER['HTTP_REFERER'];
+                 session('ref',$ref);
+            }
+
+            if(empty($ref)){
+                $ref = "javaScript:history.go(-1);";
+            }
+        </php>
+
+        <li><a href="{$ref}">列表</a></li>
+        <li class="active"><a href="#">详情</a></li>
+    </ul>
     <div class="info">
         <div class="clearfix div_box">
             <div>微信昵称：<span>{$plan.user_nickname}</span></div>

@@ -87,7 +87,7 @@ class PlanController extends UserBaseController
                 if($user){
                     $data['avatar'] = $user['avatar'];
                     $data['nickname'] = $user['user_nickname'];
-                    $data['mobile'] = $user['mobile'];
+                    $data['user_mobile'] = $user['mobile'];
                 }
             }
             $data['isLogin']=cmf_is_user_login();

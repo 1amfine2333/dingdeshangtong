@@ -22,6 +22,8 @@
         <script type="text/javascript" src="http://api.map.baidu.com/api?key=&v=1.1&services=true"></script>
 	</head>
 	<style>
+		/*html,body{ overflow: hidden;}*/
+		.color0{ color: #000;}
 		body .weui-vcode-btn.getCode.active{ color: #ccc;}
 		body .weui-vcode-btn.getCode{ color: #4c7db2;}
 		body .weui-vcode-btn{ font-size: 1rem;}
@@ -29,9 +31,11 @@
 		.result{position: absolute;line-height: 20px;z-index: 9999;background: #fff;width: 100%;left: 10%;top: 103%;font-size: 13px;color: #666;}
 		.map{ position: relative;}
 		.btn{ cursor:pointer}
+		/*.content{ position: absolute; top: 0; left: 0; right: 0; bottom: 50px; overflow: auto;}*/
+		/*.mainFooter{ z-index: 1; position: absolute; left: 0; right: 0; bottom: 0;}*/
 	</style>
 	<body class="bgf7">
-		<section id="app" class="mainSec">
+		<section id="app" class="mainSec" style="position: relative;">
 			<div class="content" style="padding-bottom: 50px;">
 				<form action="" id="formData">
 				<div class="map">
@@ -137,7 +141,8 @@
 		                	浇筑时间
 		                </div>
 		                <div class="weui-cell__bd relative">
-		                    <input type="text" class="right" required id="pouring_time"  readonly unselectable="on" onfocus="this.blur()"placeholder="请选择浇筑时间"  />
+		                	<div id="pouring_time" onclick="openTime(this)" class="colorc right">请选择浇筑时间</div>
+		                    <!--<input type="text" class="right no" required id="pouring_time" onclick="openTime(this)" placeholder="请选择浇筑时间"  />-->
 		                    <input type="hidden" name="pouring_time"  id="pouring_time2" value="" />
 		                    <span class="history" data-val="pouring_time">{{history.pouring_time||''}}</span>
 		                </div>
@@ -193,7 +198,7 @@
 				</form>
 			</div>
 			
-			<footer class="mainFooter">
+			<footer class="mainFooter" style="z-index: 1;">
 				<a class="fot1 active">首页</a>
 				<a class="fot2" href="{:url('plan/index')}">计划单</a>
 				<a class="fot3" href="{:url('user/index')}">我的 {$has_msg?'<i></i>':""}</a>
@@ -205,12 +210,13 @@
  	mui.init();
 	//点击浇筑时间出现历史记录
 	function openTime(obj){
+//		alert(1)
 		$('.history').hide();
 		$(obj).siblings('.history').show();
 	}
 	//选择时间
 	function choseTime(obj){
-		$('input').blur();
+//		$('input').blur();
 		setTimeout(function(){
 			var dtpickerStartTime = new mui.DtPicker({
 				type : "hour",
@@ -221,7 +227,8 @@
 				}
 			});
 			dtpickerStartTime.show(function(e){
-				$("#pouring_time").val(e.y.value+"年"+e.m.value+"月"+e.d.value+"日"+e.h.value+"点");				
+				$("#pouring_time").html(e.y.value+"年"+e.m.value+"月"+e.d.value+"日"+e.h.value+"点");	
+//				$("#pouring_time").val(e.y.value+"年"+e.m.value+"月"+e.d.value+"日"+e.h.value+"点");				
     			$('input[name=pouring_time]').val(e.text+":00:00");
 			})
 		},500)
@@ -250,26 +257,51 @@
 
 
         let geolocation = new BMap.Geolocation();
-        geolocation.getCurrentPosition(function(r){
-            if(this.getStatus() == BMAP_STATUS_SUCCESS){
-                var mk = new BMap.Marker(r.point);
-               	let pt =  r.point;
+       function dingwei(){
+                geolocation.getCurrentPosition(function(r){
+                    if(this.getStatus() == BMAP_STATUS_SUCCESS){
+ 
+                        var mk = new BMap.Marker(r.point);
+                        let pt =  r.point;
+                        map.addOverlay(mk);
+                        map.panTo(pt);
+                        let addComp =  r.address;
+                        let address = addComp.province ;
+                        addComp.city && (address+= addComp.city);
+                        addComp.district && (address+=  addComp.district);
+                        addComp.street && (address+=  addComp.street);
+                        addComp.streetNumber && (address+= addComp.streetNumber);
+                        app.project_address = address;
+                        app.longitude_and_latitude= pt.lat+","+pt.lng;
+
+                        r.address_cache = {project_address: app.project_address,longitude_and_latitude:app.longitude_and_latitude};
+                        cache("ADDRESS_CACHE",r);
+                        sessionStorage.setItem('address',"1");
+                    }
+                    else {
+                        /*$.toast('获取位置失败',"cancel");
+                        window.close();*/
+                    }
+                },{enableHighAccuracy: true});
+			}
+
+			if(sessionStorage.getItem('address') && cache("ADDRESS_CACHE")){
+                var r = cache("ADDRESS_CACHE")
+             
+			   let pit = new BMap.Point(r.point.lng, r.point.lat); // 创建点坐标
+                 var mk = new BMap.Marker(pit);
                 map.addOverlay(mk);
-                map.panTo(pt);
-                let addComp =  r.address;
-                let address = addComp.province ;
-                addComp.city && (address+= addComp.city);
-                addComp.district && (address+=  addComp.district);
-                addComp.street && (address+=  addComp.street);
-                addComp.streetNumber && (address+= addComp.streetNumber);
-                app.project_address = address;
-                app.longitude_and_latitude= pt.lat+","+pt.lng;
-            }
-            else {
-                $.toast('获取位置失败',"cancel");
-                window.close();
-            }
-        },{enableHighAccuracy: true});
+                map.panTo(pit);
+				
+				//map.centerAndZoom(pit, 17);
+			 
+				
+				app.project_address = r.address_cache.project_address;
+				app.longitude_and_latitude = r.address_cache.longitude_and_latitude;
+			}else{
+				dingwei()
+			}
+
 
 
 
@@ -339,9 +371,6 @@
      * @param str
      */
     function searchEnd(str) {
-        if(str==cache("ADDRESS_CACHE")||!str)return;
-
-        cache("ADDRESS_CACHE",str);
         var options = {
             onSearchComplete: function(results){
 
@@ -350,7 +379,7 @@
 
                     var s = [];
                     for (var i = 0; i < results.getCurrentNumPois(); i ++){
-                        console.log(results.getPoi(i))
+                       // console.log(results.getPoi(i))
 						let point= JSON.stringify(results.getPoi(i).point);
                         s.push( "<div class='adr_item' data-point='"+point+"' onclick='labelS(this);'>"+results.getPoi(i).title  + results.getPoi(i).address +"</div>");
                     }
@@ -476,11 +505,11 @@
 	    app[a]=_cache[a]
 	}
 */
-
-	
-
-	
 	$(function(){
+		
+		var hei=$(window).height();
+		$('#app').height(hei);
+		
 		//输入框获得焦点，读取历史记录
 		$('input').focus(function(){
 
@@ -508,7 +537,8 @@
 			var script = "app."+val +"=$(this).html()";
 			if(val=='pouring_time'){
                 $('input[name=pouring_time]').val($(this).html());
-                $('#pouring_time').val($(this).html());
+                $('#pouring_time').html($(this).html()).addClass('color0').removeClass('colorc');
+//              $('#pouring_time').val($(this).html());
 			}
 			
 			
@@ -545,12 +575,28 @@
 		
 	});
 
+	var winHeight = $(window).height();   //获取当前页面高度
+	$(window).resize(function(){
+	   var thisHeight=$(this).height();
+	    if(winHeight - thisHeight >50){
+	         //当软键盘弹出，在这里面操作
+			$(".mainFooter").hide();
+	    }else{
+	        //当软键盘收起，在此处操作
+			$(".mainFooter").show();
+			setTimeout(function(){
+				$('.history').hide();
+				$('input').blur();
+			},200)
+	    }
+	});
     /**
 	 * 隐藏底部
      */
 	$("#app input").focus(function () {
 		$(".mainFooter").hide();
     }).blur(function () {
+//		$('body').scrollTop($(window).height());
         $(".mainFooter").show();
     })
 </script>
