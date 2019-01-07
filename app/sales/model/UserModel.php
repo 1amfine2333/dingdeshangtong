@@ -94,7 +94,7 @@ class UserModel extends Model
         $refresh_token = $sales['refresh_token'];
 
         $userInfo = $this->getUser($openid, $access_token);
-
+		file_put_contents('a321.txt',var_export($userInfo,true),FILE_APPEND);
         if (!$userInfo) {
             return false;
         }

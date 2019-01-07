@@ -10,7 +10,6 @@
 // +----------------------------------------------------------------------
 namespace app\index\controller;
 
-use app\index\lib\Curl;
 use app\user\model\PlanOrderModel;
 use cmf\controller\UserBaseController;
 use think\Db;
@@ -29,7 +28,6 @@ class IndexController extends UserBaseController
         $category = Db::name('category')->select();
         //数据处理
         $category_data = [];
-
         foreach ($category as $item) {
             if ($item['parent_id'] == 0) {
                 foreach ($category as $v) {
@@ -85,14 +83,14 @@ class IndexController extends UserBaseController
 
         $data['user_id'] = cmf_get_current_user_id();
         // 创建订单号
-        $data['number'] = time() . rand(1000, 1222);
+        $data['number'] = $plan->getNumber();
         /*$data['pouring_time'] = preg_replace("/(年|月)/u","-",$data['pouring_time']);
           $data['pouring_time'] = preg_replace("/日/u","",$data['pouring_time']);
         */
         $data['pouring_time'] = strtotime($data['pouring_time']);
         $data['create_time']=time();
         if ($data['pouring_time'] < time()) {
-            $this->error("提交失败，请重试");
+            $this->error("提交时间请大于当前！");
         }
 
         //新增计划单数据
@@ -117,15 +115,5 @@ class IndexController extends UserBaseController
     {
         return view("success");
     }
-
-    public function getAddress()
-    {
-        $map = "http://api.map.baidu.com/location/ip?ak=cLx2ByWCm7OxxO65d8jKLp7iudhVNbtB&coor=bd09ll&ip=222.182.197.0";
-        $_SERVER['REMOTE_ADDR'];
-        $curl = new Curl();
-        $data = $curl->get($map, [], 'http://test.678down.com/');
-        $this->success('result', null, json_decode($data));
-    }
-
 
 }

@@ -66,7 +66,7 @@
                     <div class="name-text">{$count.create}</div>
                 </div>
                 <div class="col-sm-4">
-                    <div class="title_name">已处理计划单次数：</div>
+                    <div class="title_name">已接单计划单次数：</div>
                     <div class="name-text">{$count.success}</div>
                 </div>
                 <div class="col-sm-4">
@@ -83,7 +83,7 @@
             <div class="col-sm-12">
                 <php>$id = input('id');$type=input('type');</php>
                 <a href="{:url('admin_index/info',['id'=>$id])}" class="btn btn-info <empty name='$type'>active</empty>">已提交</a>
-                <a href="{:url('admin_index/info',['id'=>$id,'type'=>2])}" class="btn btn-success <if $type==2>active</if>">已处理</a>
+                <a href="{:url('admin_index/info',['id'=>$id,'type'=>2])}" class="btn btn-success <if $type==2>active</if>">已接单</a>
                 <a href="{:url('admin_index/info',['id'=>$id,'type'=>3])}" class="btn btn-danger <if $type==3>active</if>">已拒绝</a>
                 <a href="{:url('admin_index/info',['id'=>$id,'type'=>4])}" class="btn btn-default <if $type==4>active</if>">已取消</a>
             </div>
@@ -112,7 +112,7 @@
                 <tr><td colspan="11">暂无数据</td></tr>
             </if>
             <php>
-                $status =['1'=>"待处理","2"=>"已处理","3"=>"已拒绝",'4'=>"已取消"];
+                $status =['1'=>"待处理","2"=>"已接单","3"=>"已拒绝",'4'=>"已取消"];
             </php>
             <foreach name="list" item="vo">
                 <tr>

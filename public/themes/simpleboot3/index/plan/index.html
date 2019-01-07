@@ -25,7 +25,7 @@
     <header class="jihuanHeader">
         <div :class="type==0?'active':''" @click="chose($event,0)">全部</div>
         <div :class="type==1?'active':''" @click="chose($event,1)">待处理</div>
-        <div :class="type==2?'active':''" @click="chose($event,2)">已处理</div>
+        <div :class="type==2?'active':''" @click="chose($event,2)">已接单</div>
         <div :class="type==3?'active':''" @click="chose($event,3)">已拒绝</div>
         <div :class="type==4?'active':''" @click="chose($event,4)">已取消</div>
     </header>
@@ -70,12 +70,12 @@
     let app = new Vue({
         el: '#app',
         data: {
-            status: ['全部', '待处理', '已处理', '已拒绝', '已取消'],
+            status: ['全部', '待处理', '已接单', '已拒绝', '已取消'],
             lock: false,   //是否为空
             load: '<div class="weui-loadmore"><i class="weui-loading"></i><span class="weui-loadmore__tips">数据加载中...</span></div>',
             loading: '<div class="weui-loadmore"><i class="weui-loading"></i><span class="weui-loadmore__tips">上拉可以加载更多哦</span></div>',
             no_more: '<div class="weui-loadmore weui-loadmore_line"><span class="weui-loadmore__tips">到底啦!</span></div>',
-            type: 0,    //当前选择的状态（0.全部，1.待处理，2.已处理，3.已拒绝，4.已取消）
+            type: 0,    //当前选择的状态（0.全部，1.待处理，2.已接单，3.已拒绝，4.已取消）
             page: 1,
             list: [],
             pages: parseInt("{$data.pages}"),

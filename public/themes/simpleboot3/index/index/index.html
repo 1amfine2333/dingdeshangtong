@@ -193,6 +193,17 @@
 		                </div>
 		                <div class="weui-cell__ft"> </div>
 		            </div>
+		            <div class="weui-cell">
+		                <div class="weui-cell__hd" style="align-self: flex-start;">
+		                	<img src="__TMPL__/public/assets/user/img/beizhu.png" class="icon" alt="">
+		                </div>
+		                <div class="weui-cell__bd relative">
+		                	<div style="padding:10px 0">备注</div>
+		                    <textarea class="weui-textarea" rows="3" maxlength="50" required v-model="remark" name="remark" placeholder="请输入备注"></textarea>
+		                    <!--<span class="history" data-val="mobile">{{history.mobile||''}}</span>-->
+		                </div>
+		                <div class="weui-cell__ft"> </div>
+		            </div>
 		        </div>
 		        <div class="btn submitstr" style="margin-bottom:1rem;cursor: pointer">提 交</div>
 				</form>
@@ -227,7 +238,7 @@
 				}
 			});
 			dtpickerStartTime.show(function(e){
-				$("#pouring_time").html(e.y.value+"年"+e.m.value+"月"+e.d.value+"日"+e.h.value+"点");	
+				$("#pouring_time").html(e.y.value+"年"+e.m.value+"月"+e.d.value+"日"+e.h.value+"点").addClass('color0').removeClass('colorc');	
 //				$("#pouring_time").val(e.y.value+"年"+e.m.value+"月"+e.d.value+"日"+e.h.value+"点");				
     			$('input[name=pouring_time]').val(e.text+":00:00");
 			})
@@ -434,7 +445,7 @@
             plan_square:'',    //计划方量
             principal:'',     //现场负责人姓名
             mobile:'',     //现场负责人联系电话
-
+			remark:'',      //备注
 
 			history:_cache ||{
                 unit_name:'',     //单位名称
@@ -555,12 +566,12 @@
 	        let data = $("#formData").formData();
 	
 			for(let i in data){
-	            if(!data[i].length && i!=='salesman' && i!=='longitude_and_latitude'){
+	            if(!data[i].length && i!=='salesman' && i!=='longitude_and_latitude' && i!='remark'){
 	                $.toast("请完善计划单信息!","cancel");return;
 				}
 			}
 	        if(!testTel(data.mobile)){
-	            $.toast("请输入正确的手机号!","cancel");
+	            $.toast("请输入正确的电话号码!","cancel");
 	            return
 	        }
 	        request({
@@ -594,6 +605,12 @@
 	 * 隐藏底部
      */
 	$("#app input").focus(function () {
+		$(".mainFooter").hide();
+    }).blur(function () {
+//		$('body').scrollTop($(window).height());
+        $(".mainFooter").show();
+    })
+    $("#app textarea").focus(function () {
 		$(".mainFooter").hide();
     }).blur(function () {
 //		$('body').scrollTop($(window).height());

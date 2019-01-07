@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 namespace app\sales\controller;
 
+use app\index\lib\JsSdk;
 use app\user\model\ComplaintModel;
 use app\user\model\PlanOrderModel;
 use app\user\model\UserModel;
@@ -93,6 +94,12 @@ class PlanController extends UserBaseController
             $data['isLogin']=cmf_is_user_login();
             $this->assign('data', $data);
         }
+        $AppId = config('AppId');
+        $Secret = config('AppSecret');
+        $js = new JsSdk($AppId,$Secret);
+
+        $signPackage=$js->getSignPackage();;
+        $this->assign('signPackage',$signPackage);
 
         return $this->fetch();
 

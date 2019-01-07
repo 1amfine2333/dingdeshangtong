@@ -9,6 +9,10 @@
 
 // [ 入口文件 ]
 
+session_cache_limiter('private_no_cache');
+header('Cache-Control:private');
+
+
 // 调试模式开关
 define("APP_DEBUG", true);
 
